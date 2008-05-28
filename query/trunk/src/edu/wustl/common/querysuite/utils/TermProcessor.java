@@ -43,16 +43,16 @@ public class TermProcessor {
     private static class SubTerm implements IArithmeticOperand {
         private static final long serialVersionUID = 7342856030098944697L;
 
-        final int startIdx;
+        private static final SubTerm INVALID_SUBTERM = new SubTerm(-1, QueryObjectFactory
+                .createLiteral(TermType.Invalid), -1);
 
-        final int endIdx;
+        private final int endIdx;
 
-        final ILiteral literal;
+        private final ILiteral literal;
 
-        final int numRightPs;
+        private final int numRightPs;
 
-        private SubTerm(int startIdx, int endIdx, ILiteral literal, int numRightPs) {
-            this.startIdx = startIdx;
+        private SubTerm(int endIdx, ILiteral literal, int numRightPs) {
             this.endIdx = endIdx;
             this.literal = literal;
             this.numRightPs = numRightPs;
@@ -112,17 +112,27 @@ public class TermProcessor {
             IConnector<ArithmeticOperator> prevConn = term.getConnector(i - 1, i);
             if (currOpndNesting > prevConn.getNestingNumber()) {
                 SubTerm subTerm = convertSubTerm(term, i, postFix);
-                res = getLeftParentheses(numLeftPs)
-                        + convertBasicTerm(leftOpnd, prevConn.getOperator(), subTerm, postFix);
-                termType = TermType.getResultTermType(termType, subTerm.getTermType(), prevConn.getOperator());
+                if (subTerm == SubTerm.INVALID_SUBTERM) {
+                    return subTerm;
+                }
+                ILiteral resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), subTerm, postFix);
+                if (resLit == INVALID_LITERAL) {
+                    return SubTerm.INVALID_SUBTERM;
+                }
+                res = getLeftParentheses(numLeftPs) + resLit.getLiteral();
+                termType = resLit.getTermType();
                 res += getRightParentheses(subTerm.numRightPs);
                 i = subTerm.endIdx + 1;
                 numLeftPs -= subTerm.numRightPs;
             } else {
                 IArithmeticOperand rightOpnd = term.getOperand(i);
-                res = getLeftParentheses(numLeftPs)
-                        + convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd, postFix);
-                termType = TermType.getResultTermType(termType, rightOpnd.getTermType(), prevConn.getOperator());
+                ILiteral resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd, postFix);
+                if (resLit == INVALID_LITERAL) {
+                    return SubTerm.INVALID_SUBTERM;
+                }
+                res = getLeftParentheses(numLeftPs) + resLit.getLiteral();
+                termType = resLit.getTermType();
+
                 int numRightPs = currOpndNesting - term.getConnector(i, i + 1).getNestingNumber();
                 res += getRightParentheses(numRightPs);
                 numLeftPs -= numRightPs;
@@ -130,8 +140,10 @@ public class TermProcessor {
             }
         }
         ILiteral literal = QueryObjectFactory.createLiteral(res, termType);
-        return new SubTerm(startIdx, i - 1, literal, -numLeftPs);
+        return new SubTerm(i - 1, literal, -numLeftPs);
     }
+
+    private static final ILiteral INVALID_LITERAL = QueryObjectFactory.createLiteral(TermType.Invalid);
 
     private String getLeftParentheses(int i) {
         return getParantheses(i, "(");
@@ -149,16 +161,19 @@ public class TermProcessor {
         return s.toString();
     }
 
-    private String convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
+    private ILiteral convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
             IArithmeticOperand rightOpnd, boolean postFix) {
         // TODO remove postFix
         String leftOpndString = convertOperand(leftOpnd);
         String rightOpndString = convertOperand(rightOpnd);
+        String literal;
         if (postFix) {
-            return operator.mathString() + "[" + leftOpndString + ", " + rightOpndString + "]";
+            literal = operator.mathString() + "[" + leftOpndString + ", " + rightOpndString + "]";
         } else {
-            return leftOpndString + " " + operator.mathString() + " " + rightOpndString;
+            literal = leftOpndString + " " + operator.mathString() + " " + rightOpndString;
         }
+        TermType termType = TermType.getResultTermType(leftOpnd.getTermType(), rightOpnd.getTermType(), operator);
+        return QueryObjectFactory.createLiteral(literal, termType);
     }
 
     private String convertOperand(IArithmeticOperand operand) {
