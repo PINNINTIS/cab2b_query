@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false">
+    <class
+        name="edu.wustl.common.querysuite.queryobject.impl.Query"
+        table="QUERY"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+        <cache usage="read-write" />
+
+        <id
+            name="id"
+            column="IDENTIFIER"
+            type="long"
+            length="30"
+            unsaved-value="null"
+        >
+            <generator class="native">
+                <param name="sequence">CONSTRAINT_SEQ</param>
+            </generator>
+        </id>
+
+        <many-to-one
+            name="constraints"
+            class="edu.wustl.common.querysuite.queryobject.impl.Constraints"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="QUERY_CONSTRAINTS_ID"
+            unique="true"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Query.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+        <joined-subclass
+            name="edu.wustl.common.querysuite.queryobject.impl.ParameterizedQuery"
+            table="QUERY_PARAMETERIZED_QUERY"
+            dynamic-update="false"
+            dynamic-insert="false"
+        >
+        <key
+            column="IDENTIFIER"
+        />
+
+        <property
+            name="name"
+            type="string"
+            update="true"
+            insert="true"
+            column="QUERY_NAME"
+            length="255"
+            unique="true"
+        />
+
+        <property
+            name="description"
+            type="string"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+            length="1024"
+        />
+
+        <list
+            name="outputAttributeList"
+            table="QUERY_OUTPUT_ATTRIBUTE"
+            lazy="false"
+            inverse="false"
+            cascade="all-delete-orphan"
+        >
+            <cache 
+                usage="read-write" 
+             />
+
+              <key
+                  column="PARAMETERIZED_QUERY_ID"
+              />
+
+              <index
+                  column="POSITION"
+                  type="int"
+              />
+
+              <one-to-many
+                  class="edu.wustl.common.querysuite.queryobject.impl.OutputAttribute"
+              />
+        </list>
+
+        </joined-subclass>
+
+    </class>
+
+</hibernate-mapping>
