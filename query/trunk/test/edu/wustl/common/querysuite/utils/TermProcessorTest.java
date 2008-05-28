@@ -104,7 +104,7 @@ public class TermProcessorTest extends TestCase {
     }
 
     private String actual(ITerm term, boolean postFix) {
-        return termProcessor.convertTerm(term, postFix).getLiteral();
+        return termProcessor.convertTerm(term, postFix).getString();
     }
 
     private ILiteral literal(String s) {
