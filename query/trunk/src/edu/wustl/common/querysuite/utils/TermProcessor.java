@@ -87,6 +87,8 @@ public class TermProcessor {
         return convertSubTerm(term, 0, postFix).literal;
     }
 
+    private static final ILiteral INVALID_LITERAL = QueryObjectFactory.createLiteral(TermType.Invalid);
+
     private SubTerm convertSubTerm(ITerm term, int startIdx, boolean postFix) {
         int operatorBeforeTermNesting = term.getConnector(startIdx - 1, startIdx).getNestingNumber();
         if (term.nestingNumberOfOperand(startIdx) <= operatorBeforeTermNesting) {
@@ -110,40 +112,33 @@ public class TermProcessor {
             String leftOpndString = res.substring(numLeftPs);
             ILiteral leftOpnd = QueryObjectFactory.createLiteral(leftOpndString, termType);
             IConnector<ArithmeticOperator> prevConn = term.getConnector(i - 1, i);
+
+            IArithmeticOperand rightOpnd;
+            int nextI;
+            int numRightPs;
             if (currOpndNesting > prevConn.getNestingNumber()) {
                 SubTerm subTerm = convertSubTerm(term, i, postFix);
-                if (subTerm == SubTerm.INVALID_SUBTERM) {
-                    return subTerm;
-                }
-                ILiteral resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), subTerm, postFix);
-                if (resLit == INVALID_LITERAL) {
-                    return SubTerm.INVALID_SUBTERM;
-                }
-                res = getLeftParentheses(numLeftPs) + resLit.getLiteral();
-                termType = resLit.getTermType();
-                res += getRightParentheses(subTerm.numRightPs);
-                i = subTerm.endIdx + 1;
-                numLeftPs -= subTerm.numRightPs;
+                rightOpnd = subTerm;
+                numRightPs = subTerm.numRightPs;
+                nextI = subTerm.endIdx + 1;
             } else {
-                IArithmeticOperand rightOpnd = term.getOperand(i);
-                ILiteral resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd, postFix);
-                if (resLit == INVALID_LITERAL) {
-                    return SubTerm.INVALID_SUBTERM;
-                }
-                res = getLeftParentheses(numLeftPs) + resLit.getLiteral();
-                termType = resLit.getTermType();
-
-                int numRightPs = currOpndNesting - term.getConnector(i, i + 1).getNestingNumber();
-                res += getRightParentheses(numRightPs);
-                numLeftPs -= numRightPs;
-                i++;
+                rightOpnd = term.getOperand(i);
+                numRightPs = currOpndNesting - term.getConnector(i, i + 1).getNestingNumber();
+                nextI = i + 1;
             }
+            ILiteral resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd, postFix);
+            if (resLit == INVALID_LITERAL) {
+                return SubTerm.INVALID_SUBTERM;
+            }
+            res = getLeftParentheses(numLeftPs) + resLit.getLiteral();
+            termType = resLit.getTermType();
+            res += getRightParentheses(numRightPs);
+            numLeftPs -= numRightPs;
+            i = nextI;
         }
         ILiteral literal = QueryObjectFactory.createLiteral(res, termType);
         return new SubTerm(i - 1, literal, -numLeftPs);
     }
-
-    private static final ILiteral INVALID_LITERAL = QueryObjectFactory.createLiteral(TermType.Invalid);
 
     private String getLeftParentheses(int i) {
         return getParantheses(i, "(");
@@ -163,6 +158,10 @@ public class TermProcessor {
 
     private ILiteral convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
             IArithmeticOperand rightOpnd, boolean postFix) {
+        TermType termType = TermType.getResultTermType(leftOpnd.getTermType(), rightOpnd.getTermType(), operator);
+        if (termType == TermType.Invalid) {
+            return INVALID_LITERAL;
+        }
         // TODO remove postFix
         String leftOpndString = convertOperand(leftOpnd);
         String rightOpndString = convertOperand(rightOpnd);
@@ -172,7 +171,6 @@ public class TermProcessor {
         } else {
             literal = leftOpndString + " " + operator.mathString() + " " + rightOpndString;
         }
-        TermType termType = TermType.getResultTermType(leftOpnd.getTermType(), rightOpnd.getTermType(), operator);
         return QueryObjectFactory.createLiteral(literal, termType);
     }
 
