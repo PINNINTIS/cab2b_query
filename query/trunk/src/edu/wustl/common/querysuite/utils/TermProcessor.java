@@ -40,14 +40,16 @@ public class TermProcessor {
         this.primitiveOperationProcessor = new PrimitiveOperationProcessor();
     }
 
-    public TermProcessor(AttributeAliasProvider aliasProvider, DatabaseType databaseType) {
+    public TermProcessor(AttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
         this.aliasProvider = aliasProvider;
-        switch (databaseType) {
+        switch (databaseSQLSettings.getDatabaseType()) {
             case MySQL :
-                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
+                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor(databaseSQLSettings
+                        .getDateFormat());
                 break;
             case Oracle :
-                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
+                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor(databaseSQLSettings
+                        .getDateFormat());
                 break;
             default :
                 throw new RuntimeException("Can't occur.");
