@@ -179,14 +179,14 @@ public class TermProcessor {
         }
     }
 
-    public TermString convertTerm(ITerm term, boolean postFix) {
-        SubTerm subTerm = convertSubTerm(term, 0, postFix);
+    public TermString convertTerm(ITerm term) {
+        SubTerm subTerm = convertSubTerm(term, 0);
         return new TermString(subTerm.termStringOpnd);
     }
 
     private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid, true);
 
-    private SubTerm convertSubTerm(ITerm term, int startIdx, boolean postFix) {
+    private SubTerm convertSubTerm(ITerm term, int startIdx) {
         int operatorBeforeTermNesting = term.getConnector(startIdx - 1, startIdx).getNestingNumber();
         if (term.nestingNumberOfOperand(startIdx) <= operatorBeforeTermNesting) {
             throw new IllegalArgumentException();
@@ -214,7 +214,7 @@ public class TermProcessor {
             int nextI;
             int numRightPs;
             if (currOpndNesting > prevConn.getNestingNumber()) {
-                SubTerm subTerm = convertSubTerm(term, i, postFix);
+                SubTerm subTerm = convertSubTerm(term, i);
                 rightOpnd = subTerm;
                 numRightPs = subTerm.numRightPs;
                 nextI = subTerm.endIdx + 1;
@@ -223,7 +223,7 @@ public class TermProcessor {
                 numRightPs = currOpndNesting - term.getConnector(i, i + 1).getNestingNumber();
                 nextI = i + 1;
             }
-            TermStringOpnd resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd, postFix);
+            TermStringOpnd resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd);
             if (resLit == INVALID_TERM_STRING_OPND) {
                 return SubTerm.INVALID_SUBTERM;
             }
@@ -259,7 +259,7 @@ public class TermProcessor {
     }
 
     private TermStringOpnd convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
-            IArithmeticOperand rightOpnd, boolean postFix) {
+            IArithmeticOperand rightOpnd) {
         TermType leftType = leftOpnd.getTermType();
         TermType rightType = rightOpnd.getTermType();
         TermType termType = TermType.getResultTermType(leftType, rightType, operator);
@@ -278,13 +278,12 @@ public class TermProcessor {
             leftTermStrOpnd = convertOperand(leftOpnd);
             rightTermStrOpnd = convertOperand(rightOpnd);
         }
-        return new TermStringOpnd(primitiveOperation(leftTermStrOpnd, operator, rightTermStrOpnd, postFix),
-                termType, false);
+        return new TermStringOpnd(primitiveOperation(leftTermStrOpnd, operator, rightTermStrOpnd), termType, false);
     }
 
     private String primitiveOperation(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
-            TermStringOpnd rightTermStrOpnd, boolean postFix) {
-        return primitiveOperationProcessor.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd, postFix);
+            TermStringOpnd rightTermStrOpnd) {
+        return primitiveOperationProcessor.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd);
     }
 
     private TermStringOpnd convertOperand(IArithmeticOperand operand) {
@@ -314,4 +313,10 @@ public class TermProcessor {
             return new TermStringOpnd(termStr, operand.getTermType(), literalOpnd);
         }
     }
+
+    // for testing
+    void setPrimitiveOperationProcessor(PrimitiveOperationProcessor primitiveOperationProcessor) {
+        this.primitiveOperationProcessor = primitiveOperationProcessor;
+    }
+
 }

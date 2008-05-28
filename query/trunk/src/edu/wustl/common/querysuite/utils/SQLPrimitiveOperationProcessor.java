@@ -17,7 +17,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
 
     @Override
     String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
-            TermStringOpnd rightTermStrOpnd, boolean postFix) {
+            TermStringOpnd rightTermStrOpnd) {
         TermType leftType = leftTermStrOpnd.getTermType();
         TermType rightType = rightTermStrOpnd.getTermType();
 
@@ -44,7 +44,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         }
         leftTermStrOpnd = new TermStringOpnd(leftStr, null, false);
         rightTermStrOpnd = new TermStringOpnd(rightStr, null, false);
-        return super.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd, postFix);
+        return super.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd);
     }
 
     private String getDateCheckedString(TermStringOpnd opnd) {

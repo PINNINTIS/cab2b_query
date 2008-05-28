@@ -22,18 +22,18 @@ public class TermProcessorTest extends TestCase {
         term.addOperand(literal("1"));
         term.addOperand(conn(ArithmeticOperator.Plus, 0), literal("2"));
 
-        assertEquals("(1 + 2)", actual(term, false));
+        assertEquals("(1 + 2)", actual(term));
 
         term.addParantheses();
         term.addOperand(conn(ArithmeticOperator.MultipliedBy, 0), literal("3"));
-        assertEquals("((1 + 2) * 3)", actual(term, false));
+        assertEquals("((1 + 2) * 3)", actual(term));
 
         term.removeParantheses(0, 1);
         term.addParantheses(1, 2);
-        assertEquals("(1 + (2 * 3))", actual(term, false));
+        assertEquals("(1 + (2 * 3))", actual(term));
 
         term.addOperand(conn(ArithmeticOperator.Plus, 0), literal("5"));
-        assertEquals("(1 + (2 * 3) + 5)", actual(term, false));
+        assertEquals("(1 + (2 * 3) + 5)", actual(term));
     }
 
     public void test2() {
@@ -44,20 +44,20 @@ public class TermProcessorTest extends TestCase {
         term.addParantheses();
         term.addOperand(conn(ArithmeticOperator.MultipliedBy, 0), literal("3"));
         term.addOperand(conn(ArithmeticOperator.Minus, 1), literal("4"));
-        assertEquals("((1 + 2) * (3 - 4))", actual(term, false));
+        assertEquals("((1 + 2) * (3 - 4))", actual(term));
 
         term.addOperand(conn(ArithmeticOperator.DividedBy, 0), literal("5"));
-        assertEquals("((1 + 2) * (3 - 4) / 5)", actual(term, false));
+        assertEquals("((1 + 2) * (3 - 4) / 5)", actual(term));
 
         term.addParantheses(2, 4);
-        assertEquals("((1 + 2) * ((3 - 4) / 5))", actual(term, false));
+        assertEquals("((1 + 2) * ((3 - 4) / 5))", actual(term));
 
         term.removeParantheses(2, 4);
         term.addParantheses(0, 3);
-        assertEquals("(((1 + 2) * (3 - 4)) / 5)", actual(term, false));
+        assertEquals("(((1 + 2) * (3 - 4)) / 5)", actual(term));
 
         term.addOperand(conn(ArithmeticOperator.Plus, 1), literal("6"));
-        assertEquals("(((1 + 2) * (3 - 4)) / (5 + 6))", actual(term, false));
+        assertEquals("(((1 + 2) * (3 - 4)) / (5 + 6))", actual(term));
     }
 
     public void testPostFix() {
@@ -103,8 +103,13 @@ public class TermProcessorTest extends TestCase {
         assertEquals("(/[(*[(+[1, 2]), (-[3, 4])]), (+[5, 6])])", actual(term, true));
     }
 
-    private String actual(ITerm term, boolean postFix) {
-        return termProcessor.convertTerm(term, postFix).getString();
+    private String actual(ITerm term) {
+        return actual(term);
+    }
+
+    private String actual(ITerm term, boolean preFix) {
+        termProcessor.setPrimitiveOperationProcessor(new PrimitiveOperationProcessorMock(preFix));
+        return termProcessor.convertTerm(term).getString();
     }
 
     private ILiteral literal(String s) {

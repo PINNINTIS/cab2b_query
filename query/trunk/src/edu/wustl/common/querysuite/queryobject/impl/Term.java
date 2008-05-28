@@ -19,7 +19,7 @@ public class Term extends BaseExpression<ArithmeticOperator, IArithmeticOperand>
 
     public TermType getTermType() {
         TermProcessor processor = new TermProcessor();
-        return processor.convertTerm(this, false).getTermType();
+        return processor.convertTerm(this).getTermType();
     }
 
 }
