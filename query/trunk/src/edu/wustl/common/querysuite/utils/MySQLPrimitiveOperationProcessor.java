@@ -4,8 +4,8 @@ import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
 class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
-    public MySQLPrimitiveOperationProcessor(String dateFormat) {
-        super(dateFormat);
+    MySQLPrimitiveOperationProcessor(String dateFormat) {
+        super(dateFormat, "STR_TO_DATE");
     }
 
     @Override
@@ -17,10 +17,4 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     String getDateOffsetString(String s, TimeInterval timeInterval) {
         return "interval " + s + " " + timeIntervalStr(timeInterval);
     }
-
-    @Override
-    String strToDateFunc() {
-        return "STR_TO_DATE";
-    }
-
 }

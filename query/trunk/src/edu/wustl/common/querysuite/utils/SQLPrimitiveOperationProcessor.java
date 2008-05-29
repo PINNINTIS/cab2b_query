@@ -6,13 +6,19 @@ import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcessor {
-    private String dateFormat;
+    private final String dateFormat;
 
-    SQLPrimitiveOperationProcessor(String dateFormat) {
+    private final String strToDateFunc;
+
+    SQLPrimitiveOperationProcessor(String dateFormat, String strToDateFunc) {
         if (dateFormat == null) {
             throw new NullPointerException("date format is null.");
         }
+        if (strToDateFunc == null) {
+            throw new NullPointerException("str-to-date function is null.");
+        }
         this.dateFormat = dateFormat;
+        this.strToDateFunc = strToDateFunc;
     }
 
     @Override
@@ -42,9 +48,12 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
             }
             leftStr = getDateOffsetString(leftStr, leftTermStrOpnd.getTimeInterval());
         }
-        leftTermStrOpnd = new TermStringOpnd(leftStr, null, false);
-        rightTermStrOpnd = new TermStringOpnd(rightStr, null, false);
-        return super.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd);
+        return super.getResultString(leftStr, operator, rightStr);
+    }
+
+    @Override
+    String modifyDateLiteral(String literal) {
+        return transformLiteralDate(literal);
     }
 
     private String getDateCheckedString(TermStringOpnd opnd) {
@@ -56,7 +65,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     private String transformLiteralDate(String s) {
-        return strToDateFunc() + "('" + s + "','" + dateFormat + "')";
+        return strToDateFunc + "('" + s + "','" + dateFormat + "')";
     }
 
     String timeIntervalStr(TimeInterval timeInterval) {
@@ -66,7 +75,4 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     abstract String getDateOffsetString(String s, TimeInterval timeInterval);
 
     abstract String getDateDiffString(String leftStr, String rightStr);
-
-    abstract String strToDateFunc();
-
 }

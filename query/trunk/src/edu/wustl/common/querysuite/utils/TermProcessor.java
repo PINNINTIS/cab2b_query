@@ -1,5 +1,7 @@
 package edu.wustl.common.querysuite.utils;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
@@ -20,7 +22,7 @@ public class TermProcessor {
         String getAliasFor(IExpressionAttribute exprAttr);
     }
 
-    private static AttributeAliasProvider defaultAliasProvider = new AttributeAliasProvider() {
+    static final AttributeAliasProvider defaultAliasProvider = new AttributeAliasProvider() {
 
         public String getAliasFor(IExpressionAttribute exprAttr) {
             AttributeInterface attribute = exprAttr.getAttribute();
@@ -61,9 +63,12 @@ public class TermProcessor {
 
         private TermType termType;
 
-        private TermString(TermStringOpnd termStringOpnd) {
-            this.string = termStringOpnd.string;
-            this.termType = termStringOpnd.termType;
+        TermString(String s, TermType termType) {
+            if (s == null || termType == null) {
+                throw new IllegalArgumentException();
+            }
+            this.string = s;
+            this.termType = termType;
         }
 
         public String getString() {
@@ -74,6 +79,27 @@ public class TermProcessor {
             return termType;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof TermString)) {
+                return false;
+            }
+            TermString o = (TermString) obj;
+            return string.equals(o.string) && termType == o.termType;
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().append(string).append(termType).toHashCode();
+        }
+
+        @Override
+        public String toString() {
+            return string + "[" + termType + "]";
+        }
     }
 
     static class TermStringOpnd implements IArithmeticOperand {
@@ -87,7 +113,7 @@ public class TermProcessor {
 
         private final boolean literal;
 
-        private TermStringOpnd(String string, TermType termType, boolean literal) {
+        TermStringOpnd(String string, TermType termType, boolean literal) {
             this.string = string;
             this.termType = termType;
             if (termType == TermType.DateOffset) {
@@ -180,11 +206,26 @@ public class TermProcessor {
     }
 
     public TermString convertTerm(ITerm term) {
+        if (term.numberOfOperands() == 0) {
+            return new TermString("", TermType.Invalid);
+        }
+        if (term.numberOfOperands() == 1) {
+            TermStringOpnd opnd = convertOperand(term.getOperand(0));
+            String s = opnd.getString();
+            if (opnd.isLiteral() && opnd.getTermType() == TermType.Date) {
+                s = primitiveOperationProcessor.modifyDateLiteral(s);
+            }
+            return new TermString(s, opnd.getTermType());
+        }
         SubTerm subTerm = convertSubTerm(term, 0);
-        return new TermString(subTerm.termStringOpnd);
+        String res = subTerm.string();
+        if (subTerm != SubTerm.INVALID_SUBTERM) {
+            res = res.substring(1, res.length() - 1);
+        }
+        return new TermString(res, subTerm.getTermType());
     }
 
-    private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid, true);
+    private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid, false);
 
     private SubTerm convertSubTerm(ITerm term, int startIdx) {
         int operatorBeforeTermNesting = term.getConnector(startIdx - 1, startIdx).getNestingNumber();

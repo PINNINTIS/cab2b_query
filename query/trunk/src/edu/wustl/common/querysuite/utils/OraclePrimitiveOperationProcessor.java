@@ -2,10 +2,10 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
-public class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
+class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
-    public OraclePrimitiveOperationProcessor(String dateFormat) {
-        super(dateFormat);
+    OraclePrimitiveOperationProcessor(String dateFormat) {
+        super(dateFormat, "TO_DATE");
     }
 
     @Override
@@ -18,10 +18,4 @@ public class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProc
         // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    String strToDateFunc() {
-        return "TO_DATE";
-    }
-
 }

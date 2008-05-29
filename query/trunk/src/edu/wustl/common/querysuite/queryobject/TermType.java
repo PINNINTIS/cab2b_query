@@ -1,9 +1,13 @@
 package edu.wustl.common.querysuite.queryobject;
 
-// NOTE: (date - date) = numeric (days)
+// TODO (date - date) = numeric (days). this is a limitation.
+// NOTE: Thus, DateOffset is NEVER a result of any operation.
+
 // TODO use termtype of LHS to validate RHS.
 public enum TermType {
     // TODO String?
+    // TODO DateOffset + Numeric??
+
     Date, DateOffset, Numeric, Invalid;
 
     public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType,

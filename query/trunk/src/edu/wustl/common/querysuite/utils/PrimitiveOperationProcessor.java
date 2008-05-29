@@ -1,15 +1,20 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 class PrimitiveOperationProcessor {
     String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
             TermStringOpnd rightTermStrOpnd) {
-        String leftOpndString = leftTermStrOpnd.getString();
-        String rightOpndString = rightTermStrOpnd.getString();
-        String termStr = leftOpndString + " " + operator.mathString() + " " + rightOpndString;
+        return getResultString(leftTermStrOpnd.getString(), operator, rightTermStrOpnd.getString());
+    }
 
-        return termStr;
+    String modifyDateLiteral(String literal) {
+        return literal;
+    }
+
+    final String getResultString(String leftStr, ArithmeticOperator operator, String rightStr) {
+        return leftStr + " " + operator.mathString() + " " + rightStr;
     }
 }
