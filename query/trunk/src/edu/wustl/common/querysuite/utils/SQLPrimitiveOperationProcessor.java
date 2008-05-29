@@ -65,7 +65,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     private String transformLiteralDate(String s) {
-        return strToDateFunc + "('" + s + "','" + dateFormat + "')";
+        return strToDateFunc + "('" + s + "', '" + dateFormat + "')";
     }
 
     String timeIntervalStr(TimeInterval timeInterval) {
