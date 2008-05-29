@@ -29,6 +29,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         term.addOperand(d1);
 
         check(term, d1S, TermType.Date);
+        term.setOperand(0, createDateExpressionAttribute("a1", "e1"));
+        check(term, "e1.a1", TermType.Date);
     }
 
     public void testOffsetSQL() {
@@ -63,6 +65,17 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         swapOperands(term, 0, 1);
         // 1 + d1
         check(term, "interval 1 Day + " + d1S, TermType.Date);
+
+        term.setOperand(1, createDateExpressionAttribute("a1", "e1"));
+        // 1 + a1
+        check(term, "interval 1 Day + e1.a1", TermType.Date);
+
+        term.setOperand(0, d1);
+        // d1 + a1
+        checkInvalid(term);
+
+        term.setOperand(1, createDateOffsetExpressionAttribute("a1", "e1"));
+        check(term, d1S + " + interval e1.a1 Day", TermType.Date);
     }
 
     public void testDateDiffSQL() {
@@ -74,6 +87,9 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         String d2S = "STR_TO_DATE('d2', " + quotedDateFormat + ")";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, "datediff(" + d1S + ", " + d2S + ")", TermType.Numeric);
+
+        term.setOperand(1, createDateExpressionAttribute("a1", "e1"));
+        check(term, "datediff(" + d1S + ", e1.a1)", TermType.Numeric);
     }
 
     public void testDiffOffset() {

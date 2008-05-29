@@ -18,22 +18,22 @@ import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
 public class TermProcessor {
 
-    public interface AttributeAliasProvider {
+    public interface IAttributeAliasProvider {
         String getAliasFor(IExpressionAttribute exprAttr);
     }
 
-    static final AttributeAliasProvider defaultAliasProvider = new AttributeAliasProvider() {
+    static final IAttributeAliasProvider defaultAliasProvider = new IAttributeAliasProvider() {
 
         public String getAliasFor(IExpressionAttribute exprAttr) {
             AttributeInterface attribute = exprAttr.getAttribute();
             String entityName = attribute.getEntity().getName();
             entityName = entityName.substring(entityName.lastIndexOf(".") + 1);
-            return entityName + attribute.getName();
+            return entityName + "." + attribute.getName();
         }
 
     };
 
-    private AttributeAliasProvider aliasProvider;
+    private IAttributeAliasProvider aliasProvider;
 
     private PrimitiveOperationProcessor primitiveOperationProcessor;
 
@@ -42,7 +42,7 @@ public class TermProcessor {
         this.primitiveOperationProcessor = new PrimitiveOperationProcessor();
     }
 
-    public TermProcessor(AttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
+    public TermProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
         this.aliasProvider = aliasProvider;
         switch (databaseSQLSettings.getDatabaseType()) {
             case MySQL :
@@ -62,6 +62,8 @@ public class TermProcessor {
         private String string;
 
         private TermType termType;
+
+        static final TermString INVALID = new TermString("", TermType.Invalid);
 
         TermString(String s, TermType termType) {
             if (s == null || termType == null) {
@@ -207,9 +209,12 @@ public class TermProcessor {
 
     public TermString convertTerm(ITerm term) {
         if (term.numberOfOperands() == 0) {
-            return new TermString("", TermType.Invalid);
+            return TermString.INVALID;
         }
         if (term.numberOfOperands() == 1) {
+            if (term.getOperand(0).getTermType() == TermType.DateOffset) {
+                return TermString.INVALID;
+            }
             TermStringOpnd opnd = convertOperand(term.getOperand(0));
             String s = opnd.getString();
             if (opnd.isLiteral() && opnd.getTermType() == TermType.Date) {

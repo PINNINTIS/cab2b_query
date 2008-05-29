@@ -1,6 +1,7 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -9,7 +10,9 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
     public void test() {
         ITerm term = newTerm();
-        term.addOperand(numericLiteral("1"));
+        term.addOperand(dateOffsetLiteral("1"));
+        checkInvalid(term);
+        term.setOperand(0, numericLiteral("1"));
         checkNumeric(term, "1");
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("2"));
 
@@ -188,6 +191,17 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         term.addParantheses(1, 2);
         term.addOperand(1, conn(ArithmeticOperator.Plus, 1), f1);
         check(term, "(d1 + f1) - (d2 - n1)", TermType.Numeric);
+    }
+
+    public void testExprAttr() {
+        ITerm term = newTerm();
+        IExpressionAttribute a1 = createNumericExpressionAttribute("a1", "e1");
+        String alias = "e1.a1";
+        term.addOperand(a1);
+        check(term, alias, TermType.Numeric);
+
+        term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("1"));
+        check(term, alias + " + 1", TermType.Numeric);
     }
 
     private String concat(ILiteral s1, ArithmeticOperator oper, ILiteral s2) {
