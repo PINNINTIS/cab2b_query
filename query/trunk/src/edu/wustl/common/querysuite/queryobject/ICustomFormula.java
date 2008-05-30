@@ -12,4 +12,6 @@ public interface ICustomFormula extends IExpressionOperand {
     void addRhs(ITerm rhs);
 
     RelationalOperator getOperator();
+
+    void setOperator(RelationalOperator relationalOperator);
 }
