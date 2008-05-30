@@ -72,6 +72,11 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         return timeInterval.toString();
     }
 
+    // for testing
+    final String getDateFormat() {
+        return dateFormat;
+    }
+
     abstract String getDateOffsetString(String s, TimeInterval timeInterval);
 
     abstract String getDateDiffString(String leftStr, String rightStr);

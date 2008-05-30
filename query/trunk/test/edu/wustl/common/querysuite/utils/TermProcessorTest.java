@@ -5,6 +5,7 @@ import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
 
 public class TermProcessorTest extends AbstractTermProcessorTest {
 
@@ -195,13 +196,41 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
     public void testExprAttr() {
         ITerm term = newTerm();
-        IExpressionAttribute a1 = createNumericExpressionAttribute("a1", "e1");
+        IExpressionAttribute a1 = createNumericExpressionAttribute("a1", "edu.wustl.e1");
         String alias = "e1.a1";
         term.addOperand(a1);
         check(term, alias, TermType.Numeric);
 
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("1"));
         check(term, alias + " + 1", TermType.Numeric);
+    }
+
+    public void testConstructor() {
+        TermProcessor termProcessor = new TermProcessor();
+        assertSame(termProcessor.getAliasProvider(), TermProcessor.defaultAliasProvider);
+
+        checkPrimitiveOperationProcessor(DatabaseType.MySQL, MySQLPrimitiveOperationProcessor.class);
+        checkPrimitiveOperationProcessor(DatabaseType.Oracle, OraclePrimitiveOperationProcessor.class);
+    }
+
+    private void checkPrimitiveOperationProcessor(DatabaseType mySQL,
+            Class<? extends PrimitiveOperationProcessor> name) {
+        IAttributeAliasProvider aliasProvider = new IAttributeAliasProvider() {
+
+            public String getAliasFor(IExpressionAttribute exprAttr) {
+                throw new UnsupportedOperationException();
+            }
+
+        };
+        String dateFormat = "fooDateFormat";
+        DatabaseSQLSettings sqlSettings = new DatabaseSQLSettings(DatabaseType.MySQL, dateFormat);
+        TermProcessor termProcessor = new TermProcessor(aliasProvider, sqlSettings);
+
+        assertSame(termProcessor.getAliasProvider(), aliasProvider);
+        PrimitiveOperationProcessor actualPrimProc = termProcessor.getPrimitiveOperationProcessor();
+        assertEquals(actualPrimProc.getClass(), MySQLPrimitiveOperationProcessor.class);
+        MySQLPrimitiveOperationProcessor mysqlProc = (MySQLPrimitiveOperationProcessor) actualPrimProc;
+        assertSame(mysqlProc.getDateFormat(), dateFormat);
     }
 
     private String concat(ILiteral s1, ArithmeticOperator oper, ILiteral s2) {

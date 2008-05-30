@@ -361,8 +361,16 @@ public class TermProcessor {
     }
 
     // for testing
-    void setPrimitiveOperationProcessor(PrimitiveOperationProcessor primitiveOperationProcessor) {
+    final void setPrimitiveOperationProcessor(PrimitiveOperationProcessor primitiveOperationProcessor) {
         this.primitiveOperationProcessor = primitiveOperationProcessor;
+    }
+
+    final IAttributeAliasProvider getAliasProvider() {
+        return aliasProvider;
+    }
+
+    final PrimitiveOperationProcessor getPrimitiveOperationProcessor() {
+        return primitiveOperationProcessor;
     }
 
 }
