@@ -241,9 +241,11 @@ public class TermProcessor {
         String res = "";
         int numLeftPs = term.nestingNumberOfOperand(startIdx) - operatorBeforeTermNesting;
         res += getLeftParentheses(numLeftPs);
-        res += convertOperand(term.getOperand(startIdx)).getString();
+        TermStringOpnd firstOpnd = convertOperand(term.getOperand(startIdx));
+        res += firstOpnd.getString();
         int i = startIdx + 1;
         TermType termType = term.getOperand(startIdx).getTermType();
+        boolean literal = firstOpnd.isLiteral();
         while (true) {
             if (i == term.numberOfOperands()) {
                 break;
@@ -253,7 +255,7 @@ public class TermProcessor {
                 break;
             }
             String leftOpndString = res.substring(numLeftPs);
-            TermStringOpnd leftOpnd = new TermStringOpnd(leftOpndString, termType, i == 1);
+            TermStringOpnd leftOpnd = new TermStringOpnd(leftOpndString, termType, literal);
             IConnector<ArithmeticOperator> prevConn = term.getConnector(i - 1, i);
 
             IArithmeticOperand rightOpnd;
@@ -278,6 +280,7 @@ public class TermProcessor {
             res += getRightParentheses(numRightPs);
             numLeftPs -= numRightPs;
             i = nextI;
+            literal = false;
         }
         TermStringOpnd termStringOpnd = new TermStringOpnd(res, termType, false);
         return new SubTerm(i - 1, termStringOpnd, -numLeftPs);

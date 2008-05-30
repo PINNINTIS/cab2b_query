@@ -8,6 +8,7 @@ public enum TermType {
     // TODO String?
     // TODO DateOffset + Numeric??
 
+    // TODO Boolean ??
     Date, DateOffset, Numeric, Invalid;
 
     public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType,

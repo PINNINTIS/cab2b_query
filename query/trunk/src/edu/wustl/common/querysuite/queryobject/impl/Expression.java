@@ -17,6 +17,7 @@ import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
+import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 
 /**
@@ -465,7 +466,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      */
     public boolean containsRule() {
         for (int i = 0; i < numberOfOperands(); i++) {
-            if (!getOperand(i).isSubExpressionOperand()) {
+            if (getOperand(i) instanceof IRule) {
                 return true;
             }
         }
