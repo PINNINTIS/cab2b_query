@@ -27,8 +27,8 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         TermType leftType = leftTermStrOpnd.getTermType();
         TermType rightType = rightTermStrOpnd.getTermType();
 
-        String leftStr = getDateCheckedString(leftTermStrOpnd);
-        String rightStr = getDateCheckedString(rightTermStrOpnd);
+        String leftStr = leftTermStrOpnd.getString();
+        String rightStr = rightTermStrOpnd.getString();
 
         if (leftType == TermType.Date && rightType == TermType.Date) {
             if (operator != ArithmeticOperator.Minus) {
@@ -52,16 +52,8 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     @Override
-    String modifyDateLiteral(String literal) {
+    final String modifyDateLiteral(String literal) {
         return transformLiteralDate(literal);
-    }
-
-    private String getDateCheckedString(TermStringOpnd opnd) {
-        String s = opnd.getString();
-        if (opnd.getTermType() == TermType.Date && opnd.isLiteral()) {
-            s = transformLiteralDate(s);
-        }
-        return s;
     }
 
     private String transformLiteralDate(String s) {

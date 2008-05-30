@@ -3,6 +3,7 @@ package edu.wustl.common.querysuite.utils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
@@ -113,9 +114,7 @@ public class TermProcessor {
 
         private final TimeInterval timeInterval;
 
-        private final boolean literal;
-
-        TermStringOpnd(String string, TermType termType, boolean literal) {
+        TermStringOpnd(String string, TermType termType) {
             this.string = string;
             this.termType = termType;
             if (termType == TermType.DateOffset) {
@@ -123,14 +122,12 @@ public class TermProcessor {
             } else {
                 timeInterval = null;
             }
-            this.literal = literal;
         }
 
-        TermStringOpnd(String string, TimeInterval timeInterval, boolean literal) {
+        TermStringOpnd(String string, TimeInterval timeInterval) {
             this.string = string;
             this.timeInterval = timeInterval;
             this.termType = TermType.DateOffset;
-            this.literal = literal;
         }
 
         public String getString() {
@@ -146,10 +143,6 @@ public class TermProcessor {
                 throw new UnsupportedOperationException();
             }
             return timeInterval;
-        }
-
-        public boolean isLiteral() {
-            return literal;
         }
 
         public void setTermType(TermType termType) {
@@ -208,6 +201,7 @@ public class TermProcessor {
     }
 
     public TermString convertTerm(ITerm term) {
+        term = replaceDateLiterals(term);
         if (term.numberOfOperands() == 0) {
             return TermString.INVALID;
         }
@@ -216,11 +210,7 @@ public class TermProcessor {
                 return TermString.INVALID;
             }
             TermStringOpnd opnd = convertOperand(term.getOperand(0));
-            String s = opnd.getString();
-            if (opnd.isLiteral() && opnd.getTermType() == TermType.Date) {
-                s = primitiveOperationProcessor.modifyDateLiteral(s);
-            }
-            return new TermString(s, opnd.getTermType());
+            return new TermString(opnd.getString(), opnd.getTermType());
         }
         SubTerm subTerm = convertSubTerm(term, 0);
         String res = subTerm.string();
@@ -230,7 +220,29 @@ public class TermProcessor {
         return new TermString(res, subTerm.getTermType());
     }
 
-    private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid, false);
+    private ITerm replaceDateLiterals(ITerm term) {
+        ITerm res = QueryObjectFactory.createTerm();
+        if (term.numberOfOperands() == 0) {
+            return res;
+        }
+        res.addOperand(dateCheckedOperand(term.getOperand(0)));
+        for (int i = 1; i < term.numberOfOperands(); i++) {
+            res.addOperand(term.getConnector(i - 1, i), dateCheckedOperand(term.getOperand(i)));
+        }
+        return res;
+    }
+
+    private IArithmeticOperand dateCheckedOperand(IArithmeticOperand opnd) {
+        IArithmeticOperand res = opnd;
+        if (opnd instanceof ILiteral && opnd.getTermType() == TermType.Date) {
+            ILiteral literal = (ILiteral) opnd;
+            String dateStr = primitiveOperationProcessor.modifyDateLiteral(literal.getLiteral());
+            res = QueryObjectFactory.createLiteral(dateStr, literal.getTermType());
+        }
+        return res;
+    }
+
+    private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid);
 
     private SubTerm convertSubTerm(ITerm term, int startIdx) {
         int operatorBeforeTermNesting = term.getConnector(startIdx - 1, startIdx).getNestingNumber();
@@ -241,11 +253,10 @@ public class TermProcessor {
         String res = "";
         int numLeftPs = term.nestingNumberOfOperand(startIdx) - operatorBeforeTermNesting;
         res += getLeftParentheses(numLeftPs);
-        TermStringOpnd firstOpnd = convertOperand(term.getOperand(startIdx));
-        res += firstOpnd.getString();
+        res += convertOperand(term.getOperand(startIdx)).getString();
         int i = startIdx + 1;
         TermType termType = term.getOperand(startIdx).getTermType();
-        boolean literal = firstOpnd.isLiteral();
+
         while (true) {
             if (i == term.numberOfOperands()) {
                 break;
@@ -255,7 +266,7 @@ public class TermProcessor {
                 break;
             }
             String leftOpndString = res.substring(numLeftPs);
-            TermStringOpnd leftOpnd = new TermStringOpnd(leftOpndString, termType, literal);
+            TermStringOpnd leftOpnd = new TermStringOpnd(leftOpndString, termType);
             IConnector<ArithmeticOperator> prevConn = term.getConnector(i - 1, i);
 
             IArithmeticOperand rightOpnd;
@@ -280,9 +291,8 @@ public class TermProcessor {
             res += getRightParentheses(numRightPs);
             numLeftPs -= numRightPs;
             i = nextI;
-            literal = false;
         }
-        TermStringOpnd termStringOpnd = new TermStringOpnd(res, termType, false);
+        TermStringOpnd termStringOpnd = new TermStringOpnd(res, termType);
         return new SubTerm(i - 1, termStringOpnd, -numLeftPs);
     }
 
@@ -304,7 +314,7 @@ public class TermProcessor {
 
     private TermStringOpnd numToDateOffset(IArithmeticOperand opnd) {
         TermStringOpnd strOpnd = convertOperand(opnd);
-        return new TermStringOpnd(strOpnd.getString(), TimeInterval.Day, strOpnd.literal);
+        return new TermStringOpnd(strOpnd.getString(), TimeInterval.Day);
     }
 
     private TermStringOpnd convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
@@ -327,7 +337,7 @@ public class TermProcessor {
             leftTermStrOpnd = convertOperand(leftOpnd);
             rightTermStrOpnd = convertOperand(rightOpnd);
         }
-        return new TermStringOpnd(primitiveOperation(leftTermStrOpnd, operator, rightTermStrOpnd), termType, false);
+        return new TermStringOpnd(primitiveOperation(leftTermStrOpnd, operator, rightTermStrOpnd), termType);
     }
 
     private String primitiveOperation(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
@@ -337,11 +347,9 @@ public class TermProcessor {
 
     private TermStringOpnd convertOperand(IArithmeticOperand operand) {
         String termStr;
-        boolean literalOpnd = false;
         if (operand instanceof ILiteral) {
             ILiteral literal = (ILiteral) operand;
             termStr = literal.getLiteral();
-            literalOpnd = true;
         } else if (operand instanceof SubTerm) {
             SubTerm subTerm = (SubTerm) operand;
             termStr = subTerm.getOperandString();
@@ -351,15 +359,14 @@ public class TermProcessor {
         } else if (operand instanceof TermStringOpnd) {
             TermStringOpnd termStringOpnd = (TermStringOpnd) operand;
             termStr = termStringOpnd.getString();
-            literalOpnd = termStringOpnd.literal;
         } else {
             throw new RuntimeException("Can't occur.");
         }
         if (operand instanceof IDateOffset) {
             IDateOffset offset = (IDateOffset) operand;
-            return new TermStringOpnd(termStr, offset.getTimeInterval(), literalOpnd);
+            return new TermStringOpnd(termStr, offset.getTimeInterval());
         } else {
-            return new TermStringOpnd(termStr, operand.getTermType(), literalOpnd);
+            return new TermStringOpnd(termStr, operand.getTermType());
         }
     }
 

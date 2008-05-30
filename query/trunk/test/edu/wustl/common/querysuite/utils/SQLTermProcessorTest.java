@@ -71,10 +71,15 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         // 1 + a1
         check(term, "interval 1 Day + e1.a1", TermType.Date);
 
-        term.setOperand(0, d1);
+        swapOperands(term, 0, 1);
+        // a1 + 1
+        check(term, "e1.a1 + interval 1 Day", TermType.Date);
+
+        term.setOperand(1, d1);
         // d1 + a1
         checkInvalid(term);
 
+        swapOperands(term, 0, 1);
         term.setOperand(1, createDateOffsetExpressionAttribute("a1", "e1"));
         check(term, d1S + " + interval e1.a1 Day", TermType.Date);
     }
@@ -91,6 +96,9 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, createDateExpressionAttribute("a1", "e1"));
         check(term, "datediff(" + d1S + ", e1.a1)", TermType.Numeric);
+
+        swapOperands(term, 0, 1);
+        check(term, "datediff(e1.a1, " + d1S + ")", TermType.Numeric);
     }
 
     public void testDiffOffset() {
