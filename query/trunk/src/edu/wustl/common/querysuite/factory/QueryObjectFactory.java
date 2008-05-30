@@ -29,6 +29,7 @@ import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.queryobject.impl.Condition;
 import edu.wustl.common.querysuite.queryobject.impl.Connector;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
@@ -280,7 +281,8 @@ public abstract class QueryObjectFactory {
 
     public static ILiteral createLiteral(String literal, TermType termType) {
         if (termType == TermType.DateOffset) {
-            return createDateOffsetLiteral(literal);
+            ILiteral res = createDateOffsetLiteral();
+            res.setLiteral(literal);
         }
         return new Literal(literal, termType);
     }
@@ -310,7 +312,7 @@ public abstract class QueryObjectFactory {
         return new DateOffsetLiteral();
     }
 
-    public static IDateOffsetLiteral createDateOffsetLiteral(String literal) {
-        return new DateOffsetLiteral(literal);
+    public static IDateOffsetLiteral createDateOffsetLiteral(String literal, TimeInterval timeInterval) {
+        return new DateOffsetLiteral(literal, timeInterval);
     }
 }

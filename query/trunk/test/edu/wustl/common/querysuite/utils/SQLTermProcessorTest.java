@@ -5,6 +5,7 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
 public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     private static final String dateFormat = "yyyy-mm-dd";
@@ -131,5 +132,30 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         String d2S = "TO_DATE('d2', " + quotedDateFormat + ")";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, d1S + " - " + d2S, TermType.Numeric);
+    }
+
+    public void testOracleOffsetSQL() {
+        switchToOracle();
+        ITerm term = QueryObjectFactory.createTerm();
+        ILiteral d1 = dateLiteral("d1");
+        term.addOperand(d1);
+        String d1S = "TO_DATE('d1', " + quotedDateFormat + ")";
+
+        // day
+        term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));
+        check(term, d1S + " + NUMTODSINTERVAL(off, 'Day')", TermType.Date);
+
+        // year
+        term.setOperand(1, dateOffsetLiteral("off", TimeInterval.Year));
+        check(term, d1S + " + NUMTOYMINTERVAL(off, 'Year')", TermType.Date);
+
+        // week
+        term.setOperand(1, dateOffsetLiteral("off", TimeInterval.Week));
+        check(term, d1S + " + NUMTODSINTERVAL((off) * 7, 'Day')", TermType.Date);
+
+        // quarter
+        term.setOperand(1, dateOffsetLiteral("off", TimeInterval.Quarter));
+        check(term, d1S + " + NUMTOYMINTERVAL((off) * 3, 'Month')", TermType.Date);
+
     }
 }

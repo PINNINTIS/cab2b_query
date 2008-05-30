@@ -7,14 +7,16 @@ import edu.wustl.common.querysuite.queryobject.TimeInterval;
 public class DateOffsetLiteral extends Literal implements IDateOffsetLiteral {
     private static final long serialVersionUID = -7510642736372664817L;
 
-    private TimeInterval timeInterval = TimeInterval.Day;
+    private TimeInterval timeInterval;
 
     public DateOffsetLiteral() {
         super(TermType.DateOffset);
+        this.timeInterval = TimeInterval.Day;
     }
 
-    public DateOffsetLiteral(String literal) {
+    public DateOffsetLiteral(String literal, TimeInterval timeInterval) {
         super(literal, TermType.DateOffset);
+        this.timeInterval = timeInterval;
     }
 
     public TimeInterval getTimeInterval() {

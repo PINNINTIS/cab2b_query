@@ -14,6 +14,7 @@ import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 public abstract class AbstractTermProcessorTest extends TestCase {
@@ -62,6 +63,10 @@ public abstract class AbstractTermProcessorTest extends TestCase {
 
     protected ILiteral dateOffsetLiteral(String s) {
         return literal(s, TermType.DateOffset);
+    }
+
+    protected ILiteral dateOffsetLiteral(String s, TimeInterval timeInterval) {
+        return QueryObjectFactory.createDateOffsetLiteral(s, timeInterval);
     }
 
     protected ILiteral literal(String s, TermType termType) {
