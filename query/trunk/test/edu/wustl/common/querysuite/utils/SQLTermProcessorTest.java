@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -80,8 +81,11 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         checkInvalid(term);
 
         swapOperands(term, 0, 1);
-        term.setOperand(1, createDateOffsetExpressionAttribute("a1", "e1"));
+        IDateOffsetAttribute offsetAttr = (IDateOffsetAttribute) createDateOffsetExpressionAttribute("a1", "e1");
+        term.setOperand(1, offsetAttr);
         check(term, d1S + " + interval e1.a1 Day", TermType.Date);
+        offsetAttr.setTimeInterval(TimeInterval.Year);
+        check(term, d1S + " + interval e1.a1 Year", TermType.Date);
     }
 
     public void testDateDiffSQL() {

@@ -5,8 +5,8 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.ITerm;
-import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor;
+import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 public class Term extends BaseExpression<ArithmeticOperator, IArithmeticOperand> implements ITerm {
 
@@ -17,9 +17,14 @@ public class Term extends BaseExpression<ArithmeticOperator, IArithmeticOperand>
         return QueryObjectFactory.createArithmeticConnector(ArithmeticOperator.Unknown, nestingNumber);
     }
 
-    public TermType getTermType() {
+    public TermString getStringRepresentation() {
         TermProcessor processor = new TermProcessor();
-        return processor.convertTerm(this).getTermType();
+        return processor.convertTerm(this);
+    }
+
+    @Override
+    public String toString() {
+        return getStringRepresentation().toString();
     }
 
 }
