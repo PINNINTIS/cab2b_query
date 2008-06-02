@@ -18,6 +18,7 @@ import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
+import edu.wustl.common.querysuite.queryobject.INamedTerm;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
 import edu.wustl.common.querysuite.queryobject.IParameterizedCondition;
@@ -27,6 +28,7 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
+import edu.wustl.common.querysuite.queryobject.NamedTerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
@@ -303,6 +305,14 @@ public abstract class QueryObjectFactory {
         return new Term();
     }
 
+    public static INamedTerm createNamedTerm() {
+        return new NamedTerm();
+    }
+
+    public static INamedTerm createNamedTerm(ITerm term, String name) {
+        return new NamedTerm(name, term);
+    }
+
     public static IDateOffsetAttribute createDateOffsetAttribute(IExpressionId expressionId,
             AttributeInterface attribute) {
         return new DateOffsetAttribute(expressionId, attribute);
@@ -315,4 +325,5 @@ public abstract class QueryObjectFactory {
     public static IDateOffsetLiteral createDateOffsetLiteral(String literal, TimeInterval timeInterval) {
         return new DateOffsetLiteral(literal, timeInterval);
     }
+
 }

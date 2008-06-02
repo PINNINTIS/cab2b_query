@@ -77,4 +77,11 @@ public interface IExpression extends IBaseExpression<LogicalOperator, IExpressio
      */
     boolean containsRule();
 
+    /**
+     * To check whether there are any custom formulas present in the Expression.
+     * 
+     * @return true if there is atleast one custom formula present in the
+     *         operand list of expression.
+     */
+    boolean containsCustomFormula();
 }

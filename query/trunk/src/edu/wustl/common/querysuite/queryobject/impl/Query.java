@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IConstraints;
+import edu.wustl.common.querysuite.queryobject.INamedTerm;
 import edu.wustl.common.querysuite.queryobject.IQuery;
-import edu.wustl.common.querysuite.queryobject.ITerm;
 
 /**
  * The IQuery implementation class.
@@ -23,7 +23,7 @@ public class Query extends BaseQueryObject implements IQuery {
 
     private IConstraints constraints;
 
-    private List<ITerm> outputTerms;
+    private List<INamedTerm> outputTerms;
 
     /**
      * Default Constructor
@@ -75,14 +75,14 @@ public class Query extends BaseQueryObject implements IQuery {
         this.constraints = constraints;
     }
 
-    public List<ITerm> getOutputTerms() {
+    public List<INamedTerm> getOutputTerms() {
         if (outputTerms == null) {
-            outputTerms = new ArrayList<ITerm>();
+            outputTerms = new ArrayList<INamedTerm>();
         }
         return outputTerms;
     }
 
-    public void setOutputTerms(List<ITerm> outputTerms) {
+    public void setOutputTerms(List<INamedTerm> outputTerms) {
         this.outputTerms = outputTerms;
     }
 

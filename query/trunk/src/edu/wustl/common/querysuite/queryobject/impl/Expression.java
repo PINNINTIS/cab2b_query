@@ -13,6 +13,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
+import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
@@ -467,6 +468,18 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
     public boolean containsRule() {
         for (int i = 0; i < numberOfOperands(); i++) {
             if (getOperand(i) instanceof IRule) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @see edu.wustl.common.querysuite.queryobject.IExpression#containsCustomFormula()
+     */
+    public boolean containsCustomFormula() {
+        for (int i = 0; i < numberOfOperands(); i++) {
+            if (getOperand(i) instanceof ICustomFormula) {
                 return true;
             }
         }
