@@ -12,6 +12,8 @@ public enum TermType {
     Date, DateOffset, Numeric, Invalid;
 
     /**
+     * Returns the term type resulting from the specified arithmetic operation.
+     * Following is the result term type for various cases : <br>
      * Date (D), Numeric (N), dateOffset(O).
      * <ul>
      * <li>D +/- N = D</li>
@@ -20,10 +22,10 @@ public enum TermType {
      * </ul>
      * otherwise Invalid.
      * 
-     * @param leftOpndType
-     * @param rightOpndType
-     * @param operator
-     * @return
+     * @param leftOpndType the type of the left operand.
+     * @param rightOpndType the type of the right operand.
+     * @param operator the operator.
+     * @return the resultant term type.
      */
     public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType,
             ArithmeticOperator operator) {
