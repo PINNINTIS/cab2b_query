@@ -11,6 +11,20 @@ public enum TermType {
     // TODO Boolean ??
     Date, DateOffset, Numeric, Invalid;
 
+    /**
+     * Date (D), Numeric (N), dateOffset(O).
+     * <ul>
+     * <li>D +/- N = D</li>
+     * <li>D +/- O = D</li>
+     * <li>D - D = N</li>
+     * </ul>
+     * otherwise Invalid.
+     * 
+     * @param leftOpndType
+     * @param rightOpndType
+     * @param operator
+     * @return
+     */
     public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType,
             ArithmeticOperator operator) {
         if (leftOpndType == Invalid || rightOpndType == Invalid) {
