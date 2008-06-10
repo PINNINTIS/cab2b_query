@@ -1,6 +1,8 @@
 package edu.wustl.common.querysuite.utils;
 
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
+import edu.wustl.common.querysuite.queryobject.DSInterval;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
+import edu.wustl.common.querysuite.queryobject.YMInterval;
 
 class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
@@ -14,20 +16,20 @@ class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     @Override
-    String getDateOffsetString(String s, TimeInterval timeInterval) {
-        if (timeInterval == TimeInterval.Quarter) {
+    String getDateOffsetString(String s, ITimeIntervalEnum timeInterval) {
+        if (timeInterval == YMInterval.Quarter) {
             s = mult(s, 3);
-            timeInterval = TimeInterval.Month;
-        } else if (timeInterval == TimeInterval.Week) {
+            timeInterval = YMInterval.Month;
+        } else if (timeInterval == DSInterval.Week) {
             s = mult(s, 7);
-            timeInterval = TimeInterval.Day;
+            timeInterval = DSInterval.Day;
         }
         final String func = getFunc(timeInterval);
 
         return func + "(" + s + ", '" + timeInterval + "')";
     }
 
-    private String getFunc(TimeInterval timeInterval) {
+    private String getFunc(ITimeIntervalEnum timeInterval) {
         if (isDayToSec(timeInterval)) {
             return "NUMTODSINTERVAL";
         } else {
@@ -35,11 +37,16 @@ class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
         }
     }
 
-    private boolean isDayToSec(TimeInterval timeInterval) {
-        return timeInterval.compareTo(TimeInterval.Week) <= 0;
+    private boolean isDayToSec(ITimeIntervalEnum timeInterval) {
+        return timeInterval instanceof DSInterval;
     }
 
     private String mult(String s, int i) {
         return "(" + s + ") * " + String.valueOf(i);
+    }
+
+    @Override
+    String dateToTimestamp(String s) {
+        return "cast(" + s + " as timestamp)";
     }
 }

@@ -5,14 +5,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IDateOffset;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
 // TODO TERM IN OUTPUT OF SQL
 // TODO Date op Numeric to be treated as Date op DateOffset(Day)
@@ -112,22 +114,24 @@ public class TermProcessor {
 
         private final TermType termType;
 
-        private final TimeInterval timeInterval;
+        private final ITimeIntervalEnum timeInterval;
+
+        static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid);
 
         TermStringOpnd(String string, TermType termType) {
             this.string = string;
             this.termType = termType;
-            if (termType == TermType.DateOffset) {
-                timeInterval = TimeInterval.Day;
+            if (TermType.isInterval(termType)) {
+                timeInterval = DSInterval.Day;
             } else {
                 timeInterval = null;
             }
         }
 
-        TermStringOpnd(String string, TimeInterval timeInterval) {
+        TermStringOpnd(String string, ITimeIntervalEnum timeInterval) {
             this.string = string;
             this.timeInterval = timeInterval;
-            this.termType = TermType.DateOffset;
+            this.termType = TermType.termType(timeInterval);
         }
 
         public String getString() {
@@ -138,8 +142,8 @@ public class TermProcessor {
             return termType;
         }
 
-        public TimeInterval getTimeInterval() {
-            if (termType != TermType.DateOffset) {
+        public ITimeIntervalEnum getTimeInterval() {
+            if (!TermType.isInterval(termType)) {
                 throw new UnsupportedOperationException();
             }
             return timeInterval;
@@ -161,7 +165,7 @@ public class TermProcessor {
     private static class SubTerm implements IArithmeticOperand {
         private static final long serialVersionUID = 7342856030098944697L;
 
-        private static final SubTerm INVALID_SUBTERM = new SubTerm(-1, INVALID_TERM_STRING_OPND, -1);
+        private static final SubTerm INVALID_SUBTERM = new SubTerm(-1, TermStringOpnd.INVALID_TERM_STRING_OPND, -1);
 
         private final int endIdx;
 
@@ -206,11 +210,21 @@ public class TermProcessor {
             return TermString.INVALID;
         }
         if (term.numberOfOperands() == 1) {
-            if (term.getOperand(0).getTermType() == TermType.DateOffset) {
+            IArithmeticOperand opnd = term.getOperand(0);
+            if (opnd.getTermType() == TermType.YMInterval) {
                 return TermString.INVALID;
             }
-            TermStringOpnd opnd = convertOperand(term.getOperand(0));
-            return new TermString(opnd.getString(), opnd.getTermType());
+            if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {
+                IDateOffsetLiteral<DSInterval> lit = (IDateOffsetLiteral<DSInterval>) opnd;
+                String s = primitiveOperationProcessor.getIntervalString(lit.getLiteral(), lit.getTimeInterval());
+                return new TermString(s, TermType.DSInterval);
+            }
+            TermStringOpnd termStrOpnd = convertOperand(opnd);
+            String s = termStrOpnd.getString();
+            if (opnd.getTermType() == TermType.Date) {
+                s = primitiveOperationProcessor.dateToTimestamp(s);
+            }
+            return new TermString(s, termStrOpnd.getTermType());
         }
         SubTerm subTerm = convertSubTerm(term, 0);
         String res = subTerm.string();
@@ -233,16 +247,17 @@ public class TermProcessor {
     }
 
     private IArithmeticOperand dateCheckedOperand(IArithmeticOperand opnd) {
+        // TODO support timestamp literal?
         IArithmeticOperand res = opnd;
         if (opnd instanceof ILiteral && opnd.getTermType() == TermType.Date) {
             ILiteral literal = (ILiteral) opnd;
             String dateStr = primitiveOperationProcessor.modifyDateLiteral(literal.getLiteral());
-            res = QueryObjectFactory.createLiteral(dateStr, literal.getTermType());
+            ILiteral newLit = QueryObjectFactory.createLiteral(literal.getTermType());
+            newLit.setLiteral(dateStr);
+            res = newLit;
         }
         return res;
     }
-
-    private static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid);
 
     private SubTerm convertSubTerm(ITerm term, int startIdx) {
         int operatorBeforeTermNesting = term.getConnector(startIdx - 1, startIdx).getNestingNumber();
@@ -283,7 +298,7 @@ public class TermProcessor {
                 nextI = i + 1;
             }
             TermStringOpnd resLit = convertBasicTerm(leftOpnd, prevConn.getOperator(), rightOpnd);
-            if (resLit == INVALID_TERM_STRING_OPND) {
+            if (resLit == TermStringOpnd.INVALID_TERM_STRING_OPND) {
                 return SubTerm.INVALID_SUBTERM;
             }
             res = getLeftParentheses(numLeftPs) + resLit.getString();
@@ -314,7 +329,8 @@ public class TermProcessor {
 
     private TermStringOpnd numToDateOffset(IArithmeticOperand opnd) {
         TermStringOpnd strOpnd = convertOperand(opnd);
-        return new TermStringOpnd(strOpnd.getString(), TimeInterval.Day);
+        String res = primitiveOperationProcessor.getIntervalString(strOpnd.getString(), DSInterval.Day);
+        return new TermStringOpnd(res, DSInterval.Day);
     }
 
     private TermStringOpnd convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
@@ -323,21 +339,31 @@ public class TermProcessor {
         TermType rightType = rightOpnd.getTermType();
         TermType termType = TermType.getResultTermType(leftType, rightType, operator);
         if (termType == TermType.Invalid) {
-            return INVALID_TERM_STRING_OPND;
+            return TermStringOpnd.INVALID_TERM_STRING_OPND;
         }
         TermStringOpnd leftTermStrOpnd;
         TermStringOpnd rightTermStrOpnd;
-        if (leftType == TermType.Date && rightType == TermType.Numeric) {
+        if (isNumericCompatible(leftType) && rightType == TermType.Numeric) {
             leftTermStrOpnd = convertOperand(leftOpnd);
             rightTermStrOpnd = numToDateOffset(rightOpnd);
-        } else if (leftType == TermType.Numeric && rightType == TermType.Date) {
+        } else if (leftType == TermType.Numeric && isNumericCompatible(rightType)) {
             leftTermStrOpnd = numToDateOffset(leftOpnd);
             rightTermStrOpnd = convertOperand(rightOpnd);
         } else {
             leftTermStrOpnd = convertOperand(leftOpnd);
             rightTermStrOpnd = convertOperand(rightOpnd);
         }
+        // if (leftType == TermType.DSInterval && rightType ==
+        // TermType.DSInterval) {
+        // database independent
+        // return dsIntervalMath(leftTermStrOpnd, rightTermStrOpnd,
+        // operator);
+        // }
         return new TermStringOpnd(primitiveOperation(leftTermStrOpnd, operator, rightTermStrOpnd), termType);
+    }
+
+    private boolean isNumericCompatible(TermType termType) {
+        return termType == TermType.Date || termType == TermType.Timestamp || termType == TermType.DSInterval;
     }
 
     private String primitiveOperation(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
@@ -347,6 +373,7 @@ public class TermProcessor {
 
     private TermStringOpnd convertOperand(IArithmeticOperand operand) {
         String termStr;
+
         if (operand instanceof ILiteral) {
             ILiteral literal = (ILiteral) operand;
             termStr = literal.getLiteral();
@@ -364,6 +391,8 @@ public class TermProcessor {
         }
         if (operand instanceof IDateOffset) {
             IDateOffset offset = (IDateOffset) operand;
+            if (operand instanceof ILiteral || operand instanceof IExpressionAttribute)
+                termStr = primitiveOperationProcessor.getIntervalString(termStr, offset.getTimeInterval());
             return new TermStringOpnd(termStr, offset.getTimeInterval());
         } else {
             return new TermStringOpnd(termStr, operand.getTermType());
@@ -383,4 +412,26 @@ public class TermProcessor {
         return primitiveOperationProcessor;
     }
 
+    // DS INTERVAL MATH
+    /*
+     * private static final int[] multipliers = {60, 24, 7};
+     * 
+     * final TermStringOpnd dsIntervalMath(TermStringOpnd leftOpnd,
+     * TermStringOpnd rightOpnd, ArithmeticOperator oper) { DSInterval
+     * smallInterval = (DSInterval) leftOpnd.getTimeInterval(); DSInterval
+     * bigInterval = (DSInterval) rightOpnd.getTimeInterval(); String smallS =
+     * leftOpnd.getString(); String bigS = rightOpnd.getString(); int diff =
+     * smallInterval.compareTo(bigInterval); if (diff > 0) { DSInterval temp =
+     * smallInterval; smallInterval = bigInterval; bigInterval = temp;
+     * 
+     * String tempS = smallS; smallS = bigS; bigS = tempS; }
+     * 
+     * DSInterval[] intervals = DSInterval.values(); int smallIdx =
+     * Arrays.binarySearch(intervals, smallInterval); int bigIdx =
+     * Arrays.binarySearch(intervals, bigInterval);
+     * 
+     * for (int i = bigIdx - 1; i >= smallIdx; i--) { bigS = bigS + "*" +
+     * multipliers[i]; } String res = smallS + " " + oper.mathString() + " " +
+     * bigS; return new TermStringOpnd(res, smallInterval); }
+     */
 }

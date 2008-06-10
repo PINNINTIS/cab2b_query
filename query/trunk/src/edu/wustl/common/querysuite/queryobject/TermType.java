@@ -9,7 +9,7 @@ public enum TermType {
     // TODO DateOffset + Numeric??
 
     // TODO Boolean ??
-    Date, DateOffset, Numeric, Invalid;
+    Date, Timestamp, YMInterval, DSInterval, Numeric, Invalid;
 
     /**
      * Returns the term type resulting from the specified arithmetic operation.
@@ -35,18 +35,47 @@ public enum TermType {
         if (leftOpndType == Numeric && rightOpndType == Numeric) {
             return Numeric;
         }
-        if (leftOpndType == Date && rightOpndType == Date && operator == ArithmeticOperator.Minus) {
-            return Numeric;
+        if (leftOpndType == Date) {
+            leftOpndType = Timestamp;
         }
-        if (leftOpndType == Date && (rightOpndType == DateOffset || rightOpndType == Numeric)
+        if (rightOpndType == Date) {
+            rightOpndType = Timestamp;
+        }
+
+        // rest is Temporal
+        if (leftOpndType == Numeric) {
+            // becomes DAY
+            leftOpndType = DSInterval;
+        }
+        if (rightOpndType == Numeric) {
+            // becomes DAY
+            rightOpndType = DSInterval;
+        }
+        if (leftOpndType == DSInterval && rightOpndType == DSInterval) {
+            if (operator == ArithmeticOperator.Plus || operator == ArithmeticOperator.Minus) {
+                return DSInterval;
+            }
+            return Invalid;
+        }
+        if (leftOpndType == Timestamp && rightOpndType == Timestamp && operator == ArithmeticOperator.Minus) {
+            return DSInterval;
+        }
+
+        if (leftOpndType == Timestamp && isInterval(rightOpndType)
                 && (operator == ArithmeticOperator.Plus || operator == ArithmeticOperator.Minus)) {
-            return Date;
+            return Timestamp;
         }
-        if ((leftOpndType == DateOffset || leftOpndType == Numeric) && rightOpndType == Date
-                && operator == ArithmeticOperator.Plus) {
-            return Date;
+        if (isInterval(leftOpndType) && rightOpndType == Timestamp && operator == ArithmeticOperator.Plus) {
+            return Timestamp;
         }
         return Invalid;
+    }
 
+    public static boolean isInterval(TermType termType) {
+        return termType == DSInterval || termType == YMInterval;
+    }
+
+    public static TermType termType(ITimeIntervalEnum timeInterval) {
+        return timeInterval instanceof DSInterval ? DSInterval : YMInterval;
     }
 }

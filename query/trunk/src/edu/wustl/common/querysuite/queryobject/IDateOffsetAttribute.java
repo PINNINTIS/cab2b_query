@@ -1,5 +1,5 @@
 package edu.wustl.common.querysuite.queryobject;
 
-public interface IDateOffsetAttribute extends IDateOffset, IExpressionAttribute {
+public interface IDateOffsetAttribute<T extends ITimeIntervalEnum> extends IDateOffset<T>, IExpressionAttribute {
 
 }

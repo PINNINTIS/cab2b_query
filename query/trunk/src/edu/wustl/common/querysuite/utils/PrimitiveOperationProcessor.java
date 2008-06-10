@@ -1,7 +1,7 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
-import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 class PrimitiveOperationProcessor {
@@ -12,6 +12,14 @@ class PrimitiveOperationProcessor {
 
     String modifyDateLiteral(String literal) {
         return literal;
+    }
+
+    String getIntervalString(String s, ITimeIntervalEnum timeInterval) {
+        return s;
+    }
+
+    String dateToTimestamp(String s) {
+        return s;
     }
 
     final String getResultString(String leftStr, ArithmeticOperator operator, String rightStr) {

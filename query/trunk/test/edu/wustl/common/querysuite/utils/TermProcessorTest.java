@@ -5,14 +5,19 @@ import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.YMInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
 
 public class TermProcessorTest extends AbstractTermProcessorTest {
 
     public void test() {
         ITerm term = newTerm();
-        term.addOperand(dateOffsetLiteral("1"));
+        term.addOperand(dateOffsetLiteral("1", YMInterval.Month));
         checkInvalid(term);
+
+        term.setOperand(0, dateOffsetLiteral("1"));
+        check(term, "1", TermType.DSInterval);
+
         term.setOperand(0, numericLiteral("1"));
         checkNumeric(term, "1");
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("2"));
@@ -112,26 +117,26 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         ILiteral dateOffset1 = dateOffsetLiteral("off1");
         term.setOperand(1, dateOffset1);
         // d1 + off1
-        check(term, concat(date1, ArithmeticOperator.Plus, dateOffset1), TermType.Date);
+        check(term, concat(date1, ArithmeticOperator.Plus, dateOffset1), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 + d1
-        check(term, concat(dateOffset1, ArithmeticOperator.Plus, date1), TermType.Date);
+        check(term, concat(dateOffset1, ArithmeticOperator.Plus, date1), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
         ILiteral numLiteral1 = numericLiteral("1");
         term.setOperand(1, numLiteral1);
         // d1 + 1
-        check(term, concat(date1, ArithmeticOperator.Plus, numLiteral1), TermType.Date);
+        check(term, concat(date1, ArithmeticOperator.Plus, numLiteral1), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 + d1
-        check(term, concat(numLiteral1, ArithmeticOperator.Plus, date1), TermType.Date);
+        check(term, concat(numLiteral1, ArithmeticOperator.Plus, date1), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
 
         term.setOperand(1, dateOffset1);
         // d1 - off1
-        check(term, concat(date1, ArithmeticOperator.Minus, dateOffset1), TermType.Date);
+        check(term, concat(date1, ArithmeticOperator.Minus, dateOffset1), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 - d1
         checkInvalid(term);
@@ -139,7 +144,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, numLiteral1);
         // d1 - 1
-        check(term, concat(date1, ArithmeticOperator.Minus, numLiteral1), TermType.Date);
+        check(term, concat(date1, ArithmeticOperator.Minus, numLiteral1), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 - d1
         checkInvalid(term);
@@ -147,7 +152,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, date2);
         // d1 - d2
-        check(term, concat(date1, ArithmeticOperator.Minus, date2), TermType.Numeric);
+        check(term, concat(date1, ArithmeticOperator.Minus, date2), TermType.DSInterval);
 
         // mult and divide
         term.getConnector(0, 1).setOperator(ArithmeticOperator.MultipliedBy);
@@ -176,22 +181,22 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         checkInvalid(term);
 
         term.addParantheses(1, 2);
-        check(term, "d1 - (f1 + d2)", TermType.Numeric);
+        check(term, "d1 - (f1 + d2)", TermType.DSInterval);
 
         term.removeParantheses(1, 2);
         term.getConnector(1, 2).setOperator(ArithmeticOperator.Minus);
-        check(term, "d1 - f1 - d2", TermType.Numeric);
+        check(term, "d1 - f1 - d2", TermType.DSInterval);
         swapOperands(term, 0, 1);
         checkInvalid(term);
         swapOperands(term, 0, 1);
         term.setOperand(1, n1);
-        check(term, "d1 - n1 - d2", TermType.Numeric);
+        check(term, "d1 - n1 - d2", TermType.DSInterval);
         swapOperands(term, 1, 2);
-        check(term, "d1 - d2 - n1", TermType.Numeric);
+        check(term, "d1 - d2 - n1", TermType.DSInterval);
 
         term.addParantheses(1, 2);
         term.addOperand(1, conn(ArithmeticOperator.Plus, 1), f1);
-        check(term, "(d1 + f1) - (d2 - n1)", TermType.Numeric);
+        check(term, "(d1 + f1) - (d2 - n1)", TermType.DSInterval);
     }
 
     public void testExprAttr() {

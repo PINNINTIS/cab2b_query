@@ -1,20 +1,19 @@
 package edu.wustl.common.querysuite.utils;
 
-import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.*;
+import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createAttribute;
+import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createEntity;
 import junit.framework.TestCase;
-import edu.common.dynamicextensions.domain.DomainObjectFactory;
-import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 public abstract class AbstractTermProcessorTest extends TestCase {
@@ -62,10 +61,10 @@ public abstract class AbstractTermProcessorTest extends TestCase {
     }
 
     protected ILiteral dateOffsetLiteral(String s) {
-        return literal(s, TermType.DateOffset);
+        return literal(s, TermType.DSInterval);
     }
 
-    protected ILiteral dateOffsetLiteral(String s, TimeInterval timeInterval) {
+    protected ILiteral dateOffsetLiteral(String s, ITimeIntervalEnum timeInterval) {
         return QueryObjectFactory.createDateOffsetLiteral(s, timeInterval);
     }
 
@@ -94,9 +93,15 @@ public abstract class AbstractTermProcessorTest extends TestCase {
     protected IExpressionAttribute createDateExpressionAttribute(String attrName, String entityName) {
         return createExpressionAttribute(attrName, entityName, TermType.Date);
     }
+    
+    protected IExpressionAttribute createTimestampExpressionAttribute(String attrName, String entityName) {
+        return createExpressionAttribute(attrName, entityName, TermType.Timestamp);
+    }
 
-    protected IExpressionAttribute createDateOffsetExpressionAttribute(String attrName, String entityName) {
-        return createExpressionAttribute(attrName, entityName, TermType.DateOffset);
+    protected <T extends ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetExpressionAttribute(
+            String attrName, String entityName, T timeInterval) {
+        return QueryObjectFactory.createDateOffsetAttribute(exprId(1), createAttribute(attrName,
+                createEntity(entityName)), timeInterval);
     }
 
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {

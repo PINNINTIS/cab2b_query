@@ -3,24 +3,22 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
-public class DateOffsetAttribute extends ExpressionAttribute implements IDateOffsetAttribute {
+public class DateOffsetAttribute<T extends ITimeIntervalEnum> extends ExpressionAttribute
+        implements
+            IDateOffsetAttribute<T> {
     private static final long serialVersionUID = 3883684246378982941L;
 
-    public DateOffsetAttribute(IExpressionId expressionId, AttributeInterface attribute) {
-        super(expressionId, attribute, TermType.DateOffset);
-    }
+    private T timeInterval;
 
-    private TimeInterval timeInterval = TimeInterval.Day;
-
-    public TimeInterval getTimeInterval() {
-        return timeInterval;
-    }
-
-    public void setTimeInterval(TimeInterval timeInterval) {
+    public DateOffsetAttribute(IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
+        super(expressionId, attribute, TermType.termType(timeInterval));
         this.timeInterval = timeInterval;
     }
 
+    public T getTimeInterval() {
+        return timeInterval;
+    }
 }

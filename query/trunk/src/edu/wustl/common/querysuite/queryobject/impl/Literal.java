@@ -10,12 +10,8 @@ public class Literal extends ArithmeticOperand implements ILiteral {
     private String literal;
 
     public Literal(TermType termType) {
-        this("", termType);
-    }
-
-    public Literal(String literal, TermType termType) {
         super(termType);
-        this.literal = literal;
+        this.literal = "";
     }
 
     public String getLiteral() {

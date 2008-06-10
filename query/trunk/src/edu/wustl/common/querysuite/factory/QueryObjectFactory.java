@@ -9,6 +9,7 @@ import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 import edu.wustl.common.querysuite.metadata.associations.impl.IntraModelAssociation;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
@@ -27,11 +28,12 @@ import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.NamedTerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
+import edu.wustl.common.querysuite.queryobject.YMInterval;
 import edu.wustl.common.querysuite.queryobject.impl.Condition;
 import edu.wustl.common.querysuite.queryobject.impl.Connector;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
@@ -275,18 +277,25 @@ public abstract class QueryObjectFactory {
     }
 
     public static ILiteral createLiteral(TermType termType) {
-        if (termType == TermType.DateOffset) {
-            return createDateOffsetLiteral();
+        if (termType == TermType.DSInterval) {
+            return createDateOffsetLiteral(DSInterval.Day);
+        } else if (termType == TermType.YMInterval) {
+            return createDateOffsetLiteral(YMInterval.Month);
         }
         return new Literal(termType);
     }
 
-    public static ILiteral createLiteral(String literal, TermType termType) {
-        if (termType == TermType.DateOffset) {
-            ILiteral res = createDateOffsetLiteral();
-            res.setLiteral(literal);
+    public static ILiteral createLiteral(String s, TermType termType) {
+        ILiteral res;
+        if (termType == TermType.DSInterval) {
+            res = createDateOffsetLiteral(s, DSInterval.Day);
+        } else if (termType == TermType.YMInterval) {
+            res = createDateOffsetLiteral(s, YMInterval.Month);
+        } else {
+            res = new Literal(termType);
         }
-        return new Literal(literal, termType);
+        res.setLiteral(s);
+        return res;
     }
 
     public static ICustomFormula createCustomFormula() {
@@ -295,8 +304,10 @@ public abstract class QueryObjectFactory {
 
     public static IExpressionAttribute createExpressionAttribute(IExpressionId expressionId,
             AttributeInterface attribute, TermType termType) {
-        if (termType == TermType.DateOffset) {
-            return createDateOffsetAttribute(expressionId, attribute);
+        if (termType == TermType.DSInterval) {
+            return createDateOffsetAttribute(expressionId, attribute, DSInterval.Day);
+        } else if (termType == TermType.YMInterval) {
+            return createDateOffsetAttribute(expressionId, attribute, YMInterval.Month);
         }
         return new ExpressionAttribute(expressionId, attribute, termType);
     }
@@ -313,17 +324,20 @@ public abstract class QueryObjectFactory {
         return new NamedTerm(name, term);
     }
 
-    public static IDateOffsetAttribute createDateOffsetAttribute(IExpressionId expressionId,
-            AttributeInterface attribute) {
-        return new DateOffsetAttribute(expressionId, attribute);
+    public static <T extends ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(
+            IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
+        return new DateOffsetAttribute<T>(expressionId, attribute, timeInterval);
     }
 
-    public static IDateOffsetLiteral createDateOffsetLiteral() {
-        return new DateOffsetLiteral();
+    public static <T extends ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(T timeInterval) {
+        return new DateOffsetLiteral<T>(timeInterval);
     }
 
-    public static IDateOffsetLiteral createDateOffsetLiteral(String literal, TimeInterval timeInterval) {
-        return new DateOffsetLiteral(literal, timeInterval);
+    public static <T extends ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(String s,
+            T timeInterval) {
+        IDateOffsetLiteral<T> res = new DateOffsetLiteral<T>(timeInterval);
+        res.setLiteral(s);
+        return res;
     }
 
 }
