@@ -5,7 +5,10 @@ import java.util.List;
 
 import edu.common.dynamicextensions.domaininterface.AssociationInterface;
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.common.dynamicextensions.domaininterface.AttributeTypeInformationInterface;
+import edu.common.dynamicextensions.domaininterface.DateTypeInformationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
+import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterface;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 import edu.wustl.common.querysuite.metadata.associations.impl.IntraModelAssociation;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
@@ -303,11 +306,21 @@ public abstract class QueryObjectFactory {
     }
 
     public static IExpressionAttribute createExpressionAttribute(IExpressionId expressionId,
-            AttributeInterface attribute, TermType termType) {
-        if (termType == TermType.DSInterval) {
-            return createDateOffsetAttribute(expressionId, attribute, DSInterval.Day);
-        } else if (termType == TermType.YMInterval) {
-            return createDateOffsetAttribute(expressionId, attribute, YMInterval.Month);
+            AttributeInterface attribute) {
+        AttributeTypeInformationInterface attrTypeInfo = attribute.getAttributeTypeInformation();
+        TermType termType;
+        if (attrTypeInfo instanceof NumericTypeInformationInterface) {
+            termType = TermType.Numeric;
+        } else if (attrTypeInfo instanceof DateTypeInformationInterface) {
+            DateTypeInformationInterface dateInfo = (DateTypeInformationInterface) attrTypeInfo;
+            if (dateInfo.getFormat().equals("MM-dd-yyyy HH:mm")) {
+                termType = TermType.Timestamp;
+            } else {
+                termType = TermType.Date;
+            }
+        } else {
+            throw new UnsupportedOperationException(
+                    "Only numeric and date attributes supported in custom formulas.");
         }
         return new ExpressionAttribute(expressionId, attribute, termType);
     }

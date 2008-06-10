@@ -4,7 +4,11 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.common.dynamicextensions.domaininterface.AttributeTypeInformationInterface;
+import edu.common.dynamicextensions.domaininterface.DateTypeInformationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
+import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterface;
+import edu.wustl.common.querysuite.queryobject.TermType;
 
 public class DynExtnMockUtil {
     private static Mockery context = new Mockery();
@@ -24,6 +28,50 @@ public class DynExtnMockUtil {
                 will(returnValue(name));
                 allowing(attribute).getEntity();
                 will(returnValue(entity));
+            }
+        });
+        return attribute;
+    }
+
+    public static AttributeInterface createAttribute(final String name, final EntityInterface entity,
+            final TermType termType) {
+        final AttributeTypeInformationInterface attrInfo;
+        switch (termType) {
+            case Numeric :
+                attrInfo = context.mock(NumericTypeInformationInterface.class, getI());
+                break;
+            case Date :
+                attrInfo = context.mock(DateTypeInformationInterface.class, getI());
+                context.checking(new Expectations() {
+                    {
+                        allowing((DateTypeInformationInterface) attrInfo).getFormat();
+                        will(returnValue("foo"));
+                    }
+                });
+                break;
+            case Timestamp :
+                attrInfo = context.mock(DateTypeInformationInterface.class, getI());
+                context.checking(new Expectations() {
+                    {
+                        allowing((DateTypeInformationInterface) attrInfo).getFormat();
+                        will(returnValue("MM-dd-yyyy HH:mm"));
+                    }
+                });
+                break;
+            default :
+                throw new IllegalArgumentException();
+        }
+        final AttributeInterface attribute = context.mock(AttributeInterface.class, getI());
+
+        context.checking(new Expectations() {
+            {
+                allowing(attribute).getName();
+                will(returnValue(name));
+                allowing(attribute).getEntity();
+                will(returnValue(entity));
+                allowing(attribute).getAttributeTypeInformation();
+                will(returnValue(attrInfo));
+
             }
         });
         return attribute;

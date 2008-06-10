@@ -93,7 +93,7 @@ public abstract class AbstractTermProcessorTest extends TestCase {
     protected IExpressionAttribute createDateExpressionAttribute(String attrName, String entityName) {
         return createExpressionAttribute(attrName, entityName, TermType.Date);
     }
-    
+
     protected IExpressionAttribute createTimestampExpressionAttribute(String attrName, String entityName) {
         return createExpressionAttribute(attrName, entityName, TermType.Timestamp);
     }
@@ -106,7 +106,7 @@ public abstract class AbstractTermProcessorTest extends TestCase {
 
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {
         return QueryObjectFactory.createExpressionAttribute(exprId(1), createAttribute(attrName,
-                createEntity(entityName)), termType);
+                createEntity(entityName), termType));
     }
 
     private IExpressionId exprId(final int i) {
