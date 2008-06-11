@@ -1,5 +1,13 @@
 package edu.wustl.common.querysuite.queryobject;
 
+/**
+ * Represents the binary operator in an {@link IBaseExpression} and the nesting
+ * of that operator.
+ * 
+ * @author srinath_k
+ * 
+ * @param <T> the type of the operator
+ */
 public interface IConnector<T extends IBinaryOperator> {
     /**
      * To get the operator associated with this object.
@@ -16,7 +24,7 @@ public interface IConnector<T extends IBinaryOperator> {
     void setOperator(T operator);
 
     /**
-     * denotes no. of parantheses around this operator
+     * Denotes no. of parantheses around this operator
      * 
      * @return integer value, that represents no. of parantheses sorrounding
      *         this connector.

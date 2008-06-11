@@ -1,12 +1,24 @@
 package edu.wustl.common.querysuite.queryobject;
 
 /**
+ * Represents a generic expression consisting of binary operators and operands
+ * connected by these operators.<br>
+ * The connectors are identified by the position of the operands on either side,
+ * e.g.
+ * 
+ * <pre>
+ *  given:  operand connector operand connector operand index:    0        0,
+ * 1      1       1,2        2
+ * </pre>
+ * 
  * @author srinath_k
  * 
  * @param
  * <P>
- * the type of the operator
+ * the type of the binary operator
  * @param <V> the type of the operand
+ * @see IExpression
+ * @see ITerm
  */
 public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> extends IBaseQueryObject {
 
@@ -21,7 +33,7 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
     /**
      * To set the operand in the Expression at index position
      * 
-     * @param index the expected index of the operand in he Expression
+     * @param index the expected index of the operand in the Expression
      * @param operand The operand to be added in the Expression.
      */
     void setOperand(int index, V operand);
@@ -33,24 +45,24 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
      * 
      * @param leftOperandIndex The index of the left operand.
      * @param rightOperandIndex The index of the right operand.
-     * @return The reference to logical connector between who adjacent operands.
+     * @return The reference to connector between who adjacent operands.
      */
     IConnector<P> getConnector(int leftOperandIndex, int rightOperandIndex);
 
     /**
-     * To set logical connector between two adjescent operands.
+     * To set connector between two adjescent operands.
      * 
      * @param leftOperandIndex The index of the left operand.
      * @param rightOperandIndex The index of the right operand.
-     * @param connector The reference to the logical connector to set.
+     * @param connector The reference to the connector to set.
      * 
      */
     void setConnector(int leftOperandIndex, int rightOperandIndex, IConnector<P> connector);
 
     /**
      * To add the Parenthesis around the operands specified by left & right
-     * operand index. Increments nesting num of all the logical connectors in
-     * the expression between the specified operands' indexes, both inclusive.
+     * operand index. Increments nesting num of all the connectors in the
+     * expression between the specified operands' indexes, both inclusive.
      * 
      * @param leftOperandIndex The index of the left operand.
      * @param rightOperandIndex The index of the left operand.
@@ -65,8 +77,8 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
 
     /**
      * To remove the Parenthesis around the operands specified by left & right
-     * operand index. Decrements nesting num of all the logical connectors in
-     * the expression between the specified operands' indexes, both inclusive.
+     * operand index. Decrements nesting num of all the connectors in the
+     * expression between the specified operands' indexes, both inclusive.
      * 
      * @param leftOperandIndex The index of the left operand.
      * @param rightOperandIndex The index of the left operand.
@@ -79,9 +91,7 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
     void removeParantheses();
 
     /**
-     * Adds an operand to the operands list. A default logical connector AND
-     * will be added to the connectors list provided there are atleast two
-     * operands in the operands list.
+     * Adds an operand to the operands list.
      * 
      * @param operand The reference of the operand added.
      * @return index of the added operand.
@@ -89,11 +99,11 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
     int addOperand(V operand);
 
     /**
-     * To add operand to the Expression with the specified logical connector.
-     * This operand will be added as last operand in the operand list.
+     * To add operand to the Expression with the specified connector. This
+     * operand will be added as last operand in the operand list.
      * 
-     * @param connector the Logical connector by which the operand will be
-     *            connected to the operand behind it.
+     * @param connector the connector by which the operand will be connected to
+     *            the operand behind it.
      * @param operand The operand to be added in Expression.
      * @return index of the added operand.
      */
@@ -103,9 +113,11 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
      * Inserts an operand with the connector in front of it.
      * 
      * @param index The index at which the operand to be inserted.
-     * @param connector the Logical connector by which the operand will be
-     *            connected to the operand behind it.
+     * @param connector the connector by which the operand will be connected to
+     *            the operand behind it.
      * @param operand The operand to be added in Expression.
+     * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
+     *             index > size()).
      */
     void addOperand(int index, IConnector<P> connector, V operand);
 
@@ -114,9 +126,10 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
      * 
      * @param index The index at which the operand to be inserted.
      * @param operand The operand to be added in Expression.
-     * @param connector the Logical connector by which the operand will be
-     *            connected operand in front of it.
-     * 
+     * @param connector the connector by which the operand will be connected
+     *            operand in front of it.
+     * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
+     *             index > size()).
      */
     void addOperand(int index, V operand, IConnector<P> connector);
 

@@ -16,11 +16,25 @@ import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
 
-// TODO TERM IN OUTPUT OF SQL
-// TODO Date op Numeric to be treated as Date op DateOffset(Day)
-
+/**
+ * Provides string representation and term type of an {@link ITerm}. It
+ * requires an {@link IAttributeAliasProvider} and a
+ * {@link PrimitiveOperationProcessor} for obtaining this information. By
+ * default, it uses a default alias provider that substitutes the attribute name
+ * for an {@link IExpressionAttribute}. If an SQL string is to be built, then
+ * {@link DatabaseSQLSettings} have to be provided; based on the database
+ * settings, an appropriate {@link PrimitiveOperationProcessor} is used.
+ * 
+ * @author srinath_k
+ * 
+ */
 public class TermProcessor {
 
+    /**
+     * Provides an appropriate alias for an {@link IExpressionAttribute} in a
+     * query. This alias is used to refer to the attribute when an SQL is built
+     * from the query.
+     */
     public interface IAttributeAliasProvider {
         String getAliasFor(IExpressionAttribute exprAttr);
     }
@@ -40,11 +54,20 @@ public class TermProcessor {
 
     private PrimitiveOperationProcessor primitiveOperationProcessor;
 
+    /**
+     * Configures to use the default alias provider and
+     * {@link PrimitiveOperationProcessor}.
+     */
     public TermProcessor() {
         this.aliasProvider = defaultAliasProvider;
         this.primitiveOperationProcessor = new PrimitiveOperationProcessor();
     }
 
+    /**
+     * Configures to use the specified alias provider and a
+     * {@link PrimitiveOperationProcessor} appropriate for the specified
+     * database settings.
+     */
     public TermProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
         this.aliasProvider = aliasProvider;
         switch (databaseSQLSettings.getDatabaseType()) {
@@ -61,6 +84,13 @@ public class TermProcessor {
         }
     }
 
+    /**
+     * The result of using {@link TermProcessor} to process an {@link ITerm}.
+     * It contains the string representation and the {@link TermType} of the
+     * term.
+     * 
+     * @author srinath_k
+     */
     public static class TermString {
         private String string;
 

@@ -2,14 +2,7 @@ package edu.wustl.common.querysuite.queryobject;
 
 /**
  * A list of operands, and the logical connectors (AND, OR), that together form
- * a logical expression<br>
- * The connectors are identified by the position of the operands on either side,
- * e.g.,
- * 
- * <pre>
- *  given:  operand connector operand connector operand index:    0        0,
- * 1      1       1,2        2
- * </pre>
+ * a logical expression.<br>
  * 
  * An IExpression belongs to a constraint entity; and constraints on another
  * associated entity will be present as a subexpression on the associated entity .
@@ -23,16 +16,17 @@ package edu.wustl.common.querysuite.queryobject;
  * The expression for an expressionId is found from
  * {@link edu.wustl.common.querysuite.queryobject.IConstraints}.
  * 
+ * @see IBaseExpression
  * @see edu.wustl.common.querysuite.queryobject.IJoinGraph
  * @see edu.wustl.common.querysuite.queryobject.
- *      IConstraints#addExpression(IFunctionalClass)
+ *      IConstraints#addExpression(IQueryEntity)
  * @version 1.0
  * @updated 22-Dec-2006 2:50:17 PM
  */
 public interface IExpression extends IBaseExpression<LogicalOperator, IExpressionOperand> {
 
     /**
-     * The constraintEntity of IRule is constructor param to impl class.
+     * The entity to which this expression belongs.
      * 
      * @return The reference to the constraintEntity associated with this
      *         expression.

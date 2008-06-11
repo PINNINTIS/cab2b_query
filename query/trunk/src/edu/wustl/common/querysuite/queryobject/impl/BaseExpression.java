@@ -23,9 +23,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     protected List<IConnector<P>> connectors = new ArrayList<IConnector<P>>();
 
     /**
-     * @param operand the operand to be removed.
-     * @return true if the operand was found; false otherwise.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#removeOperand(edu.wustl.common.querysuite.queryobject.V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#removeOperand(edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public boolean removeOperand(V operand) {
         int index = expressionOperands.indexOf(operand);
@@ -33,9 +31,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param operand The operand to be added in Expression. index of the added
-     *            operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addOperand(edu.wustl.common.querysuite.queryobject.V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addOperand(edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public int addOperand(V operand) {
         expressionOperands.add(operand);
@@ -48,12 +44,8 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     protected abstract IConnector<P> getUnknownOperator(int nestingNumber);
 
     /**
-     * @param logicalConnector the Logical connector by which the operand will
-     *            be connected to the operand behind it.
-     * @param operand The operand to be added in Expression.
-     * @return index of the added operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addOperand(edu.wustl.common.querysuite.queryobject.IConnector
-     *      <P>, edu.wustl.common.querysuite.queryobject.V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addOperand(edu.wustl.common.querysuite.queryobject.IConnector,
+     *      edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public int addOperand(IConnector<P> logicalConnector, V operand) {
         expressionOperands.add(operand);
@@ -62,15 +54,9 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param index The index at which the operand to be inserted.
-     * @param logicalConnector the Logical connector by which the operand will
-     *            be connected to the operand behind it.
-     * @param operand The operand to be added in Expression.
-     * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
-     *             index > size()).
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addOperand(int,
-     *      edu.wustl.common.querysuite.queryobject.IConnector
-     *      <P>, edu.wustl.common.querysuite.queryobject.V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addOperand(int,
+     *      edu.wustl.common.querysuite.queryobject.IConnector,
+     *      edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public void addOperand(int index, IConnector<P> logicalConnector, V operand) {
         expressionOperands.add(index, operand);
@@ -84,14 +70,9 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param index The index at which the operand to be inserted.
-     * @param operand The operand to be added in Expression.
-     * @param logicalConnector the Logical connector by which the operand will
-     *            be connected operand in front of it.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addOperand(int,
-     *      edu.wustl.common.querysuite.queryobject.V,
-     *      edu.wustl.common.querysuite.queryobject.IConnector
-     *      <P>)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addOperand(int,
+     *      edu.wustl.common.querysuite.queryobject.IOperand,
+     *      edu.wustl.common.querysuite.queryobject.IConnector)
      */
     public void addOperand(int index, V operand, IConnector<P> logicalConnector) {
         expressionOperands.add(index, operand);
@@ -107,16 +88,14 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     /**
      * calls addParantheses(0, size-1)
      * 
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addParantheses()
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addParantheses()
      */
     public void addParantheses() {
         addParantheses(0, expressionOperands.size() - 1);
     }
 
     /**
-     * @param leftOperandIndex The index of the left operand.
-     * @param rightOperandIndex The index of the right operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#addParantheses(int,
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#addParantheses(int,
      *      int)
      */
     public void addParantheses(int leftOperandIndex, int rightOperandIndex) {
@@ -128,7 +107,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     /**
      * calls removeParantheses(0, size-1)
      * 
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#removeParantheses()
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#removeParantheses()
      */
     public void removeParantheses() {
         removeParantheses(0, connectors.size() - 1);
@@ -136,12 +115,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * Decrements nesting num of all the logical connectors in the expression
-     * between the specified operands' indexes, both inclusive.
-     * 
-     * @param leftOperandIndex The index of the left operand.
-     * @param rightOperandIndex The index of the right operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#removeParantheses(int,
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#removeParantheses(int,
      *      int)
      */
     public void removeParantheses(int leftOperandIndex, int rightOperandIndex) {
@@ -152,10 +126,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param leftOperandIndex The index of the left operand.
-     * @param rightOperandIndex The index of the right operand.
-     * @return The reference to logical connector between who operands.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#getLogicalConnector(int,
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#getConnector(int,
      *      int)
      */
     public IConnector<P> getConnector(int leftOperandIndex, int rightOperandIndex) {
@@ -166,6 +137,10 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
         return connectors.get(leftOperandIndex);
     }
 
+    /**
+     * @throws IllegalArgumentException if
+     *             <tt>rightOperandIndex != leftOperandIndex + 1</tt>
+     */
     protected void checkAdjacentOperands(int leftOperandIndex, int rightOperandIndex) {
         if (rightOperandIndex != leftOperandIndex + 1) {
             throw new IllegalArgumentException("Incorrect indexes selected; please select adjacent indexes");
@@ -173,22 +148,15 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param index the index of operand.
-     * @return The operand identified by the given index.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#getOperand(int)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#getOperand(int)
      */
     public V getOperand(int index) {
         return expressionOperands.get(index);
     }
 
     /**
-     * @param leftOperandIndex The index of the left operand.
-     * @param rightOperandIndex The index of the right operand.
-     * @param logicalConnector the logical connector between let & Right
-     *            operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#setLogicalConnector(int,
-     *      int, edu.wustl.common.querysuite.queryobject.IConnector
-     *      <P>)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#setConnector(int,
+     *      int, edu.wustl.common.querysuite.queryobject.IConnector)
      */
     public void setConnector(int leftOperandIndex, int rightOperandIndex, IConnector<P> logicalConnector) {
         if (rightOperandIndex == leftOperandIndex + 1) {
@@ -199,26 +167,22 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param index the expected index of the operand in he Expression
-     * @param operand The operand to be added in the Expression.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#setOperand(int,V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#setOperand(int,
+     *      edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public void setOperand(int index, V operand) {
         expressionOperands.set(index, operand);
     }
 
     /**
-     * @return the no. of operands in the expression.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#numberOfOperands()
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#numberOfOperands()
      */
     public int numberOfOperands() {
         return expressionOperands.size();
     }
 
     /**
-     * @param index the index of operand to be removed.
-     * @return the removed operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#removeOperand(int)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#removeOperand(int)
      */
     public V removeOperand(int index) {
 
@@ -234,16 +198,10 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
 
         expressionOperands.remove(index);
         if (connectorIndex == Expression.BOTH_LOGICAL_CONNECTOR) // if both
-        // adjacent
-        // connectors
-        // have same
-        // nesting
-        // no. then
-        // remove
-        // connector
-        // following
-        // the
-        // operand.
+        /*
+         * adjacent connectors have same nesting no. then remove connector
+         * following the operand.
+         */
         {
             connectorIndex = index;
         }
@@ -256,52 +214,32 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     /**
-     * @param operand the reference to V, to be searched in the Expression.
-     * @return The index of the given Expression operand.
-     * @see edu.wustl.common.querysuite.queryobject.IExpression#indexOfOperand(edu.wustl.common.querysuite.queryobject.V)
+     * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#indexOfOperand(edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public int indexOfOperand(V operand) {
         return expressionOperands.indexOf(operand);
     }
 
-    /**
-     * To get the adjacent logical connector with the greater nesting number.
-     * 
-     * @param operand The reference to V of which the Logical connector to
-     *            search.
-     * @return index of adjacent Logical connector with greater nesting number.
-     *         Expression.NO_LOGICAL_CONNECTOR if operand not found or there is
-     *         no logical connector present in the Expression.
-     *         Expression.BOTH_LOGICAL_CONNECTOR if both adjacent connectors are
-     *         of same nesting number
-     */
     public int indexOfConnectorForOperand(V operand) {
         int index = expressionOperands.indexOf(operand);
 
         if (index != -1) {
             if (expressionOperands.size() == 1) // if there is only one
-            // Expression then there is no
-            // logical connector associated
-            // with it.
+            // Expression then there is no logical connector associated with it.
             {
                 index = Expression.NO_LOGICAL_CONNECTOR;
             } else if (index == expressionOperands.size() - 1) // if expression
-            // is last
-            // operand then
-            // index of last
-            // connector
-            // will be
-            // returned.
+            // is last operand then index of last connector will be returned.
             {
                 index = index - 1;
-            } else if (index != 0) // if expression is not 1st & last, then
-            // index will depend upon the immediate
-            // bracket surrounding that expression.
+            } else if (index != 0)
+            // if expression is not 1st & last, then index will depend upon the
+            // immediate bracket surrounding that expression.
             {
                 int preNesting = ((Connector) connectors.get(index - 1)).getNestingNumber();
                 int postNesting = ((Connector) connectors.get(index)).getNestingNumber();
-                if (postNesting == preNesting) // if nesting no are same, then
-                // there is not direct bracket
+                if (postNesting == preNesting)
+                // if nesting no are same, then there is not direct bracket
                 // sorrounding operand.
                 {
                     index = Expression.BOTH_LOGICAL_CONNECTOR;

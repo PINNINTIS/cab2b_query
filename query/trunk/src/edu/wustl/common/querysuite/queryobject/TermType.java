@@ -1,26 +1,34 @@
 package edu.wustl.common.querysuite.queryobject;
 
-// TODO (date - date) = numeric (days). this is a limitation.
-// NOTE: Thus, DateOffset is NEVER a result of any operation.
-
-// TODO use termtype of LHS to validate RHS.
+/**
+ * Enum of the possible types of {@link ITerm} and related utility methods.
+ * 
+ * @author srinath_k
+ * @see ITerm
+ */
 public enum TermType {
     // TODO String?
-    // TODO DateOffset + Numeric??
-
     // TODO Boolean ??
     Date, Timestamp, YMInterval, DSInterval, Numeric, Invalid;
 
     /**
      * Returns the term type resulting from the specified arithmetic operation.
      * Following is the result term type for various cases : <br>
-     * Date (D), Numeric (N), dateOffset(O).
-     * <ul>
-     * <li>D +/- N = D</li>
-     * <li>D +/- O = D</li>
-     * <li>D - D = N</li>
-     * </ul>
-     * otherwise Invalid.
+     * Date or timestamp (D), Numeric (N), DSInterval(DS), YMInterval(YM),
+     * Interval (DS or YM).
+     * 
+     * <pre>
+     * 
+     * D (+,-) N  = D 
+     * D (+,-) I  = D 
+     * I   +   D  = D 
+     * D   -   D  = DS
+     * DS(+,-)DS  = DS 
+     * N (any) N  = N
+     * 
+     * </pre>
+     * 
+     * All other operations result in {@link #Invalid}.
      * 
      * @param leftOpndType the type of the left operand.
      * @param rightOpndType the type of the right operand.
@@ -71,10 +79,16 @@ public enum TermType {
         return Invalid;
     }
 
+    /**
+     * @return <tt>termType == DSInterval || termType == YMInterval</tt>
+     */
     public static boolean isInterval(TermType termType) {
         return termType == DSInterval || termType == YMInterval;
     }
 
+    /**
+     * @return <tt>timeInterval instanceof DSInterval ? DSInterval : YMInterval</tt>
+     */
     public static TermType termType(ITimeIntervalEnum timeInterval) {
         return timeInterval instanceof DSInterval ? DSInterval : YMInterval;
     }
