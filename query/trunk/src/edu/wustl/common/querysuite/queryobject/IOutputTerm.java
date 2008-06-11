@@ -1,6 +1,6 @@
 package edu.wustl.common.querysuite.queryobject;
 
-public interface INamedTerm extends IBaseQueryObject {
+public interface IOutputTerm extends IBaseQueryObject {
 
     ITerm getTerm();
 

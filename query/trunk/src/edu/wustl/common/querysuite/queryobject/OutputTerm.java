@@ -2,18 +2,18 @@ package edu.wustl.common.querysuite.queryobject;
 
 import edu.wustl.common.querysuite.queryobject.impl.BaseQueryObject;
 
-public class NamedTerm extends BaseQueryObject implements INamedTerm {
+public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     private static final long serialVersionUID = 5063978137285352552L;
 
     private String name;
 
     private ITerm term;
 
-    public NamedTerm() {
+    public OutputTerm() {
         System.out.println("");
     }
 
-    public NamedTerm(String name, ITerm term) {
+    public OutputTerm(String name, ITerm term) {
         this.name = name;
         this.term = term;
     }

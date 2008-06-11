@@ -22,7 +22,7 @@ import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
-import edu.wustl.common.querysuite.queryobject.INamedTerm;
+import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
 import edu.wustl.common.querysuite.queryobject.IParameterizedCondition;
@@ -33,7 +33,7 @@ import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
-import edu.wustl.common.querysuite.queryobject.NamedTerm;
+import edu.wustl.common.querysuite.queryobject.OutputTerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
@@ -324,12 +324,12 @@ public abstract class QueryObjectFactory {
         return new Term();
     }
 
-    public static INamedTerm createNamedTerm() {
-        return new NamedTerm();
+    public static IOutputTerm createNamedTerm() {
+        return new OutputTerm();
     }
 
-    public static INamedTerm createNamedTerm(ITerm term, String name) {
-        return new NamedTerm(name, term);
+    public static IOutputTerm createNamedTerm(ITerm term, String name) {
+        return new OutputTerm(name, term);
     }
 
     public static <T extends ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(

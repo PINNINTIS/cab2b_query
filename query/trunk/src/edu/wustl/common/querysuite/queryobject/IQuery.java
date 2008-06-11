@@ -23,7 +23,7 @@ public interface IQuery extends IBaseQueryObject {
      */
     void setConstraints(IConstraints constraints);
 
-    List<INamedTerm> getOutputTerms();
+    List<IOutputTerm> getOutputTerms();
 
-    void setOutputTerms(List<INamedTerm> terms);
+    void setOutputTerms(List<IOutputTerm> terms);
 }
