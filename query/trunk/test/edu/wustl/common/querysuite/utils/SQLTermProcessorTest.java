@@ -83,7 +83,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         check(term, "timestamp(timestamp(e1.a1), maketime(1*24, 0, 0))", TermType.Timestamp);
         term.setOperand(0, createTimestampExpressionAttribute("a1", "e1"));
         // a1 + 1
-        check(term, "timestamp(e1.a1, maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(timestamp(e1.a1), maketime(1*24, 0, 0))", TermType.Timestamp);
 
         term.setOperand(1, d1);
         // a1 + d1
@@ -112,10 +112,10 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         check(term, "timediff(" + d1S + ", " + d2S + ")", TermType.DSInterval);
 
         term.setOperand(1, createTimestampExpressionAttribute("a1", "e1"));
-        check(term, "timediff(" + d1S + ", e1.a1)", TermType.DSInterval);
+        check(term, "timediff(" + d1S + ", timestamp(e1.a1))", TermType.DSInterval);
 
         swapOperands(term, 0, 1);
-        check(term, "timediff(e1.a1, " + d1S + ")", TermType.DSInterval);
+        check(term, "timediff(timestamp(e1.a1), " + d1S + ")", TermType.DSInterval);
     }
 
     public void testDiffOffset() {

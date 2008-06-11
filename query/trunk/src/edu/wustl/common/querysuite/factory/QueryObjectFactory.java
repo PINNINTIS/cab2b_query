@@ -312,12 +312,7 @@ public abstract class QueryObjectFactory {
         if (attrTypeInfo instanceof NumericTypeInformationInterface) {
             termType = TermType.Numeric;
         } else if (attrTypeInfo instanceof DateTypeInformationInterface) {
-            DateTypeInformationInterface dateInfo = (DateTypeInformationInterface) attrTypeInfo;
-            if (dateInfo.getFormat().equals("MM-dd-yyyy HH:mm")) {
-                termType = TermType.Timestamp;
-            } else {
-                termType = TermType.Date;
-            }
+            termType = TermType.Date;
         } else {
             throw new UnsupportedOperationException(
                     "Only numeric and date attributes supported in custom formulas.");
