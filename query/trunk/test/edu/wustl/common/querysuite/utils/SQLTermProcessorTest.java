@@ -156,7 +156,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
         ILiteral d1 = dateLiteral("d1");
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        String d1S = "TO_DATE('d1', " + quotedDateFormat + ")";
         term.addOperand(d1);
 
         check(term, d1S, TermType.Date);
@@ -166,10 +166,10 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
         ILiteral d1 = dateLiteral("d1");
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        String d1S = "TO_DATE('d1', " + quotedDateFormat + ")";
         term.addOperand(d1);
         ILiteral d2 = dateLiteral("d2");
-        String d2S = "cast(TO_DATE('d2', " + quotedDateFormat + ") as timestamp)";
+        String d2S = "TO_DATE('d2', " + quotedDateFormat + ")";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, d1S + " - " + d2S, TermType.DSInterval);
     }
@@ -179,7 +179,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         ITerm term = QueryObjectFactory.createTerm();
         ILiteral d1 = dateLiteral("d1");
         term.addOperand(d1);
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        String d1S = "TO_DATE('d1', " + quotedDateFormat + ")";
 
         // day
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));
