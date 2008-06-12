@@ -30,8 +30,10 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     private String getDSIntervalString(String s, DSInterval interval) {
         String hour = "0";
         String minute = "0";
-        final String sec = "0";
+        String sec = "0";
         switch (interval) {
+            case Second :
+                sec = s;
             case Minute :
                 minute = s;
                 break;
