@@ -47,7 +47,8 @@ class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
     @Override
     String dateToTimestamp(String s) {
-        // time info is also present in date.
-        return s;
+        // casting to timestamp is needed in view of further interval
+        // arithmetic.
+        return "cast(" + s + " as timestamp)";
     }
 }
