@@ -58,9 +58,11 @@ public interface IConstraintsObjectBuilderInterface {
      * @param operators The operators for the conditions in the rule.
      * @param firstValues The first values for the conditions in the rule.
      * @param secondValues The second values for the conditions in the rule.
+     * @param entity the entity for which the new expression is to be created
+     *            (can be different from conditions' attribute's entity).
      * @return The IExpressionId of the expression added.
      */
-    public IExpressionId addExpression(IRule rule);
+    public IExpressionId addExpression(IRule rule, EntityInterface entity);
 
     /**
      * Edits the expression with the given expression id with the conditions

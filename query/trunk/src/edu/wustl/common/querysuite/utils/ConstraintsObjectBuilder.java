@@ -36,7 +36,6 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
-import edu.wustl.common.querysuite.queryobject.impl.QueryEntity;
 
 /**
  * This class provides the APIs for creating the query object from the DAG view.
@@ -78,15 +77,11 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
     }
 
     /**
-     * Adds the expression with the conditions passed and returns the expression
-     * id.
-     * 
-     * @param conditionList The condition list.
-     * @return The expression id of the expression added.
+     * @see edu.wustl.common.querysuite.utils.IConstraintsObjectBuilderInterface#addExpression(edu.wustl.common.querysuite.queryobject.IRule,
+     *      edu.common.dynamicextensions.domaininterface.EntityInterface)
      */
-    public IExpressionId addExpression(IRule rule) {
-        IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(rule.getCondition(0).getAttribute()
-                .getEntity());
+    public IExpressionId addExpression(IRule rule, EntityInterface entity) {
+        IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(entity);
         IExpression expression = query.getConstraints().addExpression(queryEntity);
         expression.setInView(true);
         expression.addOperand(rule);
@@ -163,7 +158,8 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @return The expression id of the new expression created.
      */
     public IExpressionId createExpressionCopy(IExpression sourceExpression) {
-        return addExpression((IRule) sourceExpression.getOperand(0));
+        return addExpression((IRule) sourceExpression.getOperand(0), sourceExpression.getQueryEntity()
+                .getDynamicExtensionsEntity());
     }
 
     /**
@@ -266,16 +262,18 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param operators The operators in the condition.
      * @param firstValues The first values for the condition.
      * @param secondValues The second values for the condition.
+     * @param entity the entity for which the new expression is to be created
+     *            (can be different from conditions' attribute's entity).
      */
     public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
-            List<String> firstValues, List<String> secondValues) {
+            List<String> firstValues, List<String> secondValues, EntityInterface entity) {
         // Create the list of conditions submitted by user.
         List<ICondition> conditionList = getConditions(attributes, operators, firstValues, secondValues);
 
         // Create the rule for the conditions submitted.
         IRule rule = QueryObjectFactory.createRule(conditionList);
 
-        return addExpression(rule);
+        return addExpression(rule, entity);
     }
 
     /**
@@ -285,15 +283,17 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param attributes The attributes in the condition.
      * @param operators The operators in the condition.
      * @param Values The list of values for all the conditions.
+     * @param entity the entity for which the new expression is to be created
+     *            (can be different from conditions' attribute's entity).
      */
     public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
-            List<List<String>> Values) {
+            List<List<String>> Values, EntityInterface entity) {
         // Create the list of conditions submitted by user.
         List<ICondition> conditionList = getConditions(attributes, operators, Values);
 
         // Create the rule for the conditions submitted.
         IRule rule = QueryObjectFactory.createRule(conditionList);
-        return addExpression(rule);
+        return addExpression(rule, entity);
     }
 
     /**
@@ -477,7 +477,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
     }
 
     public IExpressionId addExpression(EntityInterface entity) {
-        IQueryEntity queryEntity = new QueryEntity(entity);
+        IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(entity);
         IExpression expression = query.getConstraints().addExpression(queryEntity);
         expression.setInView(true);
         return expression.getExpressionId();
