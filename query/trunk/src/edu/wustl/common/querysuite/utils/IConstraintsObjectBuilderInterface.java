@@ -156,10 +156,12 @@ public interface IConstraintsObjectBuilderInterface {
      * @param attributes The attributes in the condition.
      * @param operators The operators in the condition.
      * @param firstValues The first values for the condition.
-     * @param secondValues The second values for the condition.
+     * @param secondValues The second values for the condition. *
+     * @param entity the entity for which the new expression is to be created
+     *            (can be different from conditions' attribute's entity).
      */
     public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
-            List<String> firstValues, List<String> secondValues);
+            List<String> firstValues, List<String> secondValues, EntityInterface entity);
 
     /**
      * Adds the rule for the given conditions.
@@ -167,10 +169,12 @@ public interface IConstraintsObjectBuilderInterface {
      * @param attributes The attributes in the condition.
      * @param operators The operators in the condition.
      * @param firstValues The first values for the condition.
-     * @param secondValues The second values for the condition.
+     * @param secondValues The second values for the condition. *
+     * @param entity the entity for which the new expression is to be created
+     *            (can be different from conditions' attribute's entity).
      */
     public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
-            List<List<String>> Values);
+            List<List<String>> Values, EntityInterface entity);
 
     /**
      * Adds parantheses around operands with ids child1Id and child2Id which are
