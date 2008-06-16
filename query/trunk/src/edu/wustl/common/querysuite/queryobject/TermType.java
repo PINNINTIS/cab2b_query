@@ -28,7 +28,9 @@ public enum TermType {
      * 
      * </pre>
      * 
-     * All other operations result in {@link #Invalid}.
+     * All other operations result in {@link #Invalid}. Note in particular that
+     * no operation results in <tt>YMInterval</tt>; thus, a term should never
+     * have a single operand of type <tt>YMInterval</tt>.
      * 
      * @param leftOpndType the type of the left operand.
      * @param rightOpndType the type of the right operand.
