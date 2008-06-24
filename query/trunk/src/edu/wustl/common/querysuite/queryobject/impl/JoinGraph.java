@@ -2,8 +2,11 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.wustl.common.querysuite.exceptions.CyclicException;
 import edu.wustl.common.querysuite.exceptions.MultipleRootsException;
@@ -71,7 +74,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
         graphEntryCollection.clear();
 
         for (IExpressionId vertex : graph.getVertices()) {
-            List<IExpressionId> outgoingVertices = graph.getOutgoingVertices(vertex);
+            Set<IExpressionId> outgoingVertices = graph.getChildren(vertex);
             for (IExpressionId outgoingVertex : outgoingVertices) {
                 IAssociation association = this.getAssociation(vertex, outgoingVertex);
 
@@ -176,7 +179,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      * @throws MultipleRootsException if more than 1 roots exists.
      */
     public IExpressionId getRoot() throws MultipleRootsException {
-        List<IExpressionId> unReachableNode = graph.getUnreachableNodeList();
+        Set<IExpressionId> unReachableNode = graph.getUnreachableNodeList();
 
         if (unReachableNode.size() == 0) {
             return null;
@@ -188,7 +191,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
         if (unReachableNode.size() != 1) {
             throw new MultipleRootsException("Multiple Root Exist for the Joing Graph");
         }
-        return unReachableNode.get(0);
+        return unReachableNode.iterator().next();
     }
 
     /**
@@ -209,7 +212,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#getParentList(edu.wustl.common.querysuite.queryobject.IExpressionId)
      */
     public List<IExpressionId> getParentList(IExpressionId childExpressionId) {
-        return graph.getDirectPredecessorOf(childExpressionId);
+        return asList(graph.getParents(childExpressionId), exprIdCmp);
     }
 
     /**
@@ -221,7 +224,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      * @throws MultipleRootsException if more than 1 roots exists.
      */
     public List<List<IExpressionId>> getPaths(IExpressionId expressionId) throws MultipleRootsException {
-        return graph.getReachablePaths(getRoot(), expressionId);
+        return asList(graph.getVertexPaths(getRoot(), expressionId));
     }
 
     /**
@@ -238,7 +241,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     public List<IExpressionId> getIntermediateExpressions(IExpressionId source, IExpressionId target,
             List<IAssociation> associations) {
         // getting path between two vertices.
-        List<List<IExpressionId>> reachablePaths = graph.getReachablePaths(source, target);
+        Set<List<IExpressionId>> reachablePaths = graph.getVertexPaths(source, target);
 
         for (List<IExpressionId> rechablePath : reachablePaths) {
             // compairing path size & the association list size.
@@ -285,12 +288,12 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      * @throws MultipleRootsException if more than 1 roots exists.
      */
     public List<IExpressionId> getPath(IExpressionId expressionId) throws MultipleRootsException {
-        List<List<IExpressionId>> paths = graph.getReachablePaths(getRoot(), expressionId);
+        Set<List<IExpressionId>> paths = graph.getVertexPaths(getRoot(), expressionId);
 
         if (paths.isEmpty()) {
             return new ArrayList<IExpressionId>();
         }
-        return paths.get(0);
+        return paths.iterator().next();
     }
 
     /**
@@ -303,7 +306,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      *             join graph.
      */
     public List<List<IAssociation>> getEdgesPaths(IExpressionId expressionId) throws MultipleRootsException {
-        return graph.getReachableEdgePaths(getRoot(), expressionId);
+        return asList(graph.getEdgePaths(getRoot(), expressionId));
     }
 
     /**
@@ -318,12 +321,12 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      *             join graph.
      */
     public List<IAssociation> getEdgePath(IExpressionId expressionId) throws MultipleRootsException {
-        List<List<IAssociation>> paths = graph.getReachableEdgePaths(getRoot(), expressionId);
+        Set<List<IAssociation>> paths = graph.getEdgePaths(getRoot(), expressionId);
 
         if (paths.isEmpty()) {
             return new ArrayList<IAssociation>();
         }
-        return paths.get(0);
+        return paths.iterator().next();
     }
 
     /**
@@ -333,7 +336,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      *         list if vertex has no directly reachable node.
      */
     public List<IExpressionId> getChildrenList(IExpressionId expressionId) {
-        return graph.getDirectSuccessorOf(expressionId);
+        return asList(graph.getChildren(expressionId), exprIdCmp);
     }
 
     /**
@@ -344,7 +347,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     public List<IExpressionId> getNodesWithMultipleParents() {
         List<IExpressionId> nodes = new ArrayList<IExpressionId>();
         for (IExpressionId expression : graph.getVertices()) {
-            if (graph.getDirectPredecessorOf(expression).size() > 1) {
+            if (graph.getParents(expression).size() > 1) {
                 nodes.add(expression);
             }
         }
@@ -352,6 +355,25 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     }
 
     public List<IExpressionId> getAllRoots() {
-        return graph.getUnreachableNodeList();
+        return asList(graph.getUnreachableNodeList(), exprIdCmp);
     }
+
+    private static <T> List<T> asList(Set<T> set) {
+        return new ArrayList<T>(set);
+    }
+
+    private static <T> List<T> asList(Set<T> set, Comparator<? super T> cmp) {
+        List<T> res = new ArrayList<T>(set);
+        Collections.sort(res, cmp);
+        return res;
+    }
+
+    private static final Comparator<IExpressionId> exprIdCmp = new Comparator<IExpressionId>() {
+
+        public int compare(IExpressionId o1, IExpressionId o2) {
+            Integer i1 = o1.getInt();
+            Integer i2 = o2.getInt();
+            return i1.compareTo(i2);
+        }
+    };
 }
