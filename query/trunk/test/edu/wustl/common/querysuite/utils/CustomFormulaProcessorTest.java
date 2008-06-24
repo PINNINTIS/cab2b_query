@@ -2,12 +2,16 @@ package edu.wustl.common.querysuite.utils;
 
 import junit.framework.TestCase;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
+import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.YMInterval;
 
-public class CustomFormulaProcessorTest extends TestCase {
+public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     private CustomFormulaProcessor customFormulaProcessor;
 
     private ICustomFormula customFormula;
@@ -20,9 +24,74 @@ public class CustomFormulaProcessorTest extends TestCase {
         customFormula.setLhs(newTerm(1));
     }
 
+    public void testNoOperator() {
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+    public void testInvalidLHS() {
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("d"));
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    public void testInvalidRHS() {
+        addRhs(dateOffsetLiteral("off", YMInterval.Month));
+        customFormula.setOperator(RelationalOperator.Equals);
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    public void testIncompatibleRHS() {
+        addRhs(dateLiteral("d"));
+        customFormula.setOperator(RelationalOperator.Equals);
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    public void testIncompatibleRHSBetweenIn() {
+        addRhs(2);
+        addRhs(dateLiteral("d"));
+        customFormula.setOperator(RelationalOperator.Between);
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+        customFormula.getAllRhs().add(1, newTerm(3));
+        customFormula.setOperator(RelationalOperator.In);
+        try {
+            customFormulaProcessor.asString(customFormula);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
     private ITerm newTerm(int opnd) {
+        return newTerm(QueryObjectFactory.createLiteral(String.valueOf(opnd), TermType.Numeric));
+    }
+
+    private ITerm newTerm(IArithmeticOperand opnd) {
         ITerm term = QueryObjectFactory.createTerm();
-        term.addOperand(QueryObjectFactory.createLiteral(String.valueOf(opnd), TermType.Numeric));
+        term.addOperand(opnd);
         return term;
     }
 
@@ -83,6 +152,10 @@ public class CustomFormulaProcessorTest extends TestCase {
 
     private void addRhs(int i) {
         customFormula.addRhs(newTerm(i));
+    }
+
+    private void addRhs(IArithmeticOperand opnd) {
+        customFormula.addRhs(newTerm(opnd));
     }
 
     private String sql(RelationalOperator o) {

@@ -7,7 +7,9 @@ import java.util.List;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
+import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
+import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 /**
  * Provides the string representation of a custom formula. It uses
@@ -47,8 +49,16 @@ public class CustomFormulaProcessor {
      * @return the string representation of the specified formula.
      */
     public String asString(ICustomFormula formula) {
-        String lhs = getString(formula.getLhs());
+        TermString lhsTermStr = termProcessor.convertTerm(formula.getLhs());
+        final TermType lhsType = lhsTermStr.getTermType();
+        if (lhsType == TermType.Invalid) {
+            throw new IllegalArgumentException("invalid LHS term in custom formula.");
+        }
+        String lhs = lhsTermStr.getString();
         RelationalOperator relationalOperator = formula.getOperator();
+        if(relationalOperator == null) {
+            throw new NullPointerException("relational operator not set in custom formula.");
+        }
         if (relationalOperator.numberOfValuesRequired() == 0) {
             // is (not) null
             return lhs + SPACE + getSQL(relationalOperator);
@@ -57,8 +67,7 @@ public class CustomFormulaProcessor {
         if (rhses.isEmpty()) {
             throw new IllegalArgumentException("No value for operator " + getSQL(relationalOperator));
         }
-        ITerm rhsTerm = rhses.get(0);
-        String rhs = getString(rhsTerm);
+        String rhs = getRhsString(rhses.get(0), lhsType);
         if (relationalOperator.numberOfValuesRequired() == 1) {
             // unary operators
             return lhs + SPACE + getSQL(relationalOperator) + SPACE + rhs;
@@ -67,7 +76,7 @@ public class CustomFormulaProcessor {
             if (rhses.size() != 2) {
                 throw new IllegalArgumentException("Between doesn't have 2 values.");
             }
-            String rhs2 = getString(rhses.get(1));
+            String rhs2 = getRhsString(rhses.get(1), lhsType);
             // (lhs >= rhs1 and lhs <= rhs2) or (lhs <= rhs1 and lhs >= rhs2)
             String res = "(" + lhs + " >= " + rhs + " and " + lhs + " <= " + rhs2 + ")";
             res += " or (" + lhs + " <= " + rhs + " and " + lhs + " >= " + rhs2 + ")";
@@ -84,14 +93,23 @@ public class CustomFormulaProcessor {
         String res = lhs + sqlOper + rhs;
 
         for (int i = 1, n = rhses.size(); i < n; i++) {
-            rhs = getString(rhses.get(i));
+            rhs = getRhsString(rhses.get(i), lhsType);
             String next = logicOper + lhs + sqlOper + rhs;
             res += next;
         }
         return res;
     }
 
-    private String getString(ITerm term) {
-        return termProcessor.convertTerm(term).getString();
+    private String getRhsString(ITerm rhsTerm, TermType lhsType) {
+        TermString rhsTermStr = termProcessor.convertTerm(rhsTerm);
+        TermType rhsType = rhsTermStr.getTermType();
+        if (rhsType == TermType.Invalid) {
+            throw new IllegalArgumentException("invalid RHS term in custom formula.");
+        }
+        if (rhsType != lhsType) {
+            throw new IllegalArgumentException("LHS and RHS terms are of different types; LHS : " + lhsType
+                    + ", RHS : " + rhsType);
+        }
+        return rhsTermStr.getString();
     }
 }

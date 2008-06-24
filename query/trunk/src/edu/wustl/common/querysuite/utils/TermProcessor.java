@@ -251,10 +251,12 @@ public class TermProcessor {
             }
             TermStringOpnd termStrOpnd = convertOperand(opnd);
             String s = termStrOpnd.getString();
+            TermType termType = termStrOpnd.getTermType();
             if (opnd.getTermType() == TermType.Date) {
                 s = primitiveOperationProcessor.dateToTimestamp(s);
+                termType = TermType.Timestamp;
             }
-            return new TermString(s, termStrOpnd.getTermType());
+            return new TermString(s, termType);
         }
         SubTerm subTerm = convertSubTerm(term, 0);
         String res = subTerm.string();

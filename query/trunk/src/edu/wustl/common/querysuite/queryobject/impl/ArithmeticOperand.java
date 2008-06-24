@@ -7,6 +7,9 @@ abstract class ArithmeticOperand extends BaseQueryObject implements IArithmeticO
     private TermType termType;
 
     public ArithmeticOperand(TermType termType) {
+        if (termType == TermType.Invalid) {
+            throw new IllegalArgumentException("the term type 'Invalid' not permissible for an operand.");
+        }
         this.termType = termType;
     }
 

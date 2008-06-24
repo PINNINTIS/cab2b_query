@@ -14,14 +14,14 @@ public enum TermType {
     /**
      * Returns the term type resulting from the specified arithmetic operation.
      * Following is the result term type for various cases : <br>
-     * Date or timestamp (D), Numeric (N), DSInterval(DS), YMInterval(YM),
-     * Interval (DS or YM).
+     * Date or timestamp (D), Timestamp(T), Numeric (N), DSInterval(DS),
+     * YMInterval(YM), Interval (DS or YM).
      * 
      * <pre>
      * 
-     * D (+,-) N  = D 
-     * D (+,-) I  = D 
-     * I   +   D  = D 
+     * D (+,-) N  = T 
+     * D (+,-) I  = T 
+     * I   +   D  = T 
      * D   -   D  = DS
      * DS(+,-)DS  = DS 
      * N (any) N  = N
@@ -29,8 +29,10 @@ public enum TermType {
      * </pre>
      * 
      * All other operations result in {@link #Invalid}. Note in particular that
-     * no operation results in <tt>YMInterval</tt>; thus, a term should never
-     * have a single operand of type <tt>YMInterval</tt>.
+     * no operation results in <tt>YMInterval</tt>; also, a term should never
+     * have a single operand of type <tt>YMInterval</tt>.<br>
+     * Also, a date is converted to a timestamp; thus, if a term contains a
+     * single date operand, the term's type is timestamp.
      * 
      * @param leftOpndType the type of the left operand.
      * @param rightOpndType the type of the right operand.

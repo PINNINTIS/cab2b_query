@@ -31,9 +31,9 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         String d1S = "timestamp(STR_TO_DATE('d1', " + quotedDateFormat + "))";
         term.addOperand(d1);
 
-        check(term, d1S, TermType.Date);
+        check(term, d1S, TermType.Timestamp);
         term.setOperand(0, createDateExpressionAttribute("a1", "e1"));
-        check(term, "timestamp(e1.a1)", TermType.Date);
+        check(term, "timestamp(e1.a1)", TermType.Timestamp);
     }
 
     public void testOffsetSQL() {
@@ -159,7 +159,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
         term.addOperand(d1);
 
-        check(term, d1S, TermType.Date);
+        check(term, d1S, TermType.Timestamp);
     }
 
     public void testOracleDateDiffSQL() {
