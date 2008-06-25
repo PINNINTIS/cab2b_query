@@ -73,7 +73,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
             preProcessQuery(query);
             new HibernateDatabaseOperations<Q>().insert(query);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to save query, Exception:" + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -188,11 +188,11 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         }
 
         Collection<IConnector<LogicalOperator>> logicalConnectorCollection = expression.getLogicalConnectors();
-        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
-            Connector logicalConnectorImpl = (Connector) logicalConnector;
-            String operatorString = logicalConnectorImpl.getOperatorString();
-            logicalConnectorImpl.setOperator(LogicalOperator.getLogicalOperator(operatorString));
-        }
+//        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
+//            Connector logicalConnectorImpl = (Connector) logicalConnector;
+//            String operatorString = logicalConnectorImpl.getOperatorString();
+//            logicalConnectorImpl.setOperator(LogicalOperator.getLogicalOperator(operatorString));
+//        }
     }
 
     /**
@@ -350,11 +350,11 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
             }
         }
 
-        Collection<IConnector<LogicalOperator>> logicalConnectorCollection = expression.getLogicalConnectors();
-        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
-            LogicalOperator logicalOperator = logicalConnector.getOperator();
-            ((Connector) logicalConnector).setOperatorString(logicalOperator.getOperatorString());
-        }
+//        Collection<IConnector<LogicalOperator>> logicalConnectorCollection = expression.getLogicalConnectors();
+//        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
+//            LogicalOperator logicalOperator = logicalConnector.getOperator();
+//            ((Connector) logicalConnector).setOperatorString(logicalOperator.getOperatorString());
+//        }
     }
 
     /**

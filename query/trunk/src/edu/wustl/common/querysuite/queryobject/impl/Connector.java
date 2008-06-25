@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import edu.wustl.common.querysuite.queryobject.BinaryOperatorCompoundEnum;
 import edu.wustl.common.querysuite.queryobject.IBinaryOperator;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 
@@ -15,10 +16,10 @@ import edu.wustl.common.querysuite.queryobject.IConnector;
  * @hibernate.cache usage="read-write"
  */
 // TODO check hbm etc...
-public class Connector<P extends IBinaryOperator> extends BaseQueryObject implements IConnector<P> {
+public class Connector<P extends Enum<?> & IBinaryOperator> extends BaseQueryObject implements IConnector<P> {
     private static final long serialVersionUID = 3065606993455242889L;
 
-    private P operator;
+    private BinaryOperatorCompoundEnum<P> compoundOperator;
 
     private String operatorString;
 
@@ -37,7 +38,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      * @param logicalOperator The reference to the Logical operator.
      */
     public Connector(P operator) {
-        this.operator = operator;
+        setOperator(operator);
     }
 
     /**
@@ -49,7 +50,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      *            parenthesis surrounded by this operator.
      */
     public Connector(P operator, int nestingNumber) {
-        this.operator = operator;
+        setOperator(operator);
         this.nestingNumber = nestingNumber;
     }
 
@@ -67,19 +68,20 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
     }
 
     /**
-     * @return the reference to the Logical operator.
-     * @see edu.wustl.common.querysuite.queryobject.ILogicalConnector#getLogicalOperator()
+     * @see edu.wustl.common.querysuite.queryobject.IConnector#getOperator()
      */
     public P getOperator() {
-        return operator;
+        if (compoundOperator == null) {
+            return null;
+        }
+        return compoundOperator.primitiveEnum();
     }
 
     /**
-     * @param logicOperatorCode The logical operator to set.
-     * @see edu.wustl.common.querysuite.queryobject.ILogicalConnector#setLogicalOperator(edu.wustl.common.querysuite.queryobject.LogicalOperator)
+     * @see edu.wustl.common.querysuite.queryobject.IConnector#setOperator(edu.wustl.common.querysuite.queryobject.IBinaryOperator)
      */
-    public void setOperator(P logicOperatorCode) {
-    	operator = logicOperatorCode;
+    public void setOperator(P operator) {
+        this.compoundOperator = BinaryOperatorCompoundEnum.compoundEnum(operator);
     }
 
     /**
@@ -137,7 +139,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(operator).append(nestingNumber).toHashCode();
+        return new HashCodeBuilder().append(compoundOperator).append(nestingNumber).toHashCode();
     }
 
     /**
@@ -155,8 +157,8 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
         }
 
         if (!isEqual && (obj != null && this.getClass() == obj.getClass())) {
-            Connector logicalConnector = (Connector) obj;
-            if (this.operator != null && this.operator.equals(logicalConnector.operator)
+            Connector<?> logicalConnector = (Connector<?>) obj;
+            if (this.compoundOperator != null && this.compoundOperator.equals(logicalConnector.compoundOperator)
                     && this.nestingNumber == logicalConnector.nestingNumber) {
                 isEqual = true;
             }
@@ -172,7 +174,16 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      */
     @Override
     public String toString() {
-        return "[" + operator + ":" + nestingNumber + "]";
+        return "[" + compoundOperator + ":" + nestingNumber + "]";
+    }
+
+    // for hibernate
+    private BinaryOperatorCompoundEnum<P> getCompoundOperator() {
+        return compoundOperator;
+    }
+
+    private void setCompoundOperator(BinaryOperatorCompoundEnum<P> compoundOperator) {
+        this.compoundOperator = compoundOperator;
     }
 
 }
