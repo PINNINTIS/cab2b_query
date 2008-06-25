@@ -198,7 +198,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
 	 *             if more than 1 roots exists.
 	 */
 	public IExpressionId getRoot() throws MultipleRootsException {
-		Set<IExpressionId> unReachableNode = graph.getUnreachableNodeList();
+		Set<IExpressionId> unReachableNode = graph.getUnreachableVertices();
 
 		if (unReachableNode.size() == 0) {
 			return null;
@@ -395,7 +395,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
 	}
 
 	public List<IExpressionId> getAllRoots() {
-		return asList(graph.getUnreachableNodeList(), exprIdCmp);
+		return asList(graph.getUnreachableVertices(), exprIdCmp);
 	}
 
 	private static <T> List<T> asList(Set<T> set) {
