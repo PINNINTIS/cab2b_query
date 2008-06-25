@@ -18,7 +18,7 @@ import edu.wustl.common.querysuite.queryobject.IConnector;
 public class Connector<P extends IBinaryOperator> extends BaseQueryObject implements IConnector<P> {
     private static final long serialVersionUID = 3065606993455242889L;
 
-    private P logicalOperator;
+    private P operator;
 
     private String operatorString;
 
@@ -36,20 +36,20 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      * 
      * @param logicalOperator The reference to the Logical operator.
      */
-    public Connector(P logicalOperator) {
-        this.logicalOperator = logicalOperator;
+    public Connector(P operator) {
+        this.operator = operator;
     }
 
     /**
      * The constructor to instantiate the Logical connector object with the
      * given logical operator & nesting number.
      * 
-     * @param logicalOperator The reference to the Logical operator.
+     * @param operator The reference to the Logical operator.
      * @param nestingNumber The integer value which will decide no. of
      *            parenthesis surrounded by this operator.
      */
-    public Connector(P logicalOperator, int nestingNumber) {
-        this.logicalOperator = logicalOperator;
+    public Connector(P operator, int nestingNumber) {
+        this.operator = operator;
         this.nestingNumber = nestingNumber;
     }
 
@@ -71,7 +71,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      * @see edu.wustl.common.querysuite.queryobject.ILogicalConnector#getLogicalOperator()
      */
     public P getOperator() {
-        return logicalOperator;
+        return operator;
     }
 
     /**
@@ -79,7 +79,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      * @see edu.wustl.common.querysuite.queryobject.ILogicalConnector#setLogicalOperator(edu.wustl.common.querysuite.queryobject.LogicalOperator)
      */
     public void setOperator(P logicOperatorCode) {
-        logicalOperator = logicOperatorCode;
+    	operator = logicOperatorCode;
     }
 
     /**
@@ -137,7 +137,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(logicalOperator).append(nestingNumber).toHashCode();
+        return new HashCodeBuilder().append(operator).append(nestingNumber).toHashCode();
     }
 
     /**
@@ -156,7 +156,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
 
         if (!isEqual && (obj != null && this.getClass() == obj.getClass())) {
             Connector logicalConnector = (Connector) obj;
-            if (this.logicalOperator != null && this.logicalOperator.equals(logicalConnector.logicalOperator)
+            if (this.operator != null && this.operator.equals(logicalConnector.operator)
                     && this.nestingNumber == logicalConnector.nestingNumber) {
                 isEqual = true;
             }
@@ -172,7 +172,7 @@ public class Connector<P extends IBinaryOperator> extends BaseQueryObject implem
      */
     @Override
     public String toString() {
-        return "[" + logicalOperator + ":" + nestingNumber + "]";
+        return "[" + operator + ":" + nestingNumber + "]";
     }
 
 }
