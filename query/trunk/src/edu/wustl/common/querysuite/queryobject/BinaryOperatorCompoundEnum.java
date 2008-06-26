@@ -11,9 +11,9 @@ public class BinaryOperatorCompoundEnum<T extends Enum<?> & IBinaryOperator>
             CompoundEnum<BinaryOperatorCompoundEnum<T>, T> implements Serializable {
     private static final long serialVersionUID = 7794336702657368626L;
 
-    private static final List<IBinaryOperator> values = new ArrayList<IBinaryOperator>();
+    private static final List<IBinaryOperator> primitiveValues = new ArrayList<IBinaryOperator>();
 
-    private static final List<BinaryOperatorCompoundEnum<?>> compoundValues = new ArrayList<BinaryOperatorCompoundEnum<?>>();
+    private static final List<BinaryOperatorCompoundEnum<?>> values = new ArrayList<BinaryOperatorCompoundEnum<?>>();
 
     private static int nextOrdinal = 1;
 
@@ -29,8 +29,8 @@ public class BinaryOperatorCompoundEnum<T extends Enum<?> & IBinaryOperator>
 
     private static <T extends Enum<?> & IBinaryOperator> void addEnums(Class<T> klass) {
         for (T e : klass.getEnumConstants()) {
-            values.add(e);
-            compoundValues.add(newCompoundEnum(e));
+            primitiveValues.add(e);
+            values.add(newCompoundEnum(e));
         }
     }
 
@@ -45,16 +45,16 @@ public class BinaryOperatorCompoundEnum<T extends Enum<?> & IBinaryOperator>
         if (primitiveEnum == null) {
             return null;
         }
-        int index = values.indexOf(primitiveEnum);
-        return (BinaryOperatorCompoundEnum<T>) compoundValues.get(index);
+        int index = primitiveValues.indexOf(primitiveEnum);
+        return (BinaryOperatorCompoundEnum<T>) values.get(index);
     }
 
     public static BinaryOperatorCompoundEnum<?>[] values() {
-        return compoundValues.toArray(new BinaryOperatorCompoundEnum<?>[0]);
+        return values.toArray(new BinaryOperatorCompoundEnum<?>[0]);
     }
 
     public static IBinaryOperator[] primitiveValues() {
-        return compoundValues.toArray(new IBinaryOperator[0]);
+        return primitiveValues.toArray(new IBinaryOperator[0]);
     }
 
     private BinaryOperatorCompoundEnum(T primitiveEnum, int ordinal) {
