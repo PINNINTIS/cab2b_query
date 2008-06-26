@@ -49,12 +49,12 @@ public class BinaryOperatorCompoundEnum<T extends Enum<?> & IBinaryOperator>
         return (BinaryOperatorCompoundEnum<T>) compoundValues.get(index);
     }
 
-    public static IBinaryOperator[] values() {
-        return values.toArray(new IBinaryOperator[0]);
+    public static BinaryOperatorCompoundEnum<?>[] values() {
+        return compoundValues.toArray(new BinaryOperatorCompoundEnum<?>[0]);
     }
 
-    public static BinaryOperatorCompoundEnum<?>[] compoundValues() {
-        return compoundValues.toArray(new BinaryOperatorCompoundEnum<?>[0]);
+    public static IBinaryOperator[] primitiveValues() {
+        return compoundValues.toArray(new IBinaryOperator[0]);
     }
 
     private BinaryOperatorCompoundEnum(T primitiveEnum, int ordinal) {
