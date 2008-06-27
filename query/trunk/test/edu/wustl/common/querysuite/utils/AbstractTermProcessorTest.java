@@ -64,7 +64,7 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return literal(s, TermType.DSInterval);
     }
 
-    protected ILiteral dateOffsetLiteral(String s, ITimeIntervalEnum timeInterval) {
+    protected <T extends Enum<?> & ITimeIntervalEnum> ILiteral dateOffsetLiteral(String s, T timeInterval) {
         return QueryObjectFactory.createDateOffsetLiteral(s, timeInterval);
     }
 
@@ -98,7 +98,7 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return createExpressionAttribute(attrName, entityName, TermType.Timestamp);
     }
 
-    protected <T extends ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetExpressionAttribute(
+    protected <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetExpressionAttribute(
             String attrName, String entityName, T timeInterval) {
         return QueryObjectFactory.createDateOffsetAttribute(exprId(1), createAttribute(attrName,
                 createEntity(entityName)), timeInterval);

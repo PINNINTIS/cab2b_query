@@ -81,8 +81,7 @@ public abstract class QueryObjectFactory {
      *            parantheses sorrounding this connector.
      * @return a logical connector
      */
-    public static IConnector<LogicalOperator> createLogicalConnector(LogicalOperator logicalOperator,
-            int nestingNumber) {
+    public static IConnector<LogicalOperator> createLogicalConnector(LogicalOperator logicalOperator, int nestingNumber) {
         return new Connector<LogicalOperator>(logicalOperator, nestingNumber);
     }
 
@@ -314,8 +313,7 @@ public abstract class QueryObjectFactory {
         } else if (attrTypeInfo instanceof DateTypeInformationInterface) {
             termType = TermType.Date;
         } else {
-            throw new UnsupportedOperationException(
-                    "Only numeric and date attributes supported in custom formulas.");
+            throw new UnsupportedOperationException("Only numeric and date attributes supported in custom formulas.");
         }
         return new ExpressionAttribute(expressionId, attribute, termType);
     }
@@ -332,16 +330,16 @@ public abstract class QueryObjectFactory {
         return new OutputTerm(name, term);
     }
 
-    public static <T extends ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(
+    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(
             IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
         return new DateOffsetAttribute<T>(expressionId, attribute, timeInterval);
     }
 
-    public static <T extends ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(T timeInterval) {
+    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(T timeInterval) {
         return new DateOffsetLiteral<T>(timeInterval);
     }
 
-    public static <T extends ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(String s,
+    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(String s,
             T timeInterval) {
         IDateOffsetLiteral<T> res = new DateOffsetLiteral<T>(timeInterval);
         res.setLiteral(s);
