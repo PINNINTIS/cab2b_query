@@ -51,4 +51,15 @@ public class CustomFormula extends BaseQueryObject implements ICustomFormula {
         return false;
     }
 
+    // for hibernate
+    @SuppressWarnings("unused")
+    private List<ITerm> getRhs() {
+        return rhs;
+    }
+
+    @SuppressWarnings("unused")
+    private void setRhs(List<ITerm> rhs) {
+        this.rhs = rhs;
+    }
+
 }

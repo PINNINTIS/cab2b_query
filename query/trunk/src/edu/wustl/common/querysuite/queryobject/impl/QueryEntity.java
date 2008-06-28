@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.InheritanceStrategy;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 
 /**
@@ -19,8 +20,6 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
  */
 public class QueryEntity extends BaseQueryObject implements IQueryEntity {
     private static final long serialVersionUID = 1L;
-
-    private Long entityId;
 
     protected EntityInterface entityInterface;
 
@@ -52,27 +51,6 @@ public class QueryEntity extends BaseQueryObject implements IQueryEntity {
      */
     public Long getId() {
         return id;
-    }
-
-    /**
-     * This method returns the DynamicExtension's entity identifier
-     * 
-     * @return the entityId
-     * 
-     * @hibernate.property name="entityId" column="ENTITY_ID" type="long"
-     *                     size="30" not-null="true"
-     */
-    public Long getEntityId() {
-        return entityId;
-    }
-
-    /**
-     * This method returns the DynamicExtension's entity identifier
-     * 
-     * @param entityId the entityId to set
-     */
-    public void setEntityId(Long entityId) {
-        this.entityId = entityId;
     }
 
     /**
@@ -202,5 +180,16 @@ public class QueryEntity extends BaseQueryObject implements IQueryEntity {
         } while (entityInterface != null);
 
         return set;
+    }
+
+    // for hibernate
+    @SuppressWarnings("unused")
+    private Long getEntityId() {
+        return entityInterface.getId();
+    }
+
+    @SuppressWarnings("unused")
+    private void setEntityId(Long entityId) {
+        this.entityInterface = AbstractEntityCache.getCache().getEntityById(entityId);
     }
 }

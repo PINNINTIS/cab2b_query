@@ -20,6 +20,7 @@ import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
+import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
@@ -44,7 +45,7 @@ import edu.wustl.common.querysuite.queryobject.impl.Rule;
  * @param
  *          <Q>
  */
-public class QueryBizLogic<Q extends IParameterizedQuery> {
+public class QueryBizLogic<Q extends IQuery> {
 
     /**
      * Default Constructor
@@ -137,12 +138,12 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         Constraints constraints = (Constraints) query.getConstraints();
         constraints.contemporizeExpressionsWithExpressionList();
 
-        Enumeration<IExpressionId> enumeration = constraints.getExpressionIds();
-        while (enumeration.hasMoreElements()) {
-            IExpressionId expressionId = enumeration.nextElement();
-            Expression expression = (Expression) constraints.getExpression(expressionId);
-            postProcessExpression(expression);
-        }
+//        Enumeration<IExpressionId> enumeration = constraints.getExpressionIds();
+//        while (enumeration.hasMoreElements()) {
+//            IExpressionId expressionId = enumeration.nextElement();
+//            Expression expression = (Expression) constraints.getExpression(expressionId);
+//            postProcessExpression(expression);
+//        }
 
         JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
         postProcessJoinGraph(joinGraph, constraints.getExpressionIds());
@@ -175,25 +176,28 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * 
      * @param expression
      */
-    private void postProcessExpression(Expression expression) {
-        QueryEntity queryEntity = (QueryEntity) expression.getQueryEntity();
-        postProcessQueryEntity(queryEntity);
+// private void postProcessExpression(Expression expression) {
+// QueryEntity queryEntity = (QueryEntity) expression.getQueryEntity();
+// postProcessQueryEntity(queryEntity);
 
-        List<IExpressionOperand> expressionOperands = expression.getExpressionOperands();
-        for (IExpressionOperand expressionOperand : expressionOperands) {
-            if (!expressionOperand.isSubExpressionOperand()) {
-                Rule rule = (Rule) expressionOperand;
-                postProcessRule(rule);
-            }
-        }
+        // List<IExpressionOperand> expressionOperands =
+        // expression.getExpressionOperands();
+        // for (IExpressionOperand expressionOperand : expressionOperands) {
+        // if (expressionOperand instanceof Rule) {
+        // Rule rule = (Rule) expressionOperand;
+        // postProcessRule(rule);
+        // }
+        // }
 
-        Collection<IConnector<LogicalOperator>> logicalConnectorCollection = expression.getLogicalConnectors();
-//        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
-//            Connector logicalConnectorImpl = (Connector) logicalConnector;
-//            String operatorString = logicalConnectorImpl.getOperatorString();
-//            logicalConnectorImpl.setOperator(LogicalOperator.getLogicalOperator(operatorString));
-//        }
-    }
+        // Collection<IConnector<LogicalOperator>> logicalConnectorCollection =
+        // expression.getLogicalConnectors();
+        // for (IConnector<LogicalOperator> logicalConnector :
+        // logicalConnectorCollection) {
+        // Connector logicalConnectorImpl = (Connector) logicalConnector;
+        // String operatorString = logicalConnectorImpl.getOperatorString();
+        // logicalConnectorImpl.setOperator(LogicalOperator.getLogicalOperator(operatorString));
+        // }
+//    }
 
     /**
      * This method processes the JoinGraph object after retreival.
@@ -225,45 +229,46 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         }
     }
 
-    /**
-     * This method processes the QueryEntity object after retreival.
-     * 
-     * @param queryEntity
-     */
-    private void postProcessQueryEntity(QueryEntity queryEntity) {
-        Long entityId = queryEntity.getEntityId();
-        AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
-        EntityInterface entity = abstractEntityCache.getEntityById(entityId);
-        queryEntity.setDynamicExtensionsEntity(entity);
-    }
+// /**
+// * This method processes the QueryEntity object after retreival.
+// *
+// * @param queryEntity
+// */
+// private void postProcessQueryEntity(QueryEntity queryEntity) {
+// Long entityId = queryEntity.getEntityId();
+// AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
+// EntityInterface entity = abstractEntityCache.getEntityById(entityId);
+// queryEntity.setDynamicExtensionsEntity(entity);
+// }
 
     /**
      * This method processes the Rule object after retreival.
      * 
      * @param rule
      */
-    private void postProcessRule(IRule rule) {
-        List<ICondition> conditions = rule.getConditions();
-        if (!conditions.isEmpty()) {
-            AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
-
-            for (ICondition condition : conditions) {
-                Condition conditionImpl = (Condition) condition;
-
-                Long attributeId = conditionImpl.getAttributeId();
-                AttributeInterface attribute = abstractEntityCache.getAttributeById(attributeId);
-                conditionImpl.setAttribute(attribute);
-
-                String relationalOperatorString = conditionImpl.getRelationalOperatorString();
-                if (relationalOperatorString != null) {
-                    RelationalOperator relationalOperator = RelationalOperator
-                            .getOperatorForStringRepresentation(relationalOperatorString);
-                    conditionImpl.setRelationalOperator(relationalOperator);
-                }
-            }
-        }
-    }
-
+    // private void postProcessRule(IRule rule) {
+    // List<ICondition> conditions = rule.getConditions();
+    // if (!conditions.isEmpty()) {
+    // AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
+    //
+    // for (ICondition condition : conditions) {
+    // Condition conditionImpl = (Condition) condition;
+    //
+    // Long attributeId = conditionImpl.getAttributeId();
+    // AttributeInterface attribute =
+    // abstractEntityCache.getAttributeById(attributeId);
+    // conditionImpl.setAttribute(attribute);
+    //
+    // // String relationalOperatorString =
+    // conditionImpl.getRelationalOperatorString();
+    // // if (relationalOperatorString != null) {
+    // // RelationalOperator relationalOperator = RelationalOperator
+    // // .getOperatorForStringRepresentation(relationalOperatorString);
+    // // conditionImpl.setRelationalOperator(relationalOperator);
+    // // }
+    // }
+    // }
+    // }
     /**
      * This method processes the Association object after retrieval.
      * 
@@ -299,12 +304,12 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         Constraints constraints = (Constraints) query.getConstraints();
         constraints.contemporizeExpressionListWithExpressions();
 
-        Enumeration<IExpressionId> enumeration = constraints.getExpressionIds();
-        while (enumeration.hasMoreElements()) {
-            IExpressionId expressionId = enumeration.nextElement();
-            Expression expression = (Expression) constraints.getExpression(expressionId);
-            preProcessExpression(expression);
-        }
+//        Enumeration<IExpressionId> enumeration = constraints.getExpressionIds();
+//        while (enumeration.hasMoreElements()) {
+//            IExpressionId expressionId = enumeration.nextElement();
+//            Expression expression = (Expression) constraints.getExpression(expressionId);
+//            preProcessExpression(expression);
+//        }
 
         JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
         joinGraph.contemporizeGraphEntryCollectionWithJoinGraph();
@@ -338,55 +343,59 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * 
      * @param expression
      */
-    private void preProcessExpression(Expression expression) {
-        QueryEntity queryEntity = (QueryEntity) expression.getQueryEntity();
-        preProcessQueryEntity(queryEntity);
+// private void preProcessExpression(Expression expression) {
+// QueryEntity queryEntity = (QueryEntity) expression.getQueryEntity();
+// preProcessQueryEntity(queryEntity);
 
-        List<IExpressionOperand> expressionOperands = expression.getExpressionOperands();
-        for (IExpressionOperand expressionOperand : expressionOperands) {
-            if (!expressionOperand.isSubExpressionOperand()) {
-                Rule rule = (Rule) expressionOperand;
-                preProcessRule(rule);
-            }
-        }
+        // List<IExpressionOperand> expressionOperands =
+        // expression.getExpressionOperands();
+        // for (IExpressionOperand expressionOperand : expressionOperands) {
+        // if (expressionOperand instanceof Rule) {
+        // Rule rule = (Rule) expressionOperand;
+        // preProcessRule(rule);
+        // }
+        // }
 
-//        Collection<IConnector<LogicalOperator>> logicalConnectorCollection = expression.getLogicalConnectors();
-//        for (IConnector<LogicalOperator> logicalConnector : logicalConnectorCollection) {
-//            LogicalOperator logicalOperator = logicalConnector.getOperator();
-//            ((Connector) logicalConnector).setOperatorString(logicalOperator.getOperatorString());
-//        }
-    }
+        // Collection<IConnector<LogicalOperator>> logicalConnectorCollection =
+        // expression.getLogicalConnectors();
+        // for (IConnector<LogicalOperator> logicalConnector :
+        // logicalConnectorCollection) {
+        // LogicalOperator logicalOperator = logicalConnector.getOperator();
+        // ((Connector)
+        // logicalConnector).setOperatorString(logicalOperator.getOperatorString());
+        // }
+//    }
 
-    /**
-     * This method processes the QueryEntity object before persisting it.
-     * 
-     * @param queryEntity
-     */
-    private void preProcessQueryEntity(QueryEntity queryEntity) {
-        EntityInterface entity = queryEntity.getEntityInterface();
-        queryEntity.setEntityId(entity.getId());
-    }
+// /**
+// * This method processes the QueryEntity object before persisting it.
+// *
+// * @param queryEntity
+// */
+// private void preProcessQueryEntity(QueryEntity queryEntity) {
+// EntityInterface entity = queryEntity.getEntityInterface();
+// queryEntity.setEntityId(entity.getId());
+// }
 
     /**
      * This method processes the Rule object before persisting it.
      * 
      * @param rule
      */
-    private void preProcessRule(IRule rule) {
-        List<ICondition> conditions = rule.getConditions();
-        if (!conditions.isEmpty()) {
-            for (ICondition condition : conditions) {
-                Condition conditionImpl = (Condition) condition;
-
-                AttributeInterface attribute = condition.getAttribute();
-                conditionImpl.setAttributeId(attribute.getId());
-
-                RelationalOperator relationalOperator = conditionImpl.getRelationalOperator();
-                conditionImpl.setRelationalOperatorString(relationalOperator.getStringRepresentation());
-            }
-        }
-    }
-
+    // private void preProcessRule(IRule rule) {
+    // List<ICondition> conditions = rule.getConditions();
+    // if (!conditions.isEmpty()) {
+    // for (ICondition condition : conditions) {
+    // Condition conditionImpl = (Condition) condition;
+    //
+    // AttributeInterface attribute = condition.getAttribute();
+    // conditionImpl.setAttributeId(attribute.getId());
+    //
+    // RelationalOperator relationalOperator =
+    // conditionImpl.getRelationalOperator();
+    // conditionImpl.setRelationalOperatorString(relationalOperator.getStringRepresentation());
+    // }
+    // }
+    // }
     /**
      * This method processes the Association object before persisting it.
      * 
@@ -395,8 +404,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     private void preProcessAssociation(IAssociation association) {
         if (association instanceof IntraModelAssociation) {
             IntraModelAssociation intraModelAssociation = (IntraModelAssociation) association;
-            AssociationInterface dynamicExtensionsAssociation = intraModelAssociation
-                    .getDynamicExtensionsAssociation();
+            AssociationInterface dynamicExtensionsAssociation = intraModelAssociation.getDynamicExtensionsAssociation();
             intraModelAssociation.setDynamicExtensionsAssociationId(dynamicExtensionsAssociation.getId());
         } else if (association instanceof InterModelAssociation) {
             InterModelAssociation interModelAssociation = (InterModelAssociation) association;

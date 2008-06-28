@@ -34,30 +34,8 @@ public class ExpressionId extends ExpressionOperand implements IExpressionId {
         this.expressionIdentifier = expressionId;
     }
 
-    /**
-     * This method returns the expression id.
-     * 
-     * @return The integer value sassigned to this Expression id.
-     * @see edu.wustl.common.querysuite.queryobject.IExpressionId#getExpressionIdentifier()
-     * 
-     * @hibernate.property name="expressionId" column="SUB_EXPRESSION_ID"
-     *                     type="integer" length="30" not-null="true"
-     */
-    private int getExpressionIdentifier() {
-        return expressionIdentifier;
-    }
-
     public int getInt() {
         return expressionIdentifier;
-    }
-
-    /**
-     * This method sets the expression id.
-     * 
-     * @param expressionId
-     */
-    private void setExpressionIdentifier(int expressionIdentifier) {
-        this.expressionIdentifier = expressionIdentifier;
     }
 
     /**
@@ -111,6 +89,31 @@ public class ExpressionId extends ExpressionOperand implements IExpressionId {
     @Override
     public String toString() {
         return "ExpressionId:" + expressionIdentifier;
+    }
+
+    // for hibernate
+    /**
+     * This method returns the expression id.
+     * 
+     * @return The integer value sassigned to this Expression id.
+     * @see edu.wustl.common.querysuite.queryobject.IExpressionId#getExpressionIdentifier()
+     * 
+     * @hibernate.property name="expressionId" column="SUB_EXPRESSION_ID"
+     *                     type="integer" length="30" not-null="true"
+     */
+    @SuppressWarnings("unused")
+    private int getExpressionIdentifier() {
+        return expressionIdentifier;
+    }
+
+    /**
+     * This method sets the expression id.
+     * 
+     * @param expressionId
+     */
+    @SuppressWarnings("unused")
+    private void setExpressionIdentifier(int expressionIdentifier) {
+        this.expressionIdentifier = expressionIdentifier;
     }
 
 }

@@ -74,56 +74,6 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
     }
 
     /**
-     * This method returns the List of Expression operands
-     * 
-     * @return the list of ExpressionOperands
-     * 
-     * @hibernate.list name="expressionOperands" cascade="all-delete-orphan"
-     *                 inverse="false" lazy="false"
-     * @hibernate.collection-key column="QUERY_EXPRESSION_ID"
-     * @hibernate.collection-index column="POSITION" TYPE="integer"
-     * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.ExpressionOperand"
-     * @hibernate.cache usage="read-write"
-     */
-    public List<IExpressionOperand> getExpressionOperands() {
-        return expressionOperands;
-    }
-
-    /**
-     * This method sets the list of ExpressionOperands
-     * 
-     * @param expressionOperands the expressionOperands to set
-     */
-    public void setExpressionOperands(List<IExpressionOperand> expressionOperands) {
-        this.expressionOperands = expressionOperands;
-    }
-
-    /**
-     * This method returns the List of LogicalConnectors
-     * 
-     * @return the logicalConnectors
-     * 
-     * @hibernate.list name="logicalConnectors" cascade="all-delete-orphan"
-     *                 inverse="false" lazy="false"
-     * @hibernate.collection-key column="QUERY_EXPRESSION_ID"
-     * @hibernate.collection-index column="POSITION" TYPE="integer"
-     * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.LogicalConnector"
-     * @hibernate.cache usage="read-write"
-     */
-    public List<IConnector<LogicalOperator>> getLogicalConnectors() {
-        return connectors;
-    }
-
-    /**
-     * This method sets the List of LogicalConnectors
-     * 
-     * @param logicalConnectors the logicalConnectors to set
-     */
-    public void setLogicalConnectors(List<IConnector<LogicalOperator>> logicalConnectors) {
-        this.connectors = logicalConnectors;
-    }
-
-    /**
      * Name: Abhishek Mehta Reviewer Name : Deepti Bug ID: 5661 Patch ID: 5661_6
      * See also: 1-7 Description : Making cascade all-delete-orphan from cascade
      * save-update
@@ -227,6 +177,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * 
      * @hibernate.property name="isInView" column="IS_IN_VIEW" type="boolean"
      */
+    @SuppressWarnings("unused")
     private boolean getIsInView() {
         return isInView;
     }
@@ -236,6 +187,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * 
      * @param isInView
      */
+    @SuppressWarnings("unused")
     private void setIsInView(boolean isInView) {
         this.isInView = isInView;
     }
@@ -247,6 +199,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * 
      * @hibernate.property name="isVisible" column="IS_VISIBLE" type="boolean"
      */
+    @SuppressWarnings("unused")
     private boolean getIsVisible() {
         return isVisible;
     }
@@ -257,6 +210,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * @param isVisible true if this Expression should be visible; false
      *            otherwise
      */
+    @SuppressWarnings("unused")
     private void setIsVisible(boolean isVisible) {
         this.isVisible = isVisible;
     }
@@ -491,4 +445,11 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
         return QueryObjectFactory.createLogicalConnector(LogicalOperator.Unknown, nestingNumber);
     }
 
+    @Override
+    protected void setExpressionOperands(List<IExpressionOperand> expressionOperands) {
+        super.setExpressionOperands(expressionOperands);
+        for (IExpressionOperand operand : expressionOperands) {
+            setContainingExpressionForRule(operand);
+        }
+    }
 }

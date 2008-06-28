@@ -3,100 +3,64 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping auto-import="false"  default-lazy="false">
-    <class
-        name="edu.wustl.common.querysuite.queryobject.impl.ExpressionOperand"
-        table="QUERY_EXPRESSION_OPERAND"
-        dynamic-update="false"
-        dynamic-insert="false"
-    >
-        <cache usage="read-write" />
+<hibernate-mapping auto-import="false" default-lazy="false"
+	package="edu.wustl.common.querysuite.queryobject.impl">
+	<subclass name="ExpressionOperand" abstract="true"
+		extends="edu.wustl.common.querysuite.queryobject.IOperand">
 
-        <id
-            name="id"
-            column="IDENTIFIER"
-            type="long"
-            length="30"
-            unsaved-value="null"
-        >
-            <generator class="native">
-                <param name="sequence">EXPRESSION_OPERAND_SEQ</param>
-            </generator>
-        </id>
+		<subclass name="Rule" discriminator-value="rule">
+			<list name="conditions" lazy="false" inverse="false"
+				cascade="all-delete-orphan">
+				<cache usage="read-write" />
 
-        <!--
-            To add non XDoclet property mappings, create a file named
-                hibernate-properties-ExpressionOperand.xml
-            containing the additional properties and place it in your merge dir.
-        -->
+				<key column="QUERY_RULE_ID" not-null="true" />
 
-        <joined-subclass
-            name="edu.wustl.common.querysuite.queryobject.impl.Rule"
-            table="QUERY_RULE"
-            dynamic-update="false"
-            dynamic-insert="false"
-        >
-        <key
-            column="IDENTIFIER"
-        />
+				<index column="POSITION" type="integer" />
 
-        <list
-            name="conditions"
-            lazy="false"
-            inverse="false"
-            cascade="all-delete-orphan"
-        >
-            <cache 
-                usage="read-write" 
-             />
+				<one-to-many class="Condition" />
+			</list>
+			<!-- removed this mapping since we don't fetch only rules.
+				if/when we need to fetch only rules without fetching the query, this might
+				be needed. -->
+			<!-- 
+				<join table="QUERY_EXPRESSION_OPERAND">
+				<key column="IDENTIFIER" />
+				<many-to-one name="containingExpression"
+				class="Expression"
+				cascade="none" outer-join="auto" update="true" insert="true"
+				column="QUERY_EXPRESSION_ID" />
+				</join>
+			-->
+		</subclass>
+		<subclass name="ExpressionId" discriminator-value="expr">
+			<join table="QUERY_EXPRESSION_OPERAND">
+				<key column="IDENTIFIER" />
+				<property name="expressionIdentifier" type="integer"
+					update="true" insert="true" column="SUB_EXPRESSION_ID" length="30" />
+			</join>
+		</subclass>
+		<subclass name="CustomFormula" discriminator-value="form">
+			<list name="rhs" lazy="false" inverse="false"
+				cascade="all-delete-orphan" table="QUERY_FORMULA_RHS">
+				<cache usage="read-write" />
+				<key column="CUSTOM_FORMULA_ID" />
+				<index column="POSITION" />
+				<many-to-many class="Term" column="RHS_TERM_ID" />
+			</list>
+			<join table="QUERY_CUSTOM_FORMULA">
+				<key column="IDENTIFIER" />
+				<property name="operator" column="OPERATOR">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.RelationalOperator
+						</param>
+					</type>
+				</property>
+				<many-to-one name="lhs" class="Term"
+					cascade="save-update,delete" column="LHS_TERM_ID" />
+			</join>
+		</subclass>
 
-              <key
-                  column="QUERY_RULE_ID"
-              />
-
-              <index
-                  column="POSITION"
-                  type="integer"
-              />
-
-              <one-to-many
-                  class="edu.wustl.common.querysuite.queryobject.impl.Condition"
-              />
-        </list>
-
-        <many-to-one
-            name="containingExpression"
-            class="edu.wustl.common.querysuite.queryobject.impl.Expression"
-            cascade="none"
-            outer-join="auto"
-            update="true"
-            insert="true"
-            column="QUERY_EXPRESSION_ID"
-            not-null="true"
-        />
-
-        </joined-subclass>
-        <joined-subclass
-            name="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
-            table="QUERY_EXPRESSIONID"
-            dynamic-update="false"
-            dynamic-insert="false"
-        >
-        <key
-            column="IDENTIFIER"
-        />
-        <property
-            name="expressionIdentifier"
-            type="integer"
-            update="true"
-            insert="true"
-            column="SUB_EXPRESSION_ID"
-            length="30"
-            not-null="true"
-        />
-
-        </joined-subclass>
-
-    </class>
+	</subclass>
 
 </hibernate-mapping>

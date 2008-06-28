@@ -9,6 +9,10 @@ public class Literal extends ArithmeticOperand implements ILiteral {
 
     private String literal;
 
+    protected Literal() {
+    // for hibernate
+    }
+
     public Literal(TermType termType) {
         super(termType);
         this.literal = "";

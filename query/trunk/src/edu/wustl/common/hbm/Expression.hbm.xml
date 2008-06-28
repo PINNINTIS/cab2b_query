@@ -3,117 +3,21 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping default-lazy="false">
-    <class
-        name="edu.wustl.common.querysuite.queryobject.impl.Expression"
-        table="QUERY_EXPRESSION"
-        dynamic-update="false"
-        dynamic-insert="false"
-    >
-        <cache usage="read-write" />
+<hibernate-mapping default-lazy="false"
+	package="edu.wustl.common.querysuite.queryobject.impl">
+	<subclass name="Expression" extends="BaseExpression"
+		discriminator-value="expr">
+		<join table="QUERY_EXPRESSION">
+			<key column="IDENTIFIER" />
+			<property name="isInView" type="boolean" column="IS_IN_VIEW" />
+			<property name="isVisible" type="boolean" column="IS_VISIBLE" />
 
-        <id
-            name="id"
-            column="IDENTIFIER"
-            type="long"
-            length="30"
-            unsaved-value="null"
-        >
-            <generator class="native">
-                <param name="sequence">EXPRESSION_SEQ</param>
-            </generator>
-        </id>
-
-        <list
-            name="expressionOperands"
-            lazy="false"
-            inverse="false"
-            cascade="all-delete-orphan"
-        >
-            <cache 
-                usage="read-write" 
-             />
-
-              <key
-                  column="QUERY_EXPRESSION_ID"
-              />
-
-              <index
-                  column="POSITION"
-              />
-
-              <one-to-many
-                  class="edu.wustl.common.querysuite.queryobject.impl.ExpressionOperand"
-              />
-        </list>
-
-        <list
-            name="logicalConnectors"
-            lazy="false"
-            inverse="false"
-            cascade="all-delete-orphan"
-        >
-            <cache 
-                usage="read-write" 
-             />
-
-              <key
-                  column="QUERY_EXPRESSION_ID"
-              />
-
-              <index
-                  column="POSITION"
-              />
-
-              <one-to-many
-                  class="edu.wustl.common.querysuite.queryobject.impl.Connector"
-              />
-        </list>
-
-        <many-to-one
-            name="expressionId"
-            class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
-            cascade="all"
-            outer-join="auto"
-            update="true"
-            insert="true"
-            column="QUERY_EXPRESSIONID_ID"
-            unique="true"
-        />
-
-        <many-to-one
-            name="queryEntity"
-            class="edu.wustl.common.querysuite.queryobject.impl.QueryEntity"
-            cascade="save-update,delete"
-            outer-join="auto"
-            update="true"
-            insert="true"
-            column="QUERY_QUERY_ENTITY_ID"
-            not-null="true"
-        />
-
-        <property
-            name="isInView"
-            type="boolean"
-            update="true"
-            insert="true"
-            column="IS_IN_VIEW"
-        />
-
-        <property
-            name="isVisible"
-            type="boolean"
-            update="true"
-            insert="true"
-            column="IS_VISIBLE"
-        />
-
-        <!--
-            To add non XDoclet property mappings, create a file named
-                hibernate-properties-Expression.xml
-            containing the additional properties and place it in your merge dir.
-        -->
-
-    </class>
+			<!--srinath removed unique=true -->
+			<many-to-one name="expressionId" class="ExpressionId" cascade="all"
+				column="QUERY_EXPRESSIONID_ID" />
+			<many-to-one name="queryEntity" class="QueryEntity"
+				cascade="save-update,delete" column="QUERY_QUERY_ENTITY_ID" />
+		</join>
+	</subclass>
 
 </hibernate-mapping>

@@ -39,5 +39,32 @@
 			</fileset>
 		</jar>
 	</target>
+	<path id="toolslib">
+		<path location="${classes.dir}" />
+		<path location="lib/hibernate3.jar" />
+		<path location="lib/washu-commons.jar" />
+		<path location="lib/ant/hibernate-tools.jar" />
+		<path location="lib/ant/commons-logging-1.0.4.jar" />
+		<path location="lib/ant/dom4j-1.6.jar" />
+		<path location="lib/ant/freemarker.jar" />
+		<path location="lib/ant/commons-collections-2.1.1.jar" />
+		<path location="lib/ant/mysql-connector-java-3.0.16-ga-bin.jar" />
+		<path location="lib/ant/oracleDriver.jar" />
+		<path location="lib/ant/jta.jar" />
+	</path>
+	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="toolslib" />
 
+	<target name="createDDL" depends="compile">
+		<hibernatetool destdir="${build.dir}">
+			<configuration configurationfile="queryhibernate.cfg.xml" />
+			<hbm2ddl export="false" drop="true" outputfilename="sql.ddl" />
+		</hibernatetool>
+	</target>
+
+	<target name="exportSchema" depends="compile">
+		<hibernatetool destdir="${build.dir}">
+			<configuration configurationfile="queryhibernate.cfg.xml" />
+			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
+		</hibernatetool>
+	</target>
 </project>

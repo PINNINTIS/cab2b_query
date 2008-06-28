@@ -62,8 +62,8 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
         expressionOperands.add(index, operand);
         connectors.add(index - 1, logicalConnector);
         if (index > 0
-                && (((Connector) connectors.get(index)).getNestingNumber() > ((Connector) connectors
-                        .get(index - 1)).getNestingNumber())) {
+                && (((Connector) connectors.get(index)).getNestingNumber() > ((Connector) connectors.get(index - 1))
+                        .getNestingNumber())) {
             ((Connector) connectors.get(index - 1)).setNestingNumber(((Connector) connectors.get(index))
                     .getNestingNumber());
         }
@@ -78,8 +78,8 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
         expressionOperands.add(index, operand);
         connectors.add(index, logicalConnector);
         if (index > 0
-                && (((Connector) connectors.get(index)).getNestingNumber() < ((Connector) connectors
-                        .get(index - 1)).getNestingNumber())) {
+                && (((Connector) connectors.get(index)).getNestingNumber() < ((Connector) connectors.get(index - 1))
+                        .getNestingNumber())) {
             ((Connector) connectors.get(index)).setNestingNumber(((Connector) connectors.get(index - 1))
                     .getNestingNumber());
         }
@@ -120,8 +120,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
      */
     public void removeParantheses(int leftOperandIndex, int rightOperandIndex) {
         for (int i = leftOperandIndex; i < rightOperandIndex; i++) {
-            ((Connector) connectors.get(i))
-                    .setNestingNumber(((Connector) connectors.get(i)).getNestingNumber() - 1);
+            ((Connector) connectors.get(i)).setNestingNumber(((Connector) connectors.get(i)).getNestingNumber() - 1);
         }
     }
 
@@ -265,5 +264,21 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
         } else {
             return leftNesting;
         }
+    }
+
+    protected List<V> getExpressionOperands() {
+        return expressionOperands;
+    }
+
+    protected void setExpressionOperands(List<V> expressionOperands) {
+        this.expressionOperands = expressionOperands;
+    }
+
+    protected List<IConnector<P>> getLogicalConnectors() {
+        return connectors;
+    }
+
+    protected void setLogicalConnectors(List<IConnector<P>> logicalConnectors) {
+        this.connectors = logicalConnectors;
     }
 }

@@ -1,6 +1,7 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -12,15 +13,18 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
 
     private AttributeInterface attribute;
 
+    protected ExpressionAttribute() {
+    // for hibernate
+    }
+
     public ExpressionAttribute(IExpressionId expressionId, AttributeInterface attribute, TermType termType) {
-        this.expressionId = expressionId;
-        this.attribute = attribute;
+        setExpressionId(expressionId);
+        setAttribute(attribute);
         setTermType(termType);
     }
 
     @Override
     public void setTermType(TermType termType) {
-        // TODO validate termtpe using attribute's data type.
         super.setTermType(termType);
     }
 
@@ -29,6 +33,9 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
     }
 
     public void setAttribute(AttributeInterface attribute) {
+        if (attribute == null) {
+            throw new NullPointerException();
+        }
         this.attribute = attribute;
     }
 
@@ -37,11 +44,26 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
     }
 
     public void setExpressionId(IExpressionId expressionId) {
+        if (expressionId == null) {
+            throw new NullPointerException();
+        }
         this.expressionId = expressionId;
     }
 
     @Override
     public String toString() {
         return "ExprId: " + expressionId + ", Attribute: " + attribute;
+    }
+
+    // for hibernate
+
+    @SuppressWarnings("unused")
+    private Long getAttributeId() {
+        return attribute.getId();
+    }
+
+    @SuppressWarnings("unused")
+    private void setAttributeId(Long attributeId) {
+        setAttribute(AbstractEntityCache.getCache().getAttributeById(attributeId));
     }
 }

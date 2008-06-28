@@ -5,8 +5,7 @@
 
 <hibernate-mapping default-lazy="false">
 	<class name="edu.wustl.common.querysuite.queryobject.impl.Connector"
-		table="QUERY_CONNECTOR" dynamic-update="false"
-		dynamic-insert="false">
+		table="QUERY_CONNECTOR" dynamic-update="false" dynamic-insert="false">
 		<cache usage="read-write" />
 
 		<id name="id" column="IDENTIFIER" type="long" length="30"
@@ -16,14 +15,14 @@
 			</generator>
 		</id>
 
-           <property name="compoundOperator" column="operator">
-                <type name="edu.wustl.common.hibernate.EnumType">
-                    <param name="enum-name">
-                        edu.wustl.common.querysuite.queryobject.BinaryOperatorCompoundEnum
-                    </param>
-                </type>
-            </property>
-    
+		<property name="compoundOperator" column="OPERATOR">
+			<type name="edu.wustl.common.hibernate.EnumType">
+				<param name="enum-name">
+					edu.wustl.common.querysuite.queryobject.impl.Connector$BinaryOperatorCompoundEnum
+				</param>
+			</type>
+		</property>
+
 		<property name="nestingNumber" type="integer" update="true"
 			insert="true" column="NESTING_NUMBER" />
 

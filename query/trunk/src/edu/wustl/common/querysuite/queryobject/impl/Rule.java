@@ -91,7 +91,7 @@ public class Rule extends ExpressionOperand implements IRule {
     /**
      * @param containingExpression the containingExpression to set
      */
-    public void setContainingExpression(IExpression parentExpression) {
+    void setContainingExpression(IExpression parentExpression) {
         this.containingExpression = parentExpression;
     }
 

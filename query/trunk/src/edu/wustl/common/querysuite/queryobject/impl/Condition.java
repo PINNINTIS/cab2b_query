@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 
@@ -25,17 +26,11 @@ public class Condition extends BaseQueryObject implements ICondition {
      * internal reference to the attribute. Attribute is retrived using this
      * property.
      */
-    private Long attributeId;
-
+    // private Long attributeId;
     /**
      * Stores the associated attribute
      */
     private AttributeInterface attribute;
-
-    /**
-     * String representation of the RelationalOperator
-     */
-    private String relationalOperatorString;
 
     /**
      * Stores the associated relational operator
@@ -85,25 +80,6 @@ public class Condition extends BaseQueryObject implements ICondition {
     }
 
     /**
-     * This method returns the attribute id
-     * 
-     * @return identifier of the attribute
-     * 
-     * @hibernate.property column="ATTRIBUTE_ID" type="long" length="30"
-     *                     not-null="true"
-     */
-    public Long getAttributeId() {
-        return attributeId;
-    }
-
-    /**
-     * @param attributeId the attributeId to set
-     */
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
-    }
-
-    /**
      * This method returns the left operand of the condition.
      * 
      * @return The Dynamic extension attribute, the left operand of the
@@ -121,27 +97,6 @@ public class Condition extends BaseQueryObject implements ICondition {
      */
     public void setAttribute(AttributeInterface attribute) {
         this.attribute = attribute;
-    }
-
-    /**
-     * This method returns the string representation of the RelationalOperator
-     * 
-     * @return the relationalOperatorString
-     * 
-     * @hibernate.property name="relationalOperator" type="string"
-     *                     column="RELATIONAL_OPERATOR"
-     */
-    public String getRelationalOperatorString() {
-        return relationalOperatorString;
-    }
-
-    /**
-     * This method sets the string representation of the RelationalOperator
-     * 
-     * @param relationalOperatorString the relationalOperatorString to set
-     */
-    public void setRelationalOperatorString(String relationalOperatorString) {
-        this.relationalOperatorString = relationalOperatorString;
     }
 
     /**
@@ -275,4 +230,16 @@ public class Condition extends BaseQueryObject implements ICondition {
     public String toString() {
         return "[" + attribute.getName() + relationalOperator + values + "]";
     }
+
+    // for hibernate
+    @SuppressWarnings("unused")
+    private Long getAttributeId() {
+        return attribute.getId();
+    }
+
+    @SuppressWarnings("unused")
+    private void setAttributeId(Long attributeId) {
+        this.attribute = AbstractEntityCache.getCache().getAttributeById(attributeId);
+    }
+
 }
