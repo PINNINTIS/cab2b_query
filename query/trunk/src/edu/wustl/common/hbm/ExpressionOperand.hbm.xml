@@ -10,14 +10,12 @@
 
 		<subclass name="Rule" discriminator-value="rule">
 			<list name="conditions" lazy="false" inverse="false"
-				cascade="all-delete-orphan">
+				cascade="all-delete-orphan" table="QUERY_RULE_COND">
 				<cache usage="read-write" />
-
-				<key column="QUERY_RULE_ID" not-null="true" />
-
+				<key column="RULE_ID" />
 				<index column="POSITION" type="integer" />
-
-				<one-to-many class="Condition" />
+				<many-to-many column="CONDITION_ID" class="Condition"
+					unique="true" />
 			</list>
 			<!-- removed this mapping since we don't fetch only rules.
 				if/when we need to fetch only rules without fetching the query, this might
@@ -37,27 +35,6 @@
 				<key column="IDENTIFIER" />
 				<property name="expressionIdentifier" type="integer"
 					update="true" insert="true" column="SUB_EXPRESSION_ID" length="30" />
-			</join>
-		</subclass>
-		<subclass name="CustomFormula" discriminator-value="form">
-			<list name="rhs" lazy="false" inverse="false"
-				cascade="all-delete-orphan" table="QUERY_FORMULA_RHS">
-				<cache usage="read-write" />
-				<key column="CUSTOM_FORMULA_ID" />
-				<index column="POSITION" />
-				<many-to-many class="Term" column="RHS_TERM_ID" />
-			</list>
-			<join table="QUERY_CUSTOM_FORMULA">
-				<key column="IDENTIFIER" />
-				<property name="operator" column="OPERATOR">
-					<type name="edu.wustl.common.hibernate.EnumType">
-						<param name="enum-name">
-							edu.wustl.common.querysuite.queryobject.RelationalOperator
-						</param>
-					</type>
-				</property>
-				<many-to-one name="lhs" class="Term"
-					cascade="save-update,delete" column="LHS_TERM_ID" />
 			</join>
 		</subclass>
 

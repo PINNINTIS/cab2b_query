@@ -32,7 +32,8 @@
 		<subclass name="ExpressionAttribute" discriminator-value="exAt">
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
-				<property name="attributeId" type="long" column="ATTRIBUTE_ID" />
+				<property name="attributeId" type="long"
+					column="DE_ATTRIBUTE_ID" />
 				<many-to-one name="expressionId" class="ExpressionId"
 					column="QUERY_EXPRESSIONID_ID" />
 			</join>
@@ -48,7 +49,8 @@
 						</param>
 					</type>
 				</property>
-				<property name="attributeId" type="long" column="ATTRIBUTE_ID" />
+				<property name="attributeId" type="long"
+					column="DE_ATTRIBUTE_ID" />
 				<many-to-one name="expressionId" class="ExpressionId"
 					column="QUERY_EXPRESSIONID_ID" />
 			</join>
