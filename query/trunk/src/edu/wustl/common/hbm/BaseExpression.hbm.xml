@@ -20,11 +20,8 @@
 		<list name="expressionOperands" lazy="false" inverse="false"
 			cascade="all-delete-orphan" table="QUERY_BASE_EXPR_OPND">
 			<cache usage="read-write" />
-
-			<key column="QUERY_BASE_EXPRESSION_ID" />
-
+			<key column="BASE_EXPRESSION_ID" />
 			<index column="POSITION" />
-
 			<many-to-many column="OPERAND_ID" unique="true"
 				class="edu.wustl.common.querysuite.queryobject.IOperand" />
 		</list>
@@ -32,11 +29,8 @@
 		<list name="logicalConnectors" lazy="false" inverse="false"
 			cascade="all-delete-orphan">
 			<cache usage="read-write" />
-
-			<key column="QUERY_BASE_EXPRESSION_ID" />
-
+			<key column="BASE_EXPRESSION_ID" />
 			<index column="POSITION" />
-
 			<one-to-many
 				class="edu.wustl.common.querysuite.queryobject.impl.Connector" />
 		</list>
