@@ -19,6 +19,9 @@ public class DateOffsetAttribute<T extends Enum<?> & ITimeIntervalEnum> extends 
 
     public DateOffsetAttribute(IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
         super(expressionId, attribute, TermType.termType(timeInterval));
+        if (timeInterval == null) {
+            throw new NullPointerException();
+        }
         this.compoundTimeInterval = TimeIntervalCompoundEnum.compoundEnum(timeInterval);
     }
 

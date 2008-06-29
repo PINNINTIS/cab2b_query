@@ -15,6 +15,9 @@ public class DateOffsetLiteral<T extends Enum<?> & ITimeIntervalEnum> extends Li
 
     public DateOffsetLiteral(T timeInterval) {
         super(TermType.termType(timeInterval));
+        if (timeInterval == null) {
+            throw new NullPointerException();
+        }
         this.compoundTimeInterval = TimeIntervalCompoundEnum.compoundEnum(timeInterval);
     }
 
