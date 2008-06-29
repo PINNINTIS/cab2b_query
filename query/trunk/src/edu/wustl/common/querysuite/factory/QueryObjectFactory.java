@@ -322,11 +322,11 @@ public abstract class QueryObjectFactory {
         return new Term();
     }
 
-    public static IOutputTerm createNamedTerm() {
+    public static IOutputTerm createOutputTerm() {
         return new OutputTerm();
     }
 
-    public static IOutputTerm createNamedTerm(ITerm term, String name) {
+    public static IOutputTerm createOutputTerm(ITerm term, String name) {
         return new OutputTerm(name, term);
     }
 
