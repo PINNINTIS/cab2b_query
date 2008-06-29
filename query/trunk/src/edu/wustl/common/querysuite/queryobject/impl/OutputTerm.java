@@ -1,5 +1,6 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 
@@ -11,7 +12,7 @@ public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     private ITerm term;
 
     public OutputTerm() {
-        System.out.println("");
+
     }
 
     public OutputTerm(String name, ITerm term) {
@@ -20,6 +21,9 @@ public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     }
 
     public String getName() {
+        if (name == null) {
+            name = "";
+        }
         return name;
     }
 
@@ -28,6 +32,9 @@ public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     }
 
     public ITerm getTerm() {
+        if (term == null) {
+            term = QueryObjectFactory.createTerm();
+        }
         return term;
     }
 
