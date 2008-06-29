@@ -22,7 +22,7 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
  * @version 1.0
  * @created 12-Oct-2006 13.35.04 AM
  * @updated Aug 10, 2007, 12:22:17 PM
- *
+ * 
  * @hibernate.class table="QUERY_CONSTRAINTS"
  * @hibernate.cache usage="read-write"
  */
@@ -31,7 +31,8 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     private Map<IExpressionId, IExpression> expressions = new HashMap<IExpressionId, IExpression>();
 
-    private Collection<IExpression> expressionCollection = new HashSet<IExpression>();
+    // private Collection<IExpression> expressionCollection = new
+    // HashSet<IExpression>();
 
     private IJoinGraph joinGraph = new JoinGraph();
 
@@ -46,9 +47,11 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     /**
      * Returns the identifier assigned to BaseQueryObject.
+     * 
      * @return a unique id assigned to the Condition.
      * 
-     * @hibernate.id name="id" column="IDENTIFIER" type="long" length="30" unsaved-value="null" generator-class="native"
+     * @hibernate.id name="id" column="IDENTIFIER" type="long" length="30"
+     *               unsaved-value="null" generator-class="native"
      * @hibernate.generator-param name="sequence" value="CONSTRAINT_SEQ"
      */
     public Long getId() {
@@ -56,72 +59,20 @@ public class Constraints extends BaseQueryObject implements IConstraints {
     }
 
     /**
-     * This method returns the List of IExpression associated with this Constraint.
-     * This method will only be used by Hibernate to save into the database.
-     * @return the expressionCollection
-     * 
-     * @hibernate.set name="expressionCollection" cascade="all-delete-orphan" inverse="false" lazy="false"
-     * @hibernate.collection-key column="QUERY_CONSTRAINT_ID"
-     * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.Expression"
-     * @hibernate.cache usage="read-write"
+     * Name: Abhishek Mehta Reviewer Name : Deepti Bug ID: 5661 Patch ID: 5661_4
+     * See also: 1-7 Description : Making cascade all-delete-orphan from cascade
+     * all
      */
-    private Collection<IExpression> getExpressionCollection() {
-        return expressionCollection;
-    }
 
-    /**
-     * This method sets the List of IExpression associated with this Constraint.
-     * This method will only be used by Hibernate to restore form the database.
-     * @param expressionCollection the expressionCollection to set
-     */
-    private void setExpressionCollection(Collection<IExpression> expressionCollection) {
-        this.expressionCollection = expressionCollection;
-    }
-
-    /**
-     * This method refreshes the expression collection with the entries in expressions map.
-     * This method is used during pre-processing query before persisting it.
-     */
-    public void contemporizeExpressionListWithExpressions() {
-        expressionCollection.clear();
-
-        for (IExpression expression : expressions.values()) {
-            expressionCollection.add(expression);
-        }
-    }
-
-    /**
-     * This method refreshes the expressions map with the entries in expression collection.
-     * This method is used during post-processing query after retrieving it.
-     */
-    public void contemporizeExpressionsWithExpressionList() {
-       expressions.clear();
-
-        for (IExpression expression : expressionCollection) {
-            expressions.put(expression.getExpressionId(), expression);
-
-            int expressionId = expression.getExpressionId().getInt();
-            if (expressionId > currentExpressionId) {
-                currentExpressionId = expressionId;
-            }
-        }
-    }
-
-    /**
-	 * Name: Abhishek Mehta
-	 * Reviewer Name : Deepti 
-	 * Bug ID: 5661
-	 * Patch ID: 5661_4
-	 * See also: 1-7 
-	 * Description : Making cascade all-delete-orphan from cascade all
-	 */
-    
     /**
      * This method returns the JoinGraph of this Constraint
+     * 
      * @return the reference to joingraph.
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#getJoinGraph()
      * 
-     * @hibernate.many-to-one column="QUERY_JOIN_GRAPH_ID" unique="true" class="edu.wustl.common.querysuite.queryobject.impl.JoinGraph" cascade="all-delete-orphan" lazy="false"
+     * @hibernate.many-to-one column="QUERY_JOIN_GRAPH_ID" unique="true"
+     *                        class="edu.wustl.common.querysuite.queryobject.impl.JoinGraph"
+     *                        cascade="all-delete-orphan" lazy="false"
      */
     public IJoinGraph getJoinGraph() {
         return joinGraph;
@@ -136,7 +87,8 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     /**
      * @return the root expression of the join graph.
-     * @throws MultipleRootsException When there exists multiple roots in joingraph.
+     * @throws MultipleRootsException When there exists multiple roots in
+     *             joingraph.
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#getRootExpressionId()
      */
     public IExpressionId getRootExpressionId() throws MultipleRootsException {
@@ -144,7 +96,8 @@ public class Constraints extends BaseQueryObject implements IConstraints {
     }
 
     /**
-     * @param constraintEntity the constraint Entity for which the new expr is created.
+     * @param constraintEntity the constraint Entity for which the new expr is
+     *            created.
      * @return the newly created expression.
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#addExpression(edu.wustl.common.querysuite.queryobject.IQueryEntity)
      */
@@ -187,7 +140,8 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     /**
      * @param id the id (usually obtained from getExpressionIds)
-     * @return the reference to the IExpression associatied with the given IExpressionId.
+     * @return the reference to the IExpression associatied with the given
+     *         IExpressionId.
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#getExpression(edu.wustl.common.querysuite.queryobject.IExpressionId)
      */
     public IExpression getExpression(IExpressionId id) {
@@ -195,7 +149,9 @@ public class Constraints extends BaseQueryObject implements IConstraints {
     }
 
     /**
-     * TO get the Set of all ConstraintEntites present in the Constraints object.
+     * TO get the Set of all ConstraintEntites present in the Constraints
+     * object.
+     * 
      * @return Set of all Constraint Entities.
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#getQueryEntities()
      */
@@ -206,6 +162,47 @@ public class Constraints extends BaseQueryObject implements IConstraints {
             constraintEntitySet.add(expression.getQueryEntity());
         }
         return constraintEntitySet;
+    }
+
+    // for hibernate
+
+    /**
+     * This method returns the List of IExpression associated with this
+     * Constraint. This method will only be used by Hibernate to save into the
+     * database.
+     * 
+     * @return the expressionCollection
+     * 
+     * @hibernate.set name="expressionCollection" cascade="all-delete-orphan"
+     *                inverse="false" lazy="false"
+     * @hibernate.collection-key column="QUERY_CONSTRAINT_ID"
+     * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.Expression"
+     * @hibernate.cache usage="read-write"
+     */
+    @SuppressWarnings("unused")
+    private Collection<IExpression> getExpressionCollection() {
+        return new HashSet<IExpression>(expressions.values());
+    }
+
+    /**
+     * This method sets the List of IExpression associated with this Constraint.
+     * This method will only be used by Hibernate to restore form the database.
+     * 
+     * @param expressionCollection the expressionCollection to set
+     */
+    @SuppressWarnings("unused")
+    private void setExpressionCollection(Collection<IExpression> expressionCollection) {
+        expressions.clear();
+        if (expressionCollection != null) {
+            for (IExpression expression : expressionCollection) {
+                expressions.put(expression.getExpressionId(), expression);
+
+                int expressionId = expression.getExpressionId().getInt();
+                if (expressionId > currentExpressionId) {
+                    currentExpressionId = expressionId;
+                }
+            }
+        }
     }
 
 }

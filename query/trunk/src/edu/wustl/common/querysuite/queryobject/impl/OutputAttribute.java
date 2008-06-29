@@ -6,6 +6,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 
@@ -22,8 +23,6 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
     private IExpressionId expressionId;
 
     private AttributeInterface attribute;
-
-    private Long attributeId;
 
     /** Default Constructor */
     public OutputAttribute() {
@@ -79,23 +78,6 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
     }
 
     /**
-     * @return the attributeId
-     * 
-     * @hibernate.property name="attributeId" column="ATTRIBUTE_ID" type="long"
-     *                     length="30" not-null="true"
-     */
-    public Long getAttributeId() {
-        return attributeId;
-    }
-
-    /**
-     * @param attributeId the attributeId to set
-     */
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
-    }
-
-    /**
      * Returns the identifier assigned to BaseQueryObject.
      * 
      * @return a unique id assigned to the Condition.
@@ -124,9 +106,8 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
         } else if (object != null && this.getClass() == object.getClass()) {
             OutputAttribute outputAtrribute = (OutputAttribute) object;
             IExpressionId expressionId = outputAtrribute.getExpressionId();
-            Long attributeId = outputAtrribute.getAttribute().getId();
 
-            if (this.getExpressionId().equals(expressionId) && this.getAttribute().getId().equals(attributeId)) {
+            if (this.getExpressionId().equals(expressionId) && this.getAttribute().equals(outputAtrribute)) {
                 isEqual = true;
             }
         }
@@ -142,7 +123,18 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(expressionId).append(attribute).append(attributeId).toHashCode();
+        return new HashCodeBuilder().append(expressionId).append(attribute).toHashCode();
     }
 
+    // for hibernate
+
+    @SuppressWarnings("unused")
+    private Long getAttributeId() {
+        return attribute.getId();
+    }
+
+    @SuppressWarnings("unused")
+    private void setAttributeId(Long attributeId) {
+        setAttribute(AbstractEntityCache.getCache().getAttributeById(attributeId));
+    }
 }

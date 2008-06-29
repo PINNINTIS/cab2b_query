@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.common.dynamicextensions.domaininterface.AssociationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.AssociationDirection;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 
 /**
@@ -17,13 +18,10 @@ import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
  * @hibernate.joined-subclass-key column="IDENTIFIER"
  * @hibernate.cache usage="read-write"
  */
-public class IntraModelAssociation extends ModelAssociation implements
-        IIntraModelAssociation {
+public class IntraModelAssociation extends ModelAssociation implements IIntraModelAssociation {
     private static final long serialVersionUID = 1477526671383920408L;
 
     private AssociationInterface dynamicExtensionsAssociation;
-
-    private Long dynamicExtensionsAssociationId;
 
     /**
      * Default Constructor
@@ -34,30 +32,11 @@ public class IntraModelAssociation extends ModelAssociation implements
 
     /**
      * Parameterized Constructor.
+     * 
      * @param dynamicExtensionsAssociation
      */
-    public IntraModelAssociation(
-            AssociationInterface dynamicExtensionsAssociation) {
+    public IntraModelAssociation(AssociationInterface dynamicExtensionsAssociation) {
         this.dynamicExtensionsAssociation = dynamicExtensionsAssociation;
-    }
-
-    /**
-     * @return the dynamicExtensionsAssociationId
-     * @hibernate.property name="dynamicExtensionsAssociationId"
-     *                     column="DE_ASSOCIATION_ID" type="long" length="30"
-     *                     not-null="true"
-     */
-    public Long getDynamicExtensionsAssociationId() {
-        return dynamicExtensionsAssociationId;
-    }
-
-    /**
-     * @param dynamicExtensionsAssociationId
-     *            the dynamicExtensionsAssociationId to set
-     */
-    public void setDynamicExtensionsAssociationId(
-                                                  Long dynamicExtensionsAssociationId) {
-        this.dynamicExtensionsAssociationId = dynamicExtensionsAssociationId;
     }
 
     /**
@@ -95,14 +74,13 @@ public class IntraModelAssociation extends ModelAssociation implements
     /**
      * @return intramodel association wrapping de association that is reverse of
      *         this association.
-     * @throws java.lang.UnsupportedOperationException
-     *             if this association is not bidirectional.
+     * @throws java.lang.UnsupportedOperationException if this association is
+     *             not bidirectional.
      * @author Srinath K.
      */
     public IntraModelAssociation reverse() {
         if (!isBidirectional()) {
-            throw new UnsupportedOperationException(
-                    "Association ain't bidirectional... cannot reverse.");
+            throw new UnsupportedOperationException("Association ain't bidirectional... cannot reverse.");
         }
         EntityInterface origTgtEnt = getDynamicExtensionsAssociation().getTargetEntity();
 
@@ -111,15 +89,14 @@ public class IntraModelAssociation extends ModelAssociation implements
         for (AssociationInterface associationOfOrigTgtEnt : associationsOfOrigTgtEnt) {
             if (associationOfOrigTgtEnt.getAssociationDirection() == AssociationDirection.BI_DIRECTIONAL
                     && associationOfOrigTgtEnt.getTargetRole().getName().equals(
-                                                                                getDynamicExtensionsAssociation().getSourceRole().getName())
+                            getDynamicExtensionsAssociation().getSourceRole().getName())
                     && associationOfOrigTgtEnt.getSourceRole().getName().equals(
-                                                                                getDynamicExtensionsAssociation().getTargetRole().getName())) {
+                            getDynamicExtensionsAssociation().getTargetRole().getName())) {
                 // gotcha!!!
                 return new IntraModelAssociation(associationOfOrigTgtEnt);
             }
         }
-        throw new RuntimeException(
-                "Some bigger evil is at work here... probably DE");
+        throw new RuntimeException("Some bigger evil is at work here... probably DE");
     }
 
     @Override
@@ -132,8 +109,8 @@ public class IntraModelAssociation extends ModelAssociation implements
     /**
      * To check equality of the two object. it will check equality based on
      * dynamicExtensionsAssociation.
-     * @param obj
-     *            to be check for equality.
+     * 
+     * @param obj to be check for equality.
      * @return true if objects are equals.
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -156,6 +133,7 @@ public class IntraModelAssociation extends ModelAssociation implements
     /**
      * To get the HashCode for the object. It will be calculated based on
      * dynamicExtensionsAssociation.
+     * 
      * @return The hash code value for the object.
      * @see java.lang.Object#hashCode()
      */
@@ -164,4 +142,25 @@ public class IntraModelAssociation extends ModelAssociation implements
         return new HashCodeBuilder().append(dynamicExtensionsAssociation).toHashCode();
     }
 
+    // for hibernate
+    /**
+     * @return the dynamicExtensionsAssociationId
+     * @hibernate.property name="dynamicExtensionsAssociationId"
+     *                     column="DE_ASSOCIATION_ID" type="long" length="30"
+     *                     not-null="true"
+     */
+    @SuppressWarnings("unused")
+    private Long getDynamicExtensionsAssociationId() {
+        return dynamicExtensionsAssociation.getId();
+    }
+
+    /**
+     * @param dynamicExtensionsAssociationId the dynamicExtensionsAssociationId
+     *            to set
+     */
+    @SuppressWarnings("unused")
+    private void setDynamicExtensionsAssociationId(Long dynamicExtensionsAssociationId) {
+        this.dynamicExtensionsAssociation = AbstractEntityCache.getCache().getAssociationById(
+                dynamicExtensionsAssociationId);
+    }
 }

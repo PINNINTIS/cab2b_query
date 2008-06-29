@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IInterModelAssociation;
 
 /**
@@ -25,11 +26,7 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
 
     private AttributeInterface sourceAttribute;
 
-    private Long sourceAttributeId;
-
     private AttributeInterface targetAttribute;
-
-    private Long targetAttributeId;
 
     /**
      * Default Constructor
@@ -79,38 +76,6 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
      */
     public void setTargetServiceUrl(String targetServiceUrl) {
         this.targetServiceUrl = targetServiceUrl;
-    }
-
-    /**
-     * @return the sourceAttributeId
-     * @hibernate.property name="sourceAttributeId" column="SOURCE_ATTRIBUTE_ID"
-     *                     type="long" length="30" not-null="true"
-     */
-    public Long getSourceAttributeId() {
-        return sourceAttributeId;
-    }
-
-    /**
-     * @param sourceAttributeId the sourceAttributeId to set
-     */
-    public void setSourceAttributeId(Long sourceAttributeId) {
-        this.sourceAttributeId = sourceAttributeId;
-    }
-
-    /**
-     * @return the targetAttributeId
-     * @hibernate.property name="targetAttributeId" column="TARGET_ATTRIBUTE_ID"
-     *                     type="long" length="30" not-null="true"
-     */
-    public Long getTargetAttributeId() {
-        return targetAttributeId;
-    }
-
-    /**
-     * @param targetAttributeId the targetAttributeId to set
-     */
-    public void setTargetAttributeId(Long targetAttributeId) {
-        this.targetAttributeId = targetAttributeId;
     }
 
     /**
@@ -224,8 +189,47 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(sourceAttribute).append(targetAttribute).append(sourceServiceUrl)
-                .append(targetServiceUrl).toHashCode();
+        return new HashCodeBuilder().append(sourceAttribute).append(targetAttribute).append(sourceServiceUrl).append(
+                targetServiceUrl).toHashCode();
     }
 
+    /**
+     * @return the sourceAttributeId
+     * @hibernate.property name="sourceAttributeId" column="SOURCE_ATTRIBUTE_ID"
+     *                     type="long" length="30" not-null="true"
+     */
+    @SuppressWarnings("unused")
+    private Long getSourceAttributeId() {
+        return sourceAttribute.getId();
+    }
+
+    /**
+     * @param sourceAttributeId the sourceAttributeId to set
+     */
+    @SuppressWarnings("unused")
+    private void setSourceAttributeId(Long sourceAttributeId) {
+        this.sourceAttribute = getAttributeFromCache(sourceAttributeId);
+    }
+
+    /**
+     * @return the targetAttributeId
+     * @hibernate.property name="targetAttributeId" column="TARGET_ATTRIBUTE_ID"
+     *                     type="long" length="30" not-null="true"
+     */
+    @SuppressWarnings("unused")
+    private Long getTargetAttributeId() {
+        return targetAttribute.getId();
+    }
+
+    /**
+     * @param targetAttributeId the targetAttributeId to set
+     */
+    @SuppressWarnings("unused")
+    private void setTargetAttributeId(Long targetAttributeId) {
+        this.targetAttribute = getAttributeFromCache(targetAttributeId);
+    }
+
+    private AttributeInterface getAttributeFromCache(Long attributeId) {
+        return AbstractEntityCache.getCache().getAttributeById(attributeId);
+    }
 }
