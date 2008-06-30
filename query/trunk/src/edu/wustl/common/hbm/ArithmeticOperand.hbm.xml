@@ -13,6 +13,13 @@
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
 				<property name="literal" type="string" column="LITERAL" />
+				<property name="termType" column="TERM_TYPE">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.TermType
+						</param>
+					</type>
+				</property>
 			</join>
 		</subclass>
 		<subclass name="DateOffsetLiteral" discriminator-value="doLit">
@@ -26,6 +33,13 @@
 					</type>
 				</property>
 				<property name="literal" type="string" column="LITERAL" />
+				<property name="termType" column="TERM_TYPE">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.TermType
+						</param>
+					</type>
+				</property>
 			</join>
 		</subclass>
 
@@ -36,6 +50,13 @@
 					column="DE_ATTRIBUTE_ID" />
 				<many-to-one name="expressionId" class="ExpressionId"
 					column="QUERY_EXPRESSIONID_ID" />
+				<property name="termType" column="TERM_TYPE">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.TermType
+						</param>
+					</type>
+				</property>
 			</join>
 		</subclass>
 
@@ -53,6 +74,13 @@
 					column="DE_ATTRIBUTE_ID" />
 				<many-to-one name="expressionId" class="ExpressionId"
 					column="QUERY_EXPRESSIONID_ID" />
+				<property name="termType" column="TERM_TYPE">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.TermType
+						</param>
+					</type>
+				</property>
 			</join>
 		</subclass>
 	</subclass>
