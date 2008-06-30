@@ -5,10 +5,8 @@
 	<property name="src.dir" location="src" />
 	<property name="hbm.dir" value="${src.dir}/edu/wustl/common/hbm" />
 	<target name="clean">
-		<mkdir dir="${build.dir}" />
-		<delete includeemptydirs="true">
-			<fileset dir="${build.dir}" includes="**/*" />
-		</delete>
+		<mkdir dir="${build.dir}/jar" />
+		<mkdir dir="${build.dir}/ddl" />
 		<mkdir dir="${classes.dir}" />
 		<delete includeemptydirs="true">
 			<fileset dir="${classes.dir}" includes="**/*" />
@@ -29,10 +27,10 @@
 
 	<target name="build.jar" depends="compile">
 		<delete>
-			<fileset dir="${build.dir}" includes="**/*" />
+			<fileset dir="${build.dir}/jar" includes="**/*" />
 		</delete>
 
-		<jar jarfile="${build.dir}/query.jar">
+		<jar jarfile="${build.dir}/jar/query.jar">
 			<fileset dir="${classes.dir}">
 				<include name="**/*" />
 				<exclude name="**/*Test" />
@@ -55,14 +53,14 @@
 	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="toolslib" />
 
 	<target name="createDDL" depends="compile">
-		<hibernatetool destdir="${build.dir}">
+		<hibernatetool destdir="${build.dir}/ddl">
 			<configuration configurationfile="conf/queryhibernate.cfg.xml" />
 			<hbm2ddl export="false" drop="true" outputfilename="sql.ddl" />
 		</hibernatetool>
 	</target>
 
 	<target name="exportSchema" depends="compile">
-		<hibernatetool destdir="${build.dir}">
+		<hibernatetool destdir="${build.dir}/ddl">
 			<configuration configurationfile="conf/queryhibernate.cfg.xml" />
 			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
 		</hibernatetool>
