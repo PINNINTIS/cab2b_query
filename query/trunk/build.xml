@@ -56,14 +56,14 @@
 
 	<target name="createDDL" depends="compile">
 		<hibernatetool destdir="${build.dir}">
-			<configuration configurationfile="queryhibernate.cfg.xml" />
+			<configuration configurationfile="conf/queryhibernate.cfg.xml" />
 			<hbm2ddl export="false" drop="true" outputfilename="sql.ddl" />
 		</hibernatetool>
 	</target>
 
 	<target name="exportSchema" depends="compile">
 		<hibernatetool destdir="${build.dir}">
-			<configuration configurationfile="queryhibernate.cfg.xml" />
+			<configuration configurationfile="conf/queryhibernate.cfg.xml" />
 			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
 		</hibernatetool>
 	</target>

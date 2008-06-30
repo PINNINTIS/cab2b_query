@@ -1,19 +1,11 @@
 package edu.wustl.common.querysuite.bizlogic;
 
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 
 import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.hibernate.HibernateDatabaseOperations;
-import edu.wustl.common.querysuite.exceptions.CyclicException;
-import edu.wustl.common.querysuite.metadata.associations.IAssociation;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
-import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
-import edu.wustl.common.querysuite.queryobject.impl.GraphEntry;
-import edu.wustl.common.querysuite.queryobject.impl.JoinGraph;
 import edu.wustl.common.querysuite.queryobject.impl.Query;
 
 /**
@@ -125,8 +117,8 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         // postProcessExpression(expression);
         // }
 
-        JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
-        postProcessJoinGraph(joinGraph, constraints.getExpressionIds());
+//        JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
+//        postProcessJoinGraph(joinGraph, constraints.getExpressionIds());
         // if (query instanceof ParameterizedQuery) {
         // postProcessParameterizedQuery((ParameterizedQuery) query);
         // }
@@ -184,29 +176,29 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * @param joinGraph
      * @param enumeration
      */
-    private void postProcessJoinGraph(JoinGraph joinGraph, Enumeration<IExpressionId> enumeration) {
-        Collection<GraphEntry> graphEntryList = joinGraph.getGraphEntryCollection();
-
-        if (graphEntryList.isEmpty()) {
-            while (enumeration.hasMoreElements()) {
-                IExpressionId expressionId = enumeration.nextElement();
-                joinGraph.addIExpressionId(expressionId);
-            }
-        } else {
-            for (GraphEntry graphEntry : graphEntryList) {
-                IAssociation association = graphEntry.getAssociation();
-                // postProcessAssociation(association);
-
-                IExpressionId sourceExpressionId = graphEntry.getSourceExpressionId();
-                IExpressionId targetExpressionId = graphEntry.getTargetExpressionId();
-                try {
-                    joinGraph.putAssociation(sourceExpressionId, targetExpressionId, association);
-                } catch (CyclicException e) {
-                    throw new RuntimeException("Unable to Process object, Exception:" + e.getMessage());
-                }
-            }
-        }
-    }
+//    private void postProcessJoinGraph(JoinGraph joinGraph, Enumeration<IExpressionId> enumeration) {
+//        Collection<GraphEntry> graphEntryList = joinGraph.getGraphEntryCollection();
+//
+//        if (graphEntryList.isEmpty()) {
+//            while (enumeration.hasMoreElements()) {
+//                IExpressionId expressionId = enumeration.nextElement();
+//                joinGraph.addIExpressionId(expressionId);
+//            }
+//        } else {
+//            for (GraphEntry graphEntry : graphEntryList) {
+//                IAssociation association = graphEntry.getAssociation();
+//                // postProcessAssociation(association);
+//
+//                IExpressionId sourceExpressionId = graphEntry.getSourceExpressionId();
+//                IExpressionId targetExpressionId = graphEntry.getTargetExpressionId();
+//                try {
+//                    joinGraph.putAssociation(sourceExpressionId, targetExpressionId, association);
+//                } catch (CyclicException e) {
+//                    throw new RuntimeException("Unable to Process object, Exception:" + e.getMessage());
+//                }
+//            }
+//        }
+//    }
 
     // /**
     // * This method processes the QueryEntity object after retreival.
@@ -297,8 +289,8 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
         // preProcessExpression(expression);
         // }
 
-        JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
-        joinGraph.contemporizeGraphEntryCollectionWithJoinGraph();
+//        JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
+//        joinGraph.contemporizeGraphEntryCollectionWithJoinGraph();
 
         // Collection<GraphEntry> graphEntryCollection =
         // joinGraph.getGraphEntryCollection();
