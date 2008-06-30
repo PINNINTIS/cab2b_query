@@ -9,11 +9,12 @@ import edu.wustl.common.hibernate.HibernateDatabaseOperations;
 import edu.wustl.common.querysuite.exceptions.CyclicException;
 import edu.wustl.common.querysuite.metadata.associations.IAssociation;
 import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
 import edu.wustl.common.querysuite.queryobject.impl.GraphEntry;
 import edu.wustl.common.querysuite.queryobject.impl.JoinGraph;
-import edu.wustl.common.querysuite.queryobject.impl.ParameterizedQuery;
+import edu.wustl.common.querysuite.queryobject.impl.Query;
 
 /**
  * This class processes the Query object before persisting and after retreival.
@@ -25,7 +26,7 @@ import edu.wustl.common.querysuite.queryobject.impl.ParameterizedQuery;
  * @param
  *          <Q>
  */
-public class QueryBizLogic<Q extends IQuery> {
+public class QueryBizLogic<Q extends IParameterizedQuery> {
 
     /**
      * Default Constructor
@@ -40,7 +41,7 @@ public class QueryBizLogic<Q extends IQuery> {
      * @return
      */
     protected String getQueryClassName() {
-        return ParameterizedQuery.class.getName();
+        return Query.class.getName();
     }
 
     /**
@@ -113,7 +114,7 @@ public class QueryBizLogic<Q extends IQuery> {
      */
     public void postProcessQuery(Q query) {
         Constraints constraints = (Constraints) query.getConstraints();
-//        constraints.contemporizeExpressionsWithExpressionList();
+        // constraints.contemporizeExpressionsWithExpressionList();
 
         // Enumeration<IExpressionId> enumeration =
         // constraints.getExpressionIds();
@@ -126,9 +127,9 @@ public class QueryBizLogic<Q extends IQuery> {
 
         JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
         postProcessJoinGraph(joinGraph, constraints.getExpressionIds());
-//        if (query instanceof ParameterizedQuery) {
-//            postProcessParameterizedQuery((ParameterizedQuery) query);
-//        }
+        // if (query instanceof ParameterizedQuery) {
+        // postProcessParameterizedQuery((ParameterizedQuery) query);
+        // }
     }
 
     /**
@@ -136,20 +137,22 @@ public class QueryBizLogic<Q extends IQuery> {
      * 
      * @param query
      */
-//    private void postProcessParameterizedQuery(ParameterizedQuery parameterizedQuery) {
-//        AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
-//
-//        List<IOutputAttribute> outputAttributeList = parameterizedQuery.getOutputAttributeList();
-//        for (IOutputAttribute outputAttribute : outputAttributeList) {
-//            OutputAttribute opAttribute = (OutputAttribute) outputAttribute;
-//
-//            Long attributeId = opAttribute.getAttributeId();
-//            AttributeInterface attribute = abstractEntityCache.getAttributeById(attributeId);
-//            opAttribute.setAttribute(attribute);
-//        }
-//
-//    }
-
+    // private void postProcessParameterizedQuery(ParameterizedQuery
+    // parameterizedQuery) {
+    // AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
+    //
+    // List<IOutputAttribute> outputAttributeList =
+    // parameterizedQuery.getOutputAttributeList();
+    // for (IOutputAttribute outputAttribute : outputAttributeList) {
+    // OutputAttribute opAttribute = (OutputAttribute) outputAttribute;
+    //
+    // Long attributeId = opAttribute.getAttributeId();
+    // AttributeInterface attribute =
+    // abstractEntityCache.getAttributeById(attributeId);
+    // opAttribute.setAttribute(attribute);
+    // }
+    //
+    // }
     /**
      * This method processes the expression object after retreival.
      * 
@@ -192,7 +195,7 @@ public class QueryBizLogic<Q extends IQuery> {
         } else {
             for (GraphEntry graphEntry : graphEntryList) {
                 IAssociation association = graphEntry.getAssociation();
-//                postProcessAssociation(association);
+                // postProcessAssociation(association);
 
                 IExpressionId sourceExpressionId = graphEntry.getSourceExpressionId();
                 IExpressionId targetExpressionId = graphEntry.getTargetExpressionId();
@@ -250,35 +253,40 @@ public class QueryBizLogic<Q extends IQuery> {
      * 
      * @param association
      */
-//    private void postProcessAssociation(IAssociation association) {
-//        AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
-//
-//        if (association instanceof InterModelAssociation) {
-//            InterModelAssociation interModelAssociation = (InterModelAssociation) association;
-//
-//            Long sourceAttributeId = interModelAssociation.getSourceAttributeId();
-//            AttributeInterface sourceAttribute = abstractEntityCache.getAttributeById(sourceAttributeId);
-//            interModelAssociation.setSourceAttribute(sourceAttribute);
-//
-//            Long targetAttributeId = interModelAssociation.getTargetAttributeId();
-//            AttributeInterface targetAttribute = abstractEntityCache.getAttributeById(targetAttributeId);
-//            interModelAssociation.setTargetAttribute(targetAttribute);
-//
-//        } else if (association instanceof IntraModelAssociation) {
-//            IntraModelAssociation intraModelAssociation = (IntraModelAssociation) association;
-//
-//            Long deAssociationId = intraModelAssociation.getDynamicExtensionsAssociationId();
-//            AssociationInterface deAssociation = abstractEntityCache.getAssociationById(deAssociationId);
-//            intraModelAssociation.setDynamicExtensionsAssociation(deAssociation);
-//        }
-//    }
-
+    // private void postProcessAssociation(IAssociation association) {
+    // AbstractEntityCache abstractEntityCache = AbstractEntityCache.getCache();
+    //
+    // if (association instanceof InterModelAssociation) {
+    // InterModelAssociation interModelAssociation = (InterModelAssociation)
+    // association;
+    //
+    // Long sourceAttributeId = interModelAssociation.getSourceAttributeId();
+    // AttributeInterface sourceAttribute =
+    // abstractEntityCache.getAttributeById(sourceAttributeId);
+    // interModelAssociation.setSourceAttribute(sourceAttribute);
+    //
+    // Long targetAttributeId = interModelAssociation.getTargetAttributeId();
+    // AttributeInterface targetAttribute =
+    // abstractEntityCache.getAttributeById(targetAttributeId);
+    // interModelAssociation.setTargetAttribute(targetAttribute);
+    //
+    // } else if (association instanceof IntraModelAssociation) {
+    // IntraModelAssociation intraModelAssociation = (IntraModelAssociation)
+    // association;
+    //
+    // Long deAssociationId =
+    // intraModelAssociation.getDynamicExtensionsAssociationId();
+    // AssociationInterface deAssociation =
+    // abstractEntityCache.getAssociationById(deAssociationId);
+    // intraModelAssociation.setDynamicExtensionsAssociation(deAssociation);
+    // }
+    // }
     /**
      * @param query
      */
     public void preProcessQuery(Q query) {
         Constraints constraints = (Constraints) query.getConstraints();
-//        constraints.contemporizeExpressionListWithExpressions();
+        // constraints.contemporizeExpressionListWithExpressions();
 
         // Enumeration<IExpressionId> enumeration =
         // constraints.getExpressionIds();
@@ -292,15 +300,16 @@ public class QueryBizLogic<Q extends IQuery> {
         JoinGraph joinGraph = (JoinGraph) constraints.getJoinGraph();
         joinGraph.contemporizeGraphEntryCollectionWithJoinGraph();
 
-//        Collection<GraphEntry> graphEntryCollection = joinGraph.getGraphEntryCollection();
-//        for (GraphEntry graphEntry : graphEntryCollection) {
-//            IAssociation association = graphEntry.getAssociation();
-//            preProcessAssociation(association);
-//        }
+        // Collection<GraphEntry> graphEntryCollection =
+        // joinGraph.getGraphEntryCollection();
+        // for (GraphEntry graphEntry : graphEntryCollection) {
+        // IAssociation association = graphEntry.getAssociation();
+        // preProcessAssociation(association);
+        // }
 
-//        if (query instanceof ParameterizedQuery) {
-//            preProcessParameterizedQuery((ParameterizedQuery) query);
-//        }
+        // if (query instanceof ParameterizedQuery) {
+        // preProcessParameterizedQuery((ParameterizedQuery) query);
+        // }
     }
 
     /**
@@ -308,14 +317,15 @@ public class QueryBizLogic<Q extends IQuery> {
      * 
      * @param query
      */
-//    private void preProcessParameterizedQuery(ParameterizedQuery parameterizedQuery) {
-//        List<IOutputAttribute> outputAttributeList = parameterizedQuery.getOutputAttributeList();
-//        for (IOutputAttribute outputAttribute : outputAttributeList) {
-//            AttributeInterface attribute = outputAttribute.getAttribute();
-//            ((OutputAttribute) outputAttribute).setAttributeId(attribute.getId());
-//        }
-//    }
-
+    // private void preProcessParameterizedQuery(ParameterizedQuery
+    // parameterizedQuery) {
+    // List<IOutputAttribute> outputAttributeList =
+    // parameterizedQuery.getOutputAttributeList();
+    // for (IOutputAttribute outputAttribute : outputAttributeList) {
+    // AttributeInterface attribute = outputAttribute.getAttribute();
+    // ((OutputAttribute) outputAttribute).setAttributeId(attribute.getId());
+    // }
+    // }
     /**
      * This method processes the Expression object before persisting it.
      * 
@@ -375,22 +385,26 @@ public class QueryBizLogic<Q extends IQuery> {
      * 
      * @param association
      */
-//    private void preProcessAssociation(IAssociation association) {
-//        if (association instanceof IntraModelAssociation) {
-//            IntraModelAssociation intraModelAssociation = (IntraModelAssociation) association;
-//            AssociationInterface dynamicExtensionsAssociation = intraModelAssociation.getDynamicExtensionsAssociation();
-//            intraModelAssociation.setDynamicExtensionsAssociationId(dynamicExtensionsAssociation.getId());
-//        } else if (association instanceof InterModelAssociation) {
-//            InterModelAssociation interModelAssociation = (InterModelAssociation) association;
-//
-//            AttributeInterface sourceAttribute = interModelAssociation.getSourceAttribute();
-//            interModelAssociation.setSourceAttributeId(sourceAttribute.getId());
-//
-//            AttributeInterface targetAttribute = interModelAssociation.getTargetAttribute();
-//            interModelAssociation.setTargetAttributeId(targetAttribute.getId());
-//        }
-//    }
-
+    // private void preProcessAssociation(IAssociation association) {
+    // if (association instanceof IntraModelAssociation) {
+    // IntraModelAssociation intraModelAssociation = (IntraModelAssociation)
+    // association;
+    // AssociationInterface dynamicExtensionsAssociation =
+    // intraModelAssociation.getDynamicExtensionsAssociation();
+    // intraModelAssociation.setDynamicExtensionsAssociationId(dynamicExtensionsAssociation.getId());
+    // } else if (association instanceof InterModelAssociation) {
+    // InterModelAssociation interModelAssociation = (InterModelAssociation)
+    // association;
+    //
+    // AttributeInterface sourceAttribute =
+    // interModelAssociation.getSourceAttribute();
+    // interModelAssociation.setSourceAttributeId(sourceAttribute.getId());
+    //
+    // AttributeInterface targetAttribute =
+    // interModelAssociation.getTargetAttribute();
+    // interModelAssociation.setTargetAttributeId(targetAttribute.getId());
+    // }
+    // }
     public void delete(Q query) {
         // TODO check this.
         new HibernateDatabaseOperations<Q>().delete(query);
