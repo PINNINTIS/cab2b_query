@@ -13,12 +13,4 @@ package edu.wustl.common.querysuite.queryobject;
  */
 public interface IExpressionOperand extends IBaseQueryObject, IOperand {
 
-    /**
-     * Used to determine whether the operand is an expression or a rule.
-     * 
-     * @return true- if subexpression, false - if this is a rule.
-     * @deprecated this interface should just be a marker.
-     */
-    boolean isSubExpressionOperand();
-
 }

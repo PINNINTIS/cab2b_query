@@ -367,14 +367,14 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
             int postindex = index + 1;
 
             IExpressionOperand operand = expressionOperands.get(preIndex);
-            if (operand.isSubExpressionOperand()
+            if (operand instanceof IExpressionId
                     && LogicalOperator.And.equals(getConnector(preIndex, index).getOperator())) {
                 IExpression expression = constraints.getExpression((IExpressionId) operand);
                 return isHavingSameClass(currentExpression, expression);
             }
 
             operand = expressionOperands.get(postindex);
-            if (operand.isSubExpressionOperand()
+            if (operand instanceof IExpressionId
                     && LogicalOperator.And.equals(getConnector(index, postindex).getOperator())) {
                 IExpression expression = constraints.getExpression((IExpressionId) operand);
                 return isHavingSameClass(currentExpression, expression);
@@ -393,7 +393,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
                 // is
                 // (index+1)
                 IExpressionOperand operand = expressionOperands.get(otherOperandIndex);
-                if (operand.isSubExpressionOperand()) {
+                if (operand instanceof IExpressionId) {
                     IExpression expression = constraints.getExpression((IExpressionId) operand);
                     return isHavingSameClass(currentExpression, expression);
                 }
