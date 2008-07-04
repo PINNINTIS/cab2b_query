@@ -34,7 +34,7 @@ public interface IDateOffset<T extends ITimeIntervalEnum> extends IBaseQueryObje
 
         // private constructor because this is an enum
         private TimeIntervalCompoundEnum(T primitiveEnum) {
-            super(primitiveEnum, nextOrdinal++);
+            super(primitiveEnum, nextOrdinal++, primitiveEnum.name());
             primitiveValues.add(primitiveEnum);
             values.add(this);
         }
@@ -68,6 +68,18 @@ public interface IDateOffset<T extends ITimeIntervalEnum> extends IBaseQueryObje
         // this method is mandated by the CompoundEnum contract
         public static TimeIntervalCompoundEnum<?>[] values() {
             return values.toArray(new TimeIntervalCompoundEnum<?>[0]);
+        }
+
+        public static TimeIntervalCompoundEnum<?> valueOf(String name) {
+            if (name == null) {
+                throw new NullPointerException("name is null.");
+            }
+            for (TimeIntervalCompoundEnum<?> timeInterval : values) {
+                if (timeInterval.name().equals(name)) {
+                    return timeInterval;
+                }
+            }
+            throw new IllegalArgumentException("no compound enum AllDataTypes." + name);
         }
 
         // returns all the primitive enum values in this compound enum.

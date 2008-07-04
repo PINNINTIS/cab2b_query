@@ -74,12 +74,24 @@ public class Connector<P extends Enum<?> & IBinaryOperator> extends BaseQueryObj
             return values.toArray(new BinaryOperatorCompoundEnum<?>[0]);
         }
 
+        public static BinaryOperatorCompoundEnum<?> valueOf(String name) {
+            if (name == null) {
+                throw new NullPointerException("name is null.");
+            }
+            for (BinaryOperatorCompoundEnum<?> oper : values) {
+                if (oper.name().equals(name)) {
+                    return oper;
+                }
+            }
+            throw new IllegalArgumentException("no compound enum AllDataTypes." + name);
+        }
+
         public static IBinaryOperator[] primitiveValues() {
             return primitiveValues.toArray(new IBinaryOperator[0]);
         }
 
         private BinaryOperatorCompoundEnum(T primitiveEnum, int ordinal) {
-            super(primitiveEnum, ordinal);
+            super(primitiveEnum, ordinal, primitiveEnum.name());
         }
 
         // serialization; ensure unique instance
