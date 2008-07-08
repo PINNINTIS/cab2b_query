@@ -39,16 +39,6 @@ public class ExpressionId extends ExpressionOperand implements IExpressionId {
     }
 
     /**
-     * This method will return true value always.
-     * 
-     * @return true.
-     * @see edu.wustl.common.querysuite.queryobject.IExpressionOperand#isSubExpressionOperand()
-     */
-    public boolean isSubExpressionOperand() {
-        return true;
-    }
-
-    /**
      * To get the HashCode for the object. It will be calculated based on
      * expression Id.
      * 

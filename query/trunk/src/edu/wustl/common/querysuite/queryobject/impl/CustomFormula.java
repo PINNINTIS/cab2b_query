@@ -47,10 +47,6 @@ public class CustomFormula extends BaseQueryObject implements ICustomFormula {
         getAllRhs().add(rhs);
     }
 
-    public boolean isSubExpressionOperand() {
-        return false;
-    }
-
     // for hibernate
     @SuppressWarnings("unused")
     private List<ITerm> getRhs() {

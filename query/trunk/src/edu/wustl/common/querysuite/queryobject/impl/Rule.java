@@ -126,14 +126,6 @@ public class Rule extends ExpressionOperand implements IRule {
     }
 
     /**
-     * @return false.
-     * @see edu.wustl.common.querysuite.queryobject.IExpressionOperand#isSubExpressionOperand()
-     */
-    public boolean isSubExpressionOperand() {
-        return false;
-    }
-
-    /**
      * @return The no. of conditions present in the Rule.
      * @see edu.wustl.common.querysuite.queryobject.IRule#size()
      */
