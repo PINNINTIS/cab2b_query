@@ -63,12 +63,10 @@
 		</hibernatetool>
 	</target>
 
-	<!--
 	<target name="exportSchema" depends="compile">
 		<hibernatetool destdir="${build.dir}/ddl">
-			<configuration configurationfile="conf/queryhibernate.cfg.xml" />
+			<configuration configurationfile="conf/mysql.cfg.xml" />
 			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
 		</hibernatetool>
 	</target>
-	-->
 </project>
