@@ -26,20 +26,14 @@
 				class="edu.wustl.common.querysuite.queryobject.IOperand" />
 		</list>
 
-		<list name="logicalConnectors" cascade="all-delete-orphan"
-			table="QUERY_CONNECTORS">
+		<list name="connectors" cascade="all-delete-orphan"
+			table="QUERY_BASEEXPR_TO_CONNECTORS">
 			<cache usage="read-write" />
 			<key column="BASE_EXPRESSION_ID" />
 			<index column="POSITION" />
 			<many-to-many column="CONNECTOR_ID" unique="true"
 				class="edu.wustl.common.querysuite.queryobject.impl.Connector" />
 		</list>
-
-		<!--
-			To add non XDoclet property mappings, create a file named
-			hibernate-properties-Expression.xml
-			containing the additional properties and place it in your merge dir.
-		-->
 
 	</class>
 

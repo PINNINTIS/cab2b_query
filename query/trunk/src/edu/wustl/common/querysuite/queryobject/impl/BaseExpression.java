@@ -275,11 +275,14 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
         this.expressionOperands = expressionOperands;
     }
 
-    protected List<IConnector<P>> getLogicalConnectors() {
+    // for hibernate
+    @SuppressWarnings("unused")
+    private List<IConnector<P>> getConnectors() {
         return connectors;
     }
 
-    protected void setLogicalConnectors(List<IConnector<P>> logicalConnectors) {
-        this.connectors = logicalConnectors;
+    @SuppressWarnings("unused")
+    private void setConnectors(List<IConnector<P>> connectors) {
+        this.connectors = connectors;
     }
 }
