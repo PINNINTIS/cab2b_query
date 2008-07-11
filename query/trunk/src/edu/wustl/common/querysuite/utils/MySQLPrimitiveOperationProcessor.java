@@ -58,8 +58,7 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     @Override
-    String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
-            TermStringOpnd rightTermStrOpnd) {
+    String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator, TermStringOpnd rightTermStrOpnd) {
 
         return super.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd);
     }
@@ -67,7 +66,7 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     @Override
     String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
         if (operator == ArithmeticOperator.Minus) {
-            offsetStr = "-" + offsetStr;
+            offsetStr = "concat('-',time_format(" + offsetStr + ",'%H:%i:%s'))";
         }
         return "timestamp(" + timeStr + ", " + offsetStr + ")";
     }

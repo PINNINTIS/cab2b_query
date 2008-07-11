@@ -22,8 +22,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     @Override
-    String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator,
-            TermStringOpnd rightTermStrOpnd) {
+    String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator, TermStringOpnd rightTermStrOpnd) {
         TermType leftType = leftTermStrOpnd.getTermType();
         TermType rightType = rightTermStrOpnd.getTermType();
 
@@ -82,6 +81,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
 
     @Override
     final String modifyDateLiteral(String s) {
+        s = DateParser.changeToHypenMDY(s);
         return strToDateFunc + "('" + s + "', '" + dateFormat + "')";
     }
 
