@@ -18,7 +18,7 @@
 		<property name="attributeId" type="long" update="true" insert="true"
 			column="ATTRIBUTE_ID" length="30" not-null="true" />
 
-		<property name="relationalOperator" column="OPERATOR">
+		<property name="relationalOperator" column="RELATIONAL_OPERATOR">
 			<type name="edu.wustl.common.hibernate.EnumType">
 				<param name="enum-name">
 					edu.wustl.common.querysuite.queryobject.RelationalOperator
@@ -34,7 +34,7 @@
 
 			<index column="POSITION" type="int" />
 
-			<element column="VALUE_LIST" type="string" not-null="false"
+			<element column="VALUE" type="string" not-null="false"
 				unique="false" />
 
 		</list>
