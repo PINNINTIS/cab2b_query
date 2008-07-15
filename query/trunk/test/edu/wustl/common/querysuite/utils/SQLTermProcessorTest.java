@@ -12,11 +12,9 @@ import edu.wustl.common.querysuite.queryobject.YMInterval;
 public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     private static final String dateFormat = "yyyy-mm-dd";
 
-    private static final DatabaseSQLSettings mySQLSettings = new DatabaseSQLSettings(DatabaseType.MySQL,
-            dateFormat);
+    private static final DatabaseSQLSettings mySQLSettings = new DatabaseSQLSettings(DatabaseType.MySQL, dateFormat);
 
-    private static final DatabaseSQLSettings oracleSettings = new DatabaseSQLSettings(DatabaseType.Oracle,
-            dateFormat);
+    private static final DatabaseSQLSettings oracleSettings = new DatabaseSQLSettings(DatabaseType.Oracle, dateFormat);
 
     private static final String quotedDateFormat = "'" + dateFormat + "'";
 
@@ -27,8 +25,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     public void testDateFormatSQL() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "timestamp(STR_TO_DATE('d1', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
         term.addOperand(d1);
 
         check(term, d1S, TermType.Timestamp);
@@ -39,51 +37,53 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOffsetSQL() {
         ITerm term = QueryObjectFactory.createTerm();
         term.addOperand(dateOffsetLiteral("1"));
-        check(term, "maketime(1*24, 0, 0)", TermType.DSInterval);
+        check(term, "maketime((1)*24, 0, 0)", TermType.DSInterval);
         term.setOperand(0, dateOffsetLiteral("1", YMInterval.Month));
         checkInvalid(term);
 
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "timestamp(STR_TO_DATE('d1', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
         term.setOperand(0, d1);
 
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("1"));
         // d1 + 1
-        check(term, "timestamp(" + d1S + ", maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
         // d1 - 1
-        check(term, "timestamp(" + d1S + ", -maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", concat('-',time_format(maketime((1)*24, 0, 0),'%H:%i:%s')))",
+                TermType.Timestamp);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Plus);
         swapOperands(term, 0, 1);
         // 1 + d1
-        check(term, "timestamp(" + d1S + ", maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         swapOperands(term, 0, 1);
         term.setOperand(1, numericLiteral("1"));
         // d1 + 1
-        check(term, "timestamp(" + d1S + ", maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
         // d1 - 1
-        check(term, "timestamp(" + d1S + ", -maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", concat('-',time_format(maketime((1)*24, 0, 0),'%H:%i:%s')))",
+                TermType.Timestamp);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Plus);
         swapOperands(term, 0, 1);
         // 1 + d1
-        check(term, "timestamp(" + d1S + ", maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         term.setOperand(1, createDateExpressionAttribute("a1", "e1"));
         // 1 + a1
-        check(term, "timestamp(timestamp(e1.a1), maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(timestamp(e1.a1), maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         swapOperands(term, 0, 1);
         // a1 + 1
-        check(term, "timestamp(timestamp(e1.a1), maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(timestamp(e1.a1), maketime((1)*24, 0, 0))", TermType.Timestamp);
         term.setOperand(0, createTimestampExpressionAttribute("a1", "e1"));
         // a1 + 1
-        check(term, "timestamp(timestamp(e1.a1), maketime(1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(timestamp(e1.a1), maketime((1)*24, 0, 0))", TermType.Timestamp);
 
         term.setOperand(1, d1);
         // a1 + d1
@@ -98,16 +98,16 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         offsetAttr = createDateOffsetExpressionAttribute("a1", "e1", DSInterval.Day);
         term.setOperand(1, offsetAttr);
         // d1 + a1Off
-        check(term, "timestamp(" + d1S + ", maketime(e1.a1*24, 0, 0))", TermType.Timestamp);
+        check(term, "timestamp(" + d1S + ", maketime((e1.a1)*24, 0, 0))", TermType.Timestamp);
     }
 
     public void testDateDiffSQL() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "timestamp(STR_TO_DATE('d1', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("d2");
-        String d2S = "timestamp(STR_TO_DATE('d2', " + quotedDateFormat + "))";
+        ILiteral d2 = dateLiteral("02-01-2008");
+        String d2S = "timestamp(STR_TO_DATE('2-1-2008', " + quotedDateFormat + "))";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, "timediff(" + d1S + ", " + d2S + ")", TermType.DSInterval);
 
@@ -120,29 +120,35 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     public void testDiffOffset() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "timestamp(STR_TO_DATE('d1', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("d2");
-        String d2S = "timestamp(STR_TO_DATE('d2', " + quotedDateFormat + "))";
+        ILiteral d2 = dateLiteral("02-01-2008");
+        String d2S = "timestamp(STR_TO_DATE('2-1-2008', " + quotedDateFormat + "))";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("1"));
 
         // d1 - d2 + 1
-        check(term, "addtime(timediff(" + d1S + ", " + d2S + "), maketime(1*24, 0, 0))", TermType.DSInterval);
+        check(term, "addtime(timediff(" + d1S + ", " + d2S + "), maketime((1)*24, 0, 0))", TermType.DSInterval);
 
         term.setOperand(2, dateOffsetLiteral("1"));
-        check(term, "addtime(timediff(" + d1S + ", " + d2S + "), maketime(1*24, 0, 0))", TermType.DSInterval);
+        check(term, "addtime(timediff(" + d1S + ", " + d2S + "), maketime((1)*24, 0, 0))", TermType.DSInterval);
 
         term.addParantheses(1, 2);
         // d1 - (d2 + 1)
-        check(term, "timediff(" + d1S + ", (timestamp(" + d2S + ", maketime(1*24, 0, 0))))", TermType.DSInterval);
+        check(term, "timediff(" + d1S + ", (timestamp(" + d2S + ", maketime((1)*24, 0, 0))))", TermType.DSInterval);
 
         term.addOperand(conn(ArithmeticOperator.Minus, 0), createDateOffsetExpressionAttribute("a1", "e1",
                 DSInterval.Minute));
         // d1 - (d2 + 1) - a1
-        check(term, "addtime(timediff(" + d1S + ", (timestamp(" + d2S
-                + ", maketime(1*24, 0, 0)))), -maketime(0, e1.a1, 0))", TermType.DSInterval);
+        check(
+                term,
+                "addtime(timediff("
+                        + d1S
+                        + ", (timestamp("
+                        + d2S
+                        + ", maketime((1)*24, 0, 0)))), concat('-',time_format(maketime((e1.a1)/60, (e1.a1)%60, 0),'%H:%i:%s')))",
+                TermType.DSInterval);
 
         term.setOperand(3, createDateOffsetExpressionAttribute("a1", "e1", YMInterval.Month));
         checkInvalid(term);
@@ -155,8 +161,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleDateFormatSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
         term.addOperand(d1);
 
         check(term, d1S, TermType.Timestamp);
@@ -165,11 +171,11 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleDateDiffSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d1 = dateLiteral("01-01-2008");
+        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("d2");
-        String d2S = "cast(TO_DATE('d2', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d2 = dateLiteral("02-01-2008");
+        String d2S = "cast(TO_DATE('2-1-2008', " + quotedDateFormat + ") as timestamp)";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, d1S + " - " + d2S, TermType.DSInterval);
     }
@@ -177,9 +183,9 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleOffsetSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("d1");
+        ILiteral d1 = dateLiteral("01-01-2008");
         term.addOperand(d1);
-        String d1S = "cast(TO_DATE('d1', " + quotedDateFormat + ") as timestamp)";
+        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
 
         // day
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));
