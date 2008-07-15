@@ -31,11 +31,16 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
         String hour = "0";
         String minute = "0";
         String sec = "0";
+        s = "(" + s + ")";
         switch (interval) {
             case Second :
-                sec = s;
+                sec = s + "%60";
+                minute = "(" + s + "%3600)/60";
+                hour = s + "/3600";
+                break;
             case Minute :
-                minute = s;
+                minute = s + "%60";
+                hour = s + "/60";
                 break;
             case Hour :
                 hour = s;
@@ -66,7 +71,7 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     @Override
     String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
         if (operator == ArithmeticOperator.Minus) {
-            offsetStr = "concat('-',time_format(" + offsetStr + ",'%H:%i:%s'))";
+            offsetStr = negativeMaketimeString(offsetStr);
         }
         return "timestamp(" + timeStr + ", " + offsetStr + ")";
     }
@@ -74,8 +79,12 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     @Override
     String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
         if (operator == ArithmeticOperator.Minus) {
-            rightStr = "-" + rightStr;
+            rightStr = negativeMaketimeString(rightStr);
         }
         return "addtime(" + leftStr + ", " + rightStr + ")";
+    }
+
+    private String negativeMaketimeString(String s) {
+        return "concat('-',time_format(" + s + ",'%H:%i:%s'))";
     }
 }
