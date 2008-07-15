@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false">
+    <class
+        name="edu.wustl.common.querysuite.queryobject.impl.GraphEntry"
+        table="QUERY_GRAPH_ENTRY"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+        <cache usage="read-write" />
+
+        <id
+            name="id"
+            column="IDENTIFIER"
+            type="long"
+            length="30"
+            unsaved-value="null"
+        >
+            <generator class="native">
+                <param name="sequence">GRAPH_ENTRY_SEQ</param>
+            </generator>
+        </id>
+
+        <many-to-one
+            name="association"
+            class="edu.wustl.common.querysuite.metadata.associations.impl.ModelAssociation"
+            cascade="save-update"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="QUERY_MODEL_ASSOCIATION_ID"
+        />
+
+        <many-to-one
+            name="sourceExpressionId"
+            class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+            cascade="save-update"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="SOURCE_EXPRESSIONID_ID"
+        />
+
+        <many-to-one
+            name="targetExpressionId"
+            class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+            cascade="save-update"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TARGET_EXPRESSIONID_ID"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-GraphEntry.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

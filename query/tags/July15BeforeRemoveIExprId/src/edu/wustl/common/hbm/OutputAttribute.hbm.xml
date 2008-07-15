@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false">
+    <class
+        name="edu.wustl.common.querysuite.queryobject.impl.OutputAttribute"
+        table="QUERY_OUTPUT_ATTRIBUTE"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+        <cache usage="read-write" />
+
+        <id
+            name="id"
+            column="IDENTIFIER"
+            type="long"
+            length="30"
+            unsaved-value="null"
+        >
+            <generator class="native">
+                <param name="sequence">OUTPUT_ATTRIBUTE_SEQ</param>
+            </generator>
+        </id>
+
+        <many-to-one
+            name="expressionId"
+            class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+            cascade="save-update,persist"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="EXPRESSIONID_ID"
+        />
+
+        <property
+            name="attributeId"
+            type="long"
+            update="true"
+            insert="true"
+            column="ATTRIBUTE_ID"
+            length="30"
+            not-null="true"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-OutputAttribute.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>
