@@ -9,10 +9,23 @@
 		discriminator-value="arOp"
 		extends="edu.wustl.common.querysuite.queryobject.IOperand">
 
-		<subclass name="Literal" discriminator-value="lit">
+		<subclass name="NumericLiteral" discriminator-value="numlit">
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
-				<property name="literal" type="string" column="LITERAL" />
+				<property name="number" type="string" column="LITERAL" />
+				<property name="termType" column="TERM_TYPE">
+					<type name="edu.wustl.common.hibernate.EnumType">
+						<param name="enum-name">
+							edu.wustl.common.querysuite.queryobject.TermType
+						</param>
+					</type>
+				</property>
+			</join>
+		</subclass>
+		<subclass name="DateLiteral" discriminator-value="datelit">
+			<join table="QUERY_ARITHMETIC_OPERAND">
+				<key column="IDENTIFIER" />
+				<property name="date" type="date" column="DATE_LITERAL" />
 				<property name="termType" column="TERM_TYPE">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">
@@ -32,7 +45,7 @@
 						</param>
 					</type>
 				</property>
-				<property name="literal" type="string" column="LITERAL" />
+				<property name="offset" type="string" column="LITERAL" />
 				<property name="termType" column="TERM_TYPE">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">
