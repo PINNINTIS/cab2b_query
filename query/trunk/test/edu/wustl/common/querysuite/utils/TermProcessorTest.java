@@ -1,8 +1,11 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
+import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
@@ -106,37 +109,41 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         checkNumeric(term, "/[(*[(+[1, 2]), (-[3, 4])]), (+[5, 6])]", true);
     }
 
+    private String dateStr(IDateLiteral date) {
+        return "'" + date.getDate() + "'";
+    }
+
     public void testTwoOperandDateArithmetic() {
         ITerm term = newTerm();
-        ILiteral date1 = dateLiteral("d1");
-        ILiteral date2 = dateLiteral("d2");
+        IDateLiteral date1 = dateLiteral("2008-01-01");
+        IDateLiteral date2 = dateLiteral("2008-01-02");
         term.addOperand(date1);
         term.addOperand(conn(ArithmeticOperator.Plus, 0), date2);
         checkInvalid(term);
 
-        ILiteral dateOffset1 = dateOffsetLiteral("off1");
+        IDateOffsetLiteral<?> dateOffset1 = dateOffsetLiteral("off1");
         term.setOperand(1, dateOffset1);
         // d1 + off1
-        check(term, concat(date1, ArithmeticOperator.Plus, dateOffset1), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, dateOffset1.getOffset()), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 + d1
-        check(term, concat(dateOffset1, ArithmeticOperator.Plus, date1), TermType.Timestamp);
+        check(term, concat(dateOffset1.getOffset(), ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
-        ILiteral numLiteral1 = numericLiteral("1");
+        INumericLiteral numLiteral1 = numericLiteral("1");
         term.setOperand(1, numLiteral1);
         // d1 + 1
-        check(term, concat(date1, ArithmeticOperator.Plus, numLiteral1), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, numLiteral1.getNumber()), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 + d1
-        check(term, concat(numLiteral1, ArithmeticOperator.Plus, date1), TermType.Timestamp);
+        check(term, concat(numLiteral1.getNumber(), ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
 
         term.setOperand(1, dateOffset1);
         // d1 - off1
-        check(term, concat(date1, ArithmeticOperator.Minus, dateOffset1), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, dateOffset1.getOffset()), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 - d1
         checkInvalid(term);
@@ -144,7 +151,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, numLiteral1);
         // d1 - 1
-        check(term, concat(date1, ArithmeticOperator.Minus, numLiteral1), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, numLiteral1.getNumber()), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 - d1
         checkInvalid(term);
@@ -152,7 +159,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, date2);
         // d1 - d2
-        check(term, concat(date1, ArithmeticOperator.Minus, date2), TermType.DSInterval);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, dateStr(date2)), TermType.DSInterval);
 
         // mult and divide
         term.getConnector(0, 1).setOperator(ArithmeticOperator.MultipliedBy);
@@ -175,28 +182,28 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         ILiteral f1 = dateOffsetLiteral("f1");
         ILiteral n1 = numericLiteral("n1");
 
-        term.addOperand(dateLiteral("d1"));
+        term.addOperand(dateLiteral("2008-01-01"));
         term.addOperand(conn(ArithmeticOperator.Minus, 0), f1);
-        term.addOperand(conn(ArithmeticOperator.Plus, 0), dateLiteral("d2"));
+        term.addOperand(conn(ArithmeticOperator.Plus, 0), dateLiteral("2008-01-02"));
         checkInvalid(term);
 
         term.addParantheses(1, 2);
-        check(term, "d1 - (f1 + d2)", TermType.DSInterval);
+        check(term, "'2008-01-01' - (f1 + '2008-01-02')", TermType.DSInterval);
 
         term.removeParantheses(1, 2);
         term.getConnector(1, 2).setOperator(ArithmeticOperator.Minus);
-        check(term, "d1 - f1 - d2", TermType.DSInterval);
+        check(term, "'2008-01-01' - f1 - '2008-01-02'", TermType.DSInterval);
         swapOperands(term, 0, 1);
         checkInvalid(term);
         swapOperands(term, 0, 1);
         term.setOperand(1, n1);
-        check(term, "d1 - n1 - d2", TermType.DSInterval);
+        check(term, "'2008-01-01' - n1 - '2008-01-02'", TermType.DSInterval);
         swapOperands(term, 1, 2);
-        check(term, "d1 - d2 - n1", TermType.DSInterval);
+        check(term, "'2008-01-01' - '2008-01-02' - n1", TermType.DSInterval);
 
         term.addParantheses(1, 2);
         term.addOperand(1, conn(ArithmeticOperator.Plus, 1), f1);
-        check(term, "(d1 + f1) - (d2 - n1)", TermType.DSInterval);
+        check(term, "('2008-01-01' + f1) - ('2008-01-02' - n1)", TermType.DSInterval);
     }
 
     public void testExprAttr() {
@@ -218,8 +225,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         checkPrimitiveOperationProcessor(DatabaseType.Oracle, OraclePrimitiveOperationProcessor.class);
     }
 
-    private void checkPrimitiveOperationProcessor(DatabaseType mySQL,
-            Class<? extends PrimitiveOperationProcessor> name) {
+    private void checkPrimitiveOperationProcessor(DatabaseType mySQL, Class<? extends PrimitiveOperationProcessor> name) {
         IAttributeAliasProvider aliasProvider = new IAttributeAliasProvider() {
 
             public String getAliasFor(IExpressionAttribute exprAttr) {
@@ -227,19 +233,16 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
             }
 
         };
-        String dateFormat = "fooDateFormat";
-        DatabaseSQLSettings sqlSettings = new DatabaseSQLSettings(DatabaseType.MySQL, dateFormat);
+        DatabaseSQLSettings sqlSettings = new DatabaseSQLSettings(DatabaseType.MySQL);
         TermProcessor termProcessor = new TermProcessor(aliasProvider, sqlSettings);
 
         assertSame(termProcessor.getAliasProvider(), aliasProvider);
         PrimitiveOperationProcessor actualPrimProc = termProcessor.getPrimitiveOperationProcessor();
         assertEquals(actualPrimProc.getClass(), MySQLPrimitiveOperationProcessor.class);
-        MySQLPrimitiveOperationProcessor mysqlProc = (MySQLPrimitiveOperationProcessor) actualPrimProc;
-        assertSame(mysqlProc.getDateFormat(), dateFormat);
     }
 
-    private String concat(ILiteral s1, ArithmeticOperator oper, ILiteral s2) {
-        return s1.getLiteral() + " " + oper.mathString() + " " + s2.getLiteral();
+    private String concat(String s1, ArithmeticOperator oper, String s2) {
+        return s1 + " " + oper.mathString() + " " + s2;
     }
 
 }

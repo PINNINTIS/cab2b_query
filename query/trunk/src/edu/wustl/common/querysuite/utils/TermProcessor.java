@@ -8,10 +8,12 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.IDateOffset;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
+import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -72,12 +74,10 @@ public class TermProcessor {
         this.aliasProvider = aliasProvider;
         switch (databaseSQLSettings.getDatabaseType()) {
             case MySQL :
-                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor(databaseSQLSettings
-                        .getDateFormat());
+                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
                 break;
             case Oracle :
-                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor(databaseSQLSettings
-                        .getDateFormat());
+                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
                 break;
             default :
                 throw new RuntimeException("Can't occur.");
@@ -234,6 +234,7 @@ public class TermProcessor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public TermString convertTerm(ITerm term) {
         term = replaceDateLiterals(term);
         if (term.numberOfOperands() == 0) {
@@ -246,7 +247,7 @@ public class TermProcessor {
             }
             if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {
                 IDateOffsetLiteral<DSInterval> lit = (IDateOffsetLiteral<DSInterval>) opnd;
-                String s = primitiveOperationProcessor.getIntervalString(lit.getLiteral(), lit.getTimeInterval());
+                String s = primitiveOperationProcessor.getIntervalString(lit.getOffset(), lit.getTimeInterval());
                 return new TermString(s, TermType.DSInterval);
             }
             TermStringOpnd termStrOpnd = convertOperand(opnd);
@@ -281,11 +282,10 @@ public class TermProcessor {
     private IArithmeticOperand dateCheckedOperand(IArithmeticOperand opnd) {
         // TODO support timestamp literal?
         IArithmeticOperand res = opnd;
-        if (opnd instanceof ILiteral && opnd.getTermType() == TermType.Date) {
-            ILiteral literal = (ILiteral) opnd;
-            String dateStr = primitiveOperationProcessor.modifyDateLiteral(literal.getLiteral());
-            ILiteral newLit = QueryObjectFactory.createLiteral(literal.getTermType());
-            newLit.setLiteral(dateStr);
+        if (opnd instanceof IDateLiteral) {
+            IDateLiteral literal = (IDateLiteral) opnd;
+            String dateStr = primitiveOperationProcessor.modifyDateLiteral(literal);
+            TermStringOpnd newLit = new TermStringOpnd(dateStr, TermType.Date);
             res = newLit;
         }
         return res;
@@ -406,9 +406,13 @@ public class TermProcessor {
     private TermStringOpnd convertOperand(IArithmeticOperand operand) {
         String termStr;
 
-        if (operand instanceof ILiteral) {
-            ILiteral literal = (ILiteral) operand;
-            termStr = literal.getLiteral();
+        // date literal won't appear here.
+        if (operand instanceof INumericLiteral) {
+            INumericLiteral literal = (INumericLiteral) operand;
+            termStr = literal.getNumber();
+        } else if (operand instanceof IDateOffsetLiteral) {
+            IDateOffsetLiteral<?> literal = (IDateOffsetLiteral<?>) operand;
+            termStr = literal.getOffset();
         } else if (operand instanceof SubTerm) {
             SubTerm subTerm = (SubTerm) operand;
             termStr = subTerm.getOperandString();

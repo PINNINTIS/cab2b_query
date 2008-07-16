@@ -1,14 +1,11 @@
 package edu.wustl.common.querysuite.utils;
 
-import junit.framework.TestCase;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
-import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
-import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
 
 public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
@@ -34,7 +31,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testInvalidLHS() {
-        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("d"));
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -55,7 +52,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testIncompatibleRHS() {
-        addRhs(dateLiteral("d"));
+        addRhs(dateLiteral("2008-01-01"));
         customFormula.setOperator(RelationalOperator.Equals);
         try {
             customFormulaProcessor.asString(customFormula);
@@ -67,7 +64,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testIncompatibleRHSBetweenIn() {
         addRhs(2);
-        addRhs(dateLiteral("d"));
+        addRhs(dateLiteral("2008-01-01"));
         customFormula.setOperator(RelationalOperator.Between);
         try {
             customFormulaProcessor.asString(customFormula);
@@ -86,7 +83,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     private ITerm newTerm(int opnd) {
-        return newTerm(QueryObjectFactory.createLiteral(String.valueOf(opnd), TermType.Numeric));
+        return newTerm(QueryObjectFactory.createNumericLiteral(String.valueOf(opnd)));
     }
 
     private ITerm newTerm(IArithmeticOperand opnd) {

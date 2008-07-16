@@ -1,6 +1,7 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
@@ -80,9 +81,12 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     @Override
-    final String modifyDateLiteral(String s) {
-        s = DateParser.changeToHypenMDY(s);
-        return strToDateFunc + "('" + s + "', '" + dateFormat + "')";
+    final String modifyDateLiteral(IDateLiteral s) {
+        return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
+    }
+
+    private String standardDateFormat(IDateLiteral s) {
+        return s.getDate().toString();
     }
 
     String timeIntervalStr(ITimeIntervalEnum timeInterval) {

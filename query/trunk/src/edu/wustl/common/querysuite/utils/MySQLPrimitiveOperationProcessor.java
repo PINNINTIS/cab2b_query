@@ -7,9 +7,8 @@ import edu.wustl.common.querysuite.queryobject.YMInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
-
-    MySQLPrimitiveOperationProcessor(String dateFormat) {
-        super(dateFormat, "STR_TO_DATE");
+    MySQLPrimitiveOperationProcessor() {
+        super("%Y-%m-%d", "STR_TO_DATE");
     }
 
     @Override

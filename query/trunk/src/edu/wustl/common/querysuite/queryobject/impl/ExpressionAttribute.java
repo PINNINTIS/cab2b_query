@@ -13,7 +13,7 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
 
     private AttributeInterface attribute;
 
-    protected ExpressionAttribute() {
+    ExpressionAttribute() {
     // for hibernate
     }
 

@@ -6,8 +6,8 @@ import edu.wustl.common.querysuite.queryobject.YMInterval;
 
 class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
-    OraclePrimitiveOperationProcessor(String dateFormat) {
-        super(dateFormat, "TO_DATE");
+    OraclePrimitiveOperationProcessor() {
+        super("YYYY-MM-DD", "TO_DATE");
     }
 
     @Override

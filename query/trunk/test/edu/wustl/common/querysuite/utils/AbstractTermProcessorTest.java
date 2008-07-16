@@ -3,14 +3,21 @@ package edu.wustl.common.querysuite.utils;
 import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createAttribute;
 import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createEntity;
 import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createExpression;
+
+import java.sql.Date;
+
 import junit.framework.TestCase;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
+import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -52,25 +59,25 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    protected ILiteral numericLiteral(String s) {
-        return literal(s, TermType.Numeric);
+    protected INumericLiteral numericLiteral(String s) {
+        return QueryObjectFactory.createNumericLiteral(s);
     }
 
-    protected ILiteral dateLiteral(String s) {
-        return literal(s, TermType.Date);
+    protected IDateLiteral dateLiteral(String s) {
+        return QueryObjectFactory.createDateLiteral(Date.valueOf(s));
     }
 
-    protected ILiteral dateOffsetLiteral(String s) {
-        return literal(s, TermType.DSInterval);
+    protected IDateOffsetLiteral<?> dateOffsetLiteral(String s) {
+        return QueryObjectFactory.createDateOffsetLiteral(s, DSInterval.Day);
     }
 
     protected <T extends Enum<?> & ITimeIntervalEnum> ILiteral dateOffsetLiteral(String s, T timeInterval) {
         return QueryObjectFactory.createDateOffsetLiteral(s, timeInterval);
     }
 
-    protected ILiteral literal(String s, TermType termType) {
-        return QueryObjectFactory.createLiteral(s, termType);
-    }
+    // protected ILiteral literal(String s, TermType termType) {
+    // return QueryObjectFactory.createLiteral(s, termType);
+    // }
 
     protected void swapOperands(ITerm term, int i, int j) {
         IArithmeticOperand temp = term.getOperand(i);
@@ -107,5 +114,5 @@ public abstract class AbstractTermProcessorTest extends TestCase {
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {
         return QueryObjectFactory.createExpressionAttribute(createExpression(1), createAttribute(attrName,
                 createEntity(entityName), termType));
-    }    
+    }
 }

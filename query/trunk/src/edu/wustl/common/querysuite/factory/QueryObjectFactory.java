@@ -1,5 +1,6 @@
 package edu.wustl.common.querysuite.factory;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +13,16 @@ import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterf
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 import edu.wustl.common.querysuite.metadata.associations.impl.IntraModelAssociation;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
-import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.ILiteral;
+import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
@@ -35,15 +36,15 @@ import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
-import edu.wustl.common.querysuite.queryobject.YMInterval;
 import edu.wustl.common.querysuite.queryobject.impl.Condition;
 import edu.wustl.common.querysuite.queryobject.impl.Connector;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
 import edu.wustl.common.querysuite.queryobject.impl.CustomFormula;
+import edu.wustl.common.querysuite.queryobject.impl.DateLiteral;
 import edu.wustl.common.querysuite.queryobject.impl.DateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.DateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.impl.ExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.impl.Literal;
+import edu.wustl.common.querysuite.queryobject.impl.NumericLiteral;
 import edu.wustl.common.querysuite.queryobject.impl.OutputAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.OutputEntity;
 import edu.wustl.common.querysuite.queryobject.impl.OutputTerm;
@@ -267,26 +268,14 @@ public abstract class QueryObjectFactory {
         return new OutputAttribute(expression, attribute);
     }
 
-    public static ILiteral createLiteral(TermType termType) {
-        if (termType == TermType.DSInterval) {
-            return createDateOffsetLiteral(DSInterval.Day);
-        } else if (termType == TermType.YMInterval) {
-            return createDateOffsetLiteral(YMInterval.Month);
-        }
-        return new Literal(termType);
+    public static INumericLiteral createNumericLiteral(String number) {
+        INumericLiteral numericLiteral = new NumericLiteral();
+        numericLiteral.setNumber(number);
+        return numericLiteral;
     }
 
-    public static ILiteral createLiteral(String s, TermType termType) {
-        ILiteral res;
-        if (termType == TermType.DSInterval) {
-            res = createDateOffsetLiteral(s, DSInterval.Day);
-        } else if (termType == TermType.YMInterval) {
-            res = createDateOffsetLiteral(s, YMInterval.Month);
-        } else {
-            res = new Literal(termType);
-        }
-        res.setLiteral(s);
-        return res;
+    public static INumericLiteral createNumericLiteral() {
+        return new NumericLiteral();
     }
 
     public static ICustomFormula createCustomFormula() {
@@ -333,8 +322,18 @@ public abstract class QueryObjectFactory {
     public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(String s,
             T timeInterval) {
         IDateOffsetLiteral<T> res = new DateOffsetLiteral<T>(timeInterval);
-        res.setLiteral(s);
+        res.setOffset(s);
         return res;
+    }
+
+    public static IDateLiteral createDateLiteral() {
+        return new DateLiteral();
+    }
+
+    public static IDateLiteral createDateLiteral(Date date) {
+        IDateLiteral dateLit = new DateLiteral();
+        dateLit.setDate(date);
+        return dateLit;
     }
 
 }

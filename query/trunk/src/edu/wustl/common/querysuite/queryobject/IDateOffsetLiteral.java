@@ -11,5 +11,7 @@ package edu.wustl.common.querysuite.queryobject;
  * @see ILiteral
  */
 public interface IDateOffsetLiteral<T extends ITimeIntervalEnum> extends IDateOffset<T>, ILiteral {
+    String getOffset();
 
+    void setOffset(String offset);
 }

@@ -6,8 +6,5 @@ package edu.wustl.common.querysuite.queryobject;
  * @author srinath_k
  */
 public interface ILiteral extends IArithmeticOperand {
-    // TODO string not supported.
-    String getLiteral();
 
-    void setLiteral(String literal);
 }

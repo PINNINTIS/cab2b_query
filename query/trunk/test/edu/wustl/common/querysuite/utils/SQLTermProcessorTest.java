@@ -10,13 +10,13 @@ import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
 
 public class SQLTermProcessorTest extends AbstractTermProcessorTest {
-    private static final String dateFormat = "yyyy-mm-dd";
+    private static final DatabaseSQLSettings mySQLSettings = new DatabaseSQLSettings(DatabaseType.MySQL);
 
-    private static final DatabaseSQLSettings mySQLSettings = new DatabaseSQLSettings(DatabaseType.MySQL, dateFormat);
+    private static final DatabaseSQLSettings oracleSettings = new DatabaseSQLSettings(DatabaseType.Oracle);
 
-    private static final DatabaseSQLSettings oracleSettings = new DatabaseSQLSettings(DatabaseType.Oracle, dateFormat);
+    private static final String mySqlQuotedDateFormat = "'%Y-%m-%d'";
 
-    private static final String quotedDateFormat = "'" + dateFormat + "'";
+    private static final String oracleQuotedDateFormat = "'YYYY-MM-DD'";
 
     @Override
     protected void setUp() throws Exception {
@@ -25,8 +25,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     public void testDateFormatSQL() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "timestamp(STR_TO_DATE('2008-01-01', " + mySqlQuotedDateFormat + "))";
         term.addOperand(d1);
 
         check(term, d1S, TermType.Timestamp);
@@ -41,8 +41,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         term.setOperand(0, dateOffsetLiteral("1", YMInterval.Month));
         checkInvalid(term);
 
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "timestamp(STR_TO_DATE('2008-01-01', " + mySqlQuotedDateFormat + "))";
         term.setOperand(0, d1);
 
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("1"));
@@ -103,11 +103,11 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     public void testDateDiffSQL() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "timestamp(STR_TO_DATE('2008-01-01', " + mySqlQuotedDateFormat + "))";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("02-01-2008");
-        String d2S = "timestamp(STR_TO_DATE('2-1-2008', " + quotedDateFormat + "))";
+        ILiteral d2 = dateLiteral("2008-01-02");
+        String d2S = "timestamp(STR_TO_DATE('2008-01-02', " + mySqlQuotedDateFormat + "))";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, "timediff(" + d1S + ", " + d2S + ")", TermType.DSInterval);
 
@@ -120,11 +120,11 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     public void testDiffOffset() {
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "timestamp(STR_TO_DATE('1-1-2008', " + quotedDateFormat + "))";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "timestamp(STR_TO_DATE('2008-01-01', " + mySqlQuotedDateFormat + "))";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("02-01-2008");
-        String d2S = "timestamp(STR_TO_DATE('2-1-2008', " + quotedDateFormat + "))";
+        ILiteral d2 = dateLiteral("2008-01-02");
+        String d2S = "timestamp(STR_TO_DATE('2008-01-02', " + mySqlQuotedDateFormat + "))";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("1"));
 
@@ -161,8 +161,8 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleDateFormatSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "cast(TO_DATE('2008-01-01', " + oracleQuotedDateFormat + ") as timestamp)";
         term.addOperand(d1);
 
         check(term, d1S, TermType.Timestamp);
@@ -171,11 +171,11 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleDateDiffSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
-        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d1 = dateLiteral("2008-01-01");
+        String d1S = "cast(TO_DATE('2008-01-01', " + oracleQuotedDateFormat + ") as timestamp)";
         term.addOperand(d1);
-        ILiteral d2 = dateLiteral("02-01-2008");
-        String d2S = "cast(TO_DATE('2-1-2008', " + quotedDateFormat + ") as timestamp)";
+        ILiteral d2 = dateLiteral("2008-01-02");
+        String d2S = "cast(TO_DATE('2008-01-02', " + oracleQuotedDateFormat + ") as timestamp)";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
         check(term, d1S + " - " + d2S, TermType.DSInterval);
     }
@@ -183,9 +183,9 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     public void testOracleOffsetSQL() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
-        ILiteral d1 = dateLiteral("01-01-2008");
+        ILiteral d1 = dateLiteral("2008-01-01");
         term.addOperand(d1);
-        String d1S = "cast(TO_DATE('1-1-2008', " + quotedDateFormat + ") as timestamp)";
+        String d1S = "cast(TO_DATE('2008-01-01', " + oracleQuotedDateFormat + ") as timestamp)";
 
         // day
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));

@@ -6,12 +6,12 @@ import edu.wustl.common.querysuite.queryobject.TermType;
 abstract class ArithmeticOperand extends BaseQueryObject implements IArithmeticOperand {
     private TermType termType;
 
-    public ArithmeticOperand(TermType termType) {
-        setTermType(termType);
+    ArithmeticOperand() {
+    // for hibernate
     }
 
-    public ArithmeticOperand() {
-
+    public ArithmeticOperand(TermType termType) {
+        setTermType(termType);
     }
 
     public TermType getTermType() {
