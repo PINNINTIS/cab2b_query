@@ -19,11 +19,12 @@ abstract class ArithmeticOperand extends BaseQueryObject implements IArithmeticO
     }
 
     public void setTermType(TermType termType) {
-        if (termType == null || termType == TermType.Invalid) {
+        if (termType == null) {
+            throw new NullPointerException("term type is null.");
+        }
+        if (termType == TermType.Invalid) {
             throw new IllegalArgumentException("the term type 'Invalid' not permissible for an operand.");
         }
-
         this.termType = termType;
     }
-
 }
