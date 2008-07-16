@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false">
+    <class
+        name="edu.wustl.common.querysuite.metadata.associations.impl.ModelAssociation"
+        table="QUERY_MODEL_ASSOCIATION"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+        <cache usage="read-write" />
+
+        <id
+            name="id"
+            column="IDENTIFIER"
+            type="long"
+            length="30"
+            unsaved-value="null"
+        >
+            <generator class="native">
+                <param name="sequence">MODEL_ASSOCIATION_SEQ</param>
+            </generator>
+        </id>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-ModelAssociation.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+        <joined-subclass
+            name="edu.wustl.common.querysuite.metadata.associations.impl.IntraModelAssociation"
+            table="QUERY_INTRA_MODEL_ASSOCIATION"
+            dynamic-update="false"
+            dynamic-insert="false"
+        >
+        <key
+            column="IDENTIFIER"
+        />
+        <property
+            name="dynamicExtensionsAssociationId"
+            type="long"
+            update="true"
+            insert="true"
+            column="DE_ASSOCIATION_ID"
+            length="30"
+            not-null="true"
+        />
+
+        </joined-subclass>
+        <joined-subclass
+            name="edu.wustl.common.querysuite.metadata.associations.impl.InterModelAssociation"
+            table="QUERY_INTER_MODEL_ASSOCIATION"
+            dynamic-update="false"
+            dynamic-insert="false"
+        >
+        <key
+            column="IDENTIFIER"
+        />
+        <property
+            name="sourceServiceUrl"
+            type="string"
+            update="true"
+            insert="true"
+            column="SOURCE_SERVICE_URL"
+            length="1000"
+            not-null="true"
+        />
+
+        <property
+            name="targetServiceUrl"
+            type="string"
+            update="true"
+            insert="true"
+            column="TARGET_SERVICE_URL"
+            length="1000"
+            not-null="true"
+        />
+
+        <property
+            name="sourceAttributeId"
+            type="long"
+            update="true"
+            insert="true"
+            column="SOURCE_ATTRIBUTE_ID"
+            length="30"
+            not-null="true"
+        />
+
+        <property
+            name="targetAttributeId"
+            type="long"
+            update="true"
+            insert="true"
+            column="TARGET_ATTRIBUTE_ID"
+            length="30"
+            not-null="true"
+        />
+
+        </joined-subclass>
+
+    </class>
+
+</hibernate-mapping>

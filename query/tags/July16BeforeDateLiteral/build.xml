@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="query" basedir="." default="build.jar">
+	<property name="build.dir" location="build" />
+	<property name="classes.dir" location="classes" />
+	<property name="src.dir" location="src" />
+	<property name="hbm.dir" value="${src.dir}/edu/wustl/common/hbm" />
+	<target name="clean">
+		<mkdir dir="${build.dir}/jar" />
+		<mkdir dir="${build.dir}/ddl" />
+		<mkdir dir="${classes.dir}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${classes.dir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<path id="run.classpath">
+		<pathelement location="conf" />
+		<fileset dir="lib" includes="**/*.jar" />
+		<pathelement location="${output}" />
+	</path>
+	<target name="compile" depends="clean">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" fork="true" memoryMaximumSize="1200m" includes="**/*.java" debug="on" deprecation="true" classpathref="run.classpath" failonerror="true" nowarn="on" target="1.5" />
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}" includes="**/*.hbm.xml" />
+		</copy>
+	</target>
+
+	<target name="build.jar" depends="compile">
+		<delete>
+			<fileset dir="${build.dir}/jar" includes="**/*" />
+		</delete>
+
+		<jar jarfile="${build.dir}/jar/query.jar">
+			<fileset dir="${classes.dir}">
+				<include name="**/*" />
+				<exclude name="**/*Test" />
+			</fileset>
+		</jar>
+	</target>
+	<path id="toolslib">
+		<path location="${classes.dir}" />
+		<path location="lib/hibernate3.jar" />
+		<path location="lib/washu-commons.jar" />
+		<path location="lib/ant/hibernate-tools.jar" />
+		<path location="lib/ant/commons-logging-1.0.4.jar" />
+		<path location="lib/ant/dom4j-1.6.jar" />
+		<path location="lib/ant/freemarker.jar" />
+		<path location="lib/ant/commons-collections-2.1.1.jar" />
+		<path location="lib/ant/mysql-connector-java-3.0.16-ga-bin.jar" />
+		<path location="lib/ant/oracleDriver.jar" />
+		<path location="lib/ant/jta.jar" />
+	</path>
+	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="toolslib" />
+
+	<target name="createDDL" depends="compile">
+		<hibernatetool destdir="${build.dir}/ddl">
+			<configuration configurationfile="conf/mysql.cfg.xml" />
+			<hbm2ddl export="false" drop="true" outputfilename="mysql.ddl" />
+		</hibernatetool>
+		<hibernatetool destdir="${build.dir}/ddl">
+			<configuration configurationfile="conf/oracle.cfg.xml" />
+			<hbm2ddl export="false" drop="true" outputfilename="oracle.ddl" />
+		</hibernatetool>
+	</target>
+
+	<target name="exportSchema" depends="compile">
+		<hibernatetool destdir="${build.dir}/ddl">
+			<configuration configurationfile="conf/mysql.cfg.xml" />
+			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
+		</hibernatetool>
+	</target>
+</project>
