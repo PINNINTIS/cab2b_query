@@ -13,9 +13,9 @@ public interface IExpressionAttribute extends IArithmeticOperand {
     /**
      * @return the expression from which this attribute is sourced.
      */
-    IExpressionId getExpressionId();
+    IExpression getExpression();
 
-    void setExpressionId(IExpressionId expressionId);
+    void setExpression(IExpression expression);
 
     /**
      * @return the actual attribute which is used in a term.

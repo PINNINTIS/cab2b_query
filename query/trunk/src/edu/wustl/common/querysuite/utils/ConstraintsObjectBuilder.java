@@ -16,7 +16,6 @@ package edu.wustl.common.querysuite.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +29,6 @@ import edu.wustl.common.querysuite.metadata.associations.IInterModelAssociation;
 import edu.wustl.common.querysuite.metadata.path.IPath;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
@@ -52,7 +50,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
     /**
      * 
      */
-    private Set<IExpressionId> m_visibleExpressions = new HashSet<IExpressionId>();
+    private Set<Integer> m_visibleExpressions = new HashSet<Integer>();
 
     public ConstraintsObjectBuilder(IQuery query) {
         this.query = query;
@@ -80,7 +78,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @see edu.wustl.common.querysuite.utils.IConstraintsObjectBuilderInterface#addExpression(edu.wustl.common.querysuite.queryobject.IRule,
      *      edu.common.dynamicextensions.domaininterface.EntityInterface)
      */
-    public IExpressionId addExpression(IRule rule, EntityInterface entity) {
+    public int addExpression(IRule rule, EntityInterface entity) {
         IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(entity);
         IExpression expression = query.getConstraints().addExpression(queryEntity);
         expression.setInView(true);
@@ -97,8 +95,8 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param conditionList The conditions to be added.
      * @return The IExpression of the updated expression.
      */
-    public IExpression editExpression(IExpressionId iExpressionId, IRule rule) {
-        IExpression expression = query.getConstraints().getExpression(iExpressionId);
+    public IExpression editExpression(int iExpressionId, IRule rule) {
+        IExpression expression = exprFromId(iExpressionId);
         expression.addOperand(rule);
 
         return expression;
@@ -111,7 +109,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param iExpressionId The id of the expression to be removed.
      * @return The IExpression of the expression removed.
      */
-    public IExpression removeExpression(IExpressionId iExpressionId) {
+    public IExpression removeExpression(int iExpressionId) {
         return query.getConstraints().removeExpressionWithId(iExpressionId);
     }
 
@@ -122,12 +120,12 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param destExpressionId The destination expression.
      * @param association The association to be set.
      */
-    public void addAssociation(IExpressionId sourceExpressionId, IExpressionId destExpressionId,
+    public void addAssociation(int sourceExpressionId, int destExpressionId,
             IAssociation association) throws CyclicException {
-        IExpression sourceExpression = query.getConstraints().getExpression(sourceExpressionId);
-        IExpression destExpression = query.getConstraints().getExpression(destExpressionId);
+        IExpression sourceExpression = exprFromId(sourceExpressionId);
+        IExpression destExpression = exprFromId(destExpressionId);
         addAssociationToQuery(sourceExpressionId, destExpressionId, association);
-        sourceExpression.addOperand(destExpression.getExpressionId());
+        sourceExpression.addOperand(destExpression);
         if (association instanceof IInterModelAssociation) {
             String sourceUrl = getServiceUrls(association.getSourceEntity())[0];
             if (sourceUrl == null) {
@@ -157,7 +155,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param sourceExpression The source expression.
      * @return The expression id of the new expression created.
      */
-    public IExpressionId createExpressionCopy(IExpression sourceExpression) {
+    public int createExpressionCopy(IExpression sourceExpression) {
         return addExpression((IRule) sourceExpression.getOperand(0), sourceExpression.getQueryEntity()
                 .getDynamicExtensionsEntity());
     }
@@ -169,11 +167,11 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param destExpressionId The destiantion expression id.
      * @param association The association to be added.
      */
-    private void addAssociationToQuery(IExpressionId sourceExpressionId, IExpressionId destExpressionId,
+    private void addAssociationToQuery(int sourceExpressionId, int destExpressionId,
             IAssociation association) throws CyclicException {
         try {
             query.getConstraints().getJoinGraph()
-                    .putAssociation(sourceExpressionId, destExpressionId, association);
+                    .putAssociation(exprFromId(sourceExpressionId), exprFromId(destExpressionId), association);
         } catch (CyclicException cycExp) {
             // Logger.out.error("Cyclic Exception while putting association
             // between "
@@ -194,11 +192,14 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @return Returns true if the association is successfully removed else
      *         returns false.
      */
-    public boolean removeAssociation(IExpressionId sourceExpressionId, IExpressionId destExpressionId) {
-        return query.getConstraints().getExpression(sourceExpressionId).removeOperand(destExpressionId)
-                && query.getConstraints().getJoinGraph().removeAssociation(sourceExpressionId, destExpressionId);
+    public boolean removeAssociation(int sourceExpressionId, int destExpressionId) {
+        return exprFromId(sourceExpressionId).removeOperand(exprFromId(destExpressionId))
+                && query.getConstraints().getJoinGraph().removeAssociation(exprFromId(sourceExpressionId), exprFromId(destExpressionId));
     }
 
+    private IExpression exprFromId(int id) {
+        return query.getConstraints().getExpression(id);
+    }
     /**
      * Sets the logical operator between the parent and child expressions.
      * 
@@ -206,10 +207,10 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param childExpressionId The child expression id.
      * @param logicalOperator The logical operator to be set.
      */
-    public void setLogicalConnector(IExpressionId parentExpressionId, IExpressionId childExpressionId,
+    public void setLogicalConnector(int parentExpressionId, int childExpressionId,
             LogicalOperator logicalOperator, boolean isUpdate) {
-        IExpression parentExpression = query.getConstraints().getExpression(parentExpressionId);
-        int childIndex = parentExpression.indexOfOperand(childExpressionId);
+        IExpression parentExpression = exprFromId(parentExpressionId);
+        int childIndex = parentExpression.indexOfOperand(exprFromId(childExpressionId));
         if (childIndex != 0) {
             int parentIndex = childIndex - 1;
             if (false == isUpdate) {
@@ -229,10 +230,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
     public Collection<EntityInterface> getEntities() {
         Collection<EntityInterface> entities = new HashSet<EntityInterface>();
 
-        Enumeration<IExpressionId> expressionIds = query.getConstraints().getExpressionIds();
-        while (expressionIds.hasMoreElements()) {
-            IExpressionId expressionId = expressionIds.nextElement();
-            IExpression expression = query.getConstraints().getExpression(expressionId);
+        for(IExpression expression : query.getConstraints()) {
             entities.add((EntityInterface) expression.getQueryEntity().getDynamicExtensionsEntity());
         }
 
@@ -245,7 +243,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * 
      * @param entity The entity for which the expression is to be created.
      */
-    public IExpressionId createDummyExpression(EntityInterface entity) {
+    public int createDummyExpression(EntityInterface entity) {
         // Logger.out.debug("Inside createDummyExpression()");
         IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(entity);
         IExpression expression = query.getConstraints().addExpression(queryEntity);
@@ -265,7 +263,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param entity the entity for which the new expression is to be created
      *            (can be different from conditions' attribute's entity).
      */
-    public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
+    public int addRule(List<AttributeInterface> attributes, List<String> operators,
             List<String> firstValues, List<String> secondValues, EntityInterface entity) {
         // Create the list of conditions submitted by user.
         List<ICondition> conditionList = getConditions(attributes, operators, firstValues, secondValues);
@@ -286,7 +284,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param entity the entity for which the new expression is to be created
      *            (can be different from conditions' attribute's entity).
      */
-    public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
+    public int addRule(List<AttributeInterface> attributes, List<String> operators,
             List<List<String>> Values, EntityInterface entity) {
         // Create the list of conditions submitted by user.
         List<ICondition> conditionList = getConditions(attributes, operators, Values);
@@ -364,11 +362,11 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param child1Id The first child operand id.
      * @param child2Id The second child operand id.
      */
-    public void addParantheses(IExpressionId parentId, IExpressionId child1Id, IExpressionId child2Id) {
+    public void addParantheses(int parentId, int child1Id, int child2Id) {
 
-        IExpression parentExpression = query.getConstraints().getExpression(parentId);
-        int child1Index = parentExpression.indexOfOperand(child1Id);
-        int child2Index = parentExpression.indexOfOperand(child2Id);
+        IExpression parentExpression = exprFromId(parentId);
+        int child1Index = parentExpression.indexOfOperand(exprFromId(child1Id));
+        int child2Index = parentExpression.indexOfOperand(exprFromId(child2Id));
         parentExpression.addParantheses(child1Index, child2Index);
     }
 
@@ -380,10 +378,10 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param child1Id The first child operand id.
      * @param child2Id The second child operand id.
      */
-    public void removeParantheses(IExpressionId parentId, IExpressionId child1Id, IExpressionId child2Id) {
-        IExpression parentExpression = query.getConstraints().getExpression(parentId);
-        int child1Index = parentExpression.indexOfOperand(child1Id);
-        int child2Index = parentExpression.indexOfOperand(child2Id);
+    public void removeParantheses(int parentId, int child1Id, int child2Id) {
+        IExpression parentExpression = exprFromId(parentId);
+        int child1Index = parentExpression.indexOfOperand(exprFromId(child1Id));
+        int child2Index = parentExpression.indexOfOperand(exprFromId(child2Id));
         parentExpression.removeParantheses(child1Index, child2Index);
     }
 
@@ -395,16 +393,16 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param path The association path for the source and target entity.
      * @throws CyclicException
      */
-    public List<IExpressionId> addPath(IExpressionId sourceExpressionId, IExpressionId destExpressionId, IPath path)
+    public List<Integer> addPath(int sourceExpressionId, int destExpressionId, IPath path)
             throws CyclicException {
-        List<IExpressionId> intermediateExpressionIds = new ArrayList<IExpressionId>();
+        List<Integer> intermediateExpressionIds = new ArrayList<Integer>();
         List<IAssociation> associations = path.getIntermediateAssociations();
         // No intermediate path between source and target entity
-        IExpressionId srcExpressionId = sourceExpressionId;
+        int srcExpressionId = sourceExpressionId;
         for (int i = 0; i < associations.size() - 1; i++) {
             EntityInterface targetEntity = associations.get(i).getTargetEntity();
-            IExpressionId targetExpressionId = createDummyExpression(targetEntity);
-            IExpression targetExpression = this.query.getConstraints().getExpression(targetExpressionId);
+            int targetExpressionId = createDummyExpression(targetEntity);
+            IExpression targetExpression = this.exprFromId(targetExpressionId);
             targetExpression.setVisible(false);
             intermediateExpressionIds.add(targetExpressionId);
             try {
@@ -427,7 +425,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * 
      * @param expressionId ExpressionId to be added to visible list
      */
-    public void addExressionIdToVisibleList(IExpressionId expressionId) {
+    public void addExressionIdToVisibleList(int expressionId) {
         m_visibleExpressions.add(expressionId);
     }
 
@@ -436,7 +434,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * 
      * @return List of visible expressionIds
      */
-    public Set<IExpressionId> getVisibleExressionIds() {
+    public Set<Integer> getVisibleExressionIds() {
         return m_visibleExpressions;
     }
 
@@ -445,7 +443,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * 
      * @param expressionId ExpressionId to be removed from visible list
      */
-    public void removeExressionIdFromVisibleList(IExpressionId expressionId) {
+    public void removeExressionIdFromVisibleList(int expressionId) {
         m_visibleExpressions.remove(expressionId);
     }
 
@@ -457,14 +455,14 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * @param path The path to added between source and destination node
      * @return true if addition of this path generates cyclic query
      */
-    public boolean isPathCreatesCyclicGraph(IExpressionId sourceExpressionId, IExpressionId destExpressionId,
+    public boolean isPathCreatesCyclicGraph(int sourceExpressionId, int destExpressionId,
             IPath path) {
         try {
-            List<IExpressionId> intermediateExpressionIds = addPath(sourceExpressionId, destExpressionId, path);
+            List<Integer> intermediateExpressionIds = addPath(sourceExpressionId, destExpressionId, path);
             if (0 == intermediateExpressionIds.size()) {
                 removeAssociation(sourceExpressionId, destExpressionId);
-                IExpression sourceExpression = query.getConstraints().getExpression(sourceExpressionId);
-                sourceExpression.removeOperand(destExpressionId);
+                IExpression sourceExpression = exprFromId(sourceExpressionId);
+                sourceExpression.removeOperand(exprFromId(destExpressionId));
             } else {
                 for (int i = 0; i < intermediateExpressionIds.size(); i++) {
                     this.removeExpression(intermediateExpressionIds.get(i));
@@ -476,7 +474,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
         }
     }
 
-    public IExpressionId addExpression(EntityInterface entity) {
+    public int addExpression(EntityInterface entity) {
         IQueryEntity queryEntity = QueryObjectFactory.createQueryEntity(entity);
         IExpression expression = query.getConstraints().addExpression(queryEntity);
         expression.setInView(true);

@@ -2,7 +2,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
 
@@ -17,8 +17,8 @@ public class DateOffsetAttribute<T extends Enum<?> & ITimeIntervalEnum> extends 
 
     }
 
-    public DateOffsetAttribute(IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
-        super(expressionId, attribute, TermType.termType(timeInterval));
+    public DateOffsetAttribute(IExpression expression, AttributeInterface attribute, T timeInterval) {
+        super(expression, attribute, TermType.termType(timeInterval));
         if (timeInterval == null) {
             throw new NullPointerException();
         }

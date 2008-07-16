@@ -11,13 +11,10 @@
 			<key column="IDENTIFIER" />
 			<property name="isInView" type="boolean" column="IS_IN_VIEW" />
 			<property name="isVisible" type="boolean" column="IS_VISIBLE" />
+			<property name="expressionId" type="integer" column="UI_EXPR_ID" />
 
-			<!--srinath removed unique=true -->
-			<many-to-one name="expressionId" class="ExpressionId" cascade="all"
-				column="QUERY_EXPRESSIONID_ID" />
 			<many-to-one name="queryEntity" class="QueryEntity"
 				cascade="save-update,delete" column="QUERY_QUERY_ENTITY_ID" />
 		</join>
 	</subclass>
-
 </hibernate-mapping>

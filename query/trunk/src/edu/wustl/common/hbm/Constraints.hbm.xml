@@ -25,7 +25,7 @@
         </id>
 
         <set
-            name="expressionCollection"
+            name="expressions"
             lazy="false"
             inverse="false"
             cascade="all-delete-orphan"
@@ -40,7 +40,7 @@
               />
 
               <one-to-many
-                  class="edu.wustl.common.querysuite.queryobject.impl.Expression"
+					class="edu.wustl.common.querysuite.queryobject.impl.Expression"
               />
         </set>
 

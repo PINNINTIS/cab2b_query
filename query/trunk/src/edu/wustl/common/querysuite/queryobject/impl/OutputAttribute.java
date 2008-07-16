@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.cab2b.common.cache.AbstractEntityCache;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 
 /**
@@ -20,7 +20,7 @@ import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 public class OutputAttribute extends BaseQueryObject implements IOutputAttribute {
     private static final long serialVersionUID = 1L;
 
-    private IExpressionId expressionId;
+    private IExpression expression;
 
     private AttributeInterface attribute;
 
@@ -32,11 +32,11 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
     /**
      * Parameterized Constructor
      * 
-     * @param expressionId
+     * @param expression
      * @param attribute
      */
-    public OutputAttribute(IExpressionId expressionId, AttributeInterface attribute) {
-        this.expressionId = expressionId;
+    public OutputAttribute(IExpression expression, AttributeInterface attribute) {
+        this.expression = expression;
         this.attribute = attribute;
     }
 
@@ -46,21 +46,21 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
      */
 
     /**
-     * @return the expressionId
+     * @return the expression
      * 
      * @hibernate.many-to-one column="EXPRESSIONID_ID"
-     *                        class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+     *                        class="edu.wustl.common.querysuite.queryobject.impl.Expression"
      *                        cascade="none" lazy="false"
      */
-    public IExpressionId getExpressionId() {
-        return expressionId;
+    public IExpression getExpression() {
+        return expression;
     }
 
     /**
-     * @param expressionId the expressionId to set
+     * @param expression the expression to set
      */
-    public void setExpressionId(IExpressionId expressionId) {
-        this.expressionId = expressionId;
+    public void setExpression(IExpression expression) {
+        this.expression = expression;
     }
 
     /**
@@ -105,9 +105,9 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
             isEqual = true;
         } else if (object != null && this.getClass() == object.getClass()) {
             OutputAttribute outputAtrribute = (OutputAttribute) object;
-            IExpressionId expressionId = outputAtrribute.getExpressionId();
+            IExpression expression = outputAtrribute.getExpression();
 
-            if (this.getExpressionId().equals(expressionId) && this.getAttribute().equals(outputAtrribute)) {
+            if (this.getExpression().equals(expression) && this.getAttribute().equals(outputAtrribute)) {
                 isEqual = true;
             }
         }
@@ -123,7 +123,7 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(expressionId).append(attribute).toHashCode();
+        return new HashCodeBuilder().append(expression).append(attribute).toHashCode();
     }
 
     // for hibernate

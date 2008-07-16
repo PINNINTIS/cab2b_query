@@ -36,7 +36,7 @@ public interface IJoinGraph extends IBaseQueryObject
 	 * @param childExpressionId The child Expression id.
 	 * @return The association betweent the thwo Expression ids.
 	 */
-	IAssociation getAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId);
+	IAssociation getAssociation(IExpression parentExpressionId, IExpression childExpressionId);
 
 	/**
 	 * To put the association in the joingraph.
@@ -49,7 +49,7 @@ public interface IJoinGraph extends IBaseQueryObject
 	 * @throws CyclicException
 	 *             if adding this edge will cause a cycle in the graph
 	 */
-	IAssociation putAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId,
+	IAssociation putAssociation(IExpression parentExpressionId, IExpression childExpressionId,
 			IAssociation association) throws CyclicException;
 
 	/**
@@ -58,7 +58,7 @@ public interface IJoinGraph extends IBaseQueryObject
 	 * @param childExpressionId The child Expression id
 	 * @return true if the association between the specified expressions existed.
 	 */
-	boolean removeAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId);
+	boolean removeAssociation(IExpression parentExpressionId, IExpression childExpressionId);
 
 	/**
 	 * indicates if the graph is a connected graph. for building queries
@@ -75,7 +75,7 @@ public interface IJoinGraph extends IBaseQueryObject
 	 * @return  true if the graph contains an association between the specified
 	 * expressionIds.
 	 */
-	boolean containsAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId);
+	boolean containsAssociation(IExpression parentExpressionId, IExpression childExpressionId);
 
 	/**
 	 * For each element in IExpressionId list, the root node will be checked 
@@ -84,21 +84,21 @@ public interface IJoinGraph extends IBaseQueryObject
 	 * @return root node of the join graph, null if no root exists for the expression tree
 	 * @throws MultipleRootsException if more than 1 roots exists.
 	 */
-	IExpressionId getRoot() throws MultipleRootsException;
+    IExpression getRoot() throws MultipleRootsException;
 
 	/**
 	 * To get the list of Parents of the given ExpressionId.
 	 * @param childExpressionId the Child Expression Id reference.
 	 * @return The List parent of ExpressionId for th given childExpressionId. 
 	 */
-	List<IExpressionId> getParentList(IExpressionId childExpressionId);
+	List<IExpression> getParentList(IExpression childExpressionId);
 
 	/**
 	 * To get the list of children of the given ExpressionId.
 	 * @param expressionId the expr id whose children are to be found.
 	 * @return children of given expressionId. 
 	 */
-	List<IExpressionId> getChildrenList(IExpressionId expressionId);
+	List<IExpression> getChildrenList(IExpression expressionId);
 	
-	List<IExpressionId> getAllRoots();
+	List<IExpression> getAllRoots();
 }

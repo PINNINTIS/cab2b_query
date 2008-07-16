@@ -10,7 +10,7 @@ import edu.common.dynamicextensions.domaininterface.AttributeInterface;
  * @created Oct 8, 2007, 3:04:09 PM
  */
 public interface IOutputAttribute extends IBaseQueryObject {
-    IExpressionId getExpressionId();
+    IExpression getExpression();
 
     AttributeInterface getAttribute();
 }

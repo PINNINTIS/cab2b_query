@@ -19,12 +19,12 @@ import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
-import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
+import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.IParameterizedCondition;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
@@ -43,7 +43,6 @@ import edu.wustl.common.querysuite.queryobject.impl.CustomFormula;
 import edu.wustl.common.querysuite.queryobject.impl.DateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.DateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.impl.ExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.impl.ExpressionId;
 import edu.wustl.common.querysuite.queryobject.impl.Literal;
 import edu.wustl.common.querysuite.queryobject.impl.OutputAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.OutputEntity;
@@ -168,16 +167,6 @@ public abstract class QueryObjectFactory {
     }
 
     /**
-     * To instantiate Expression Id object.
-     * 
-     * @param id The id to set.
-     * @return The reference to the ExpressionId object.
-     */
-    public static IExpressionId createExpressionId(int id) {
-        return new ExpressionId(id);
-    }
-
-    /**
      * To instantiate Constraints class object.
      * 
      * @return The object of Constraints Class.
@@ -270,12 +259,12 @@ public abstract class QueryObjectFactory {
      * This method instantiate object of class implementing IOutputAttribute
      * interface.
      * 
-     * @param expressionId
+     * @param expression
      * @param attribute
      * @return
      */
-    public static IOutputAttribute createOutputAttribute(IExpressionId expressionId, AttributeInterface attribute) {
-        return new OutputAttribute(expressionId, attribute);
+    public static IOutputAttribute createOutputAttribute(IExpression expression, AttributeInterface attribute) {
+        return new OutputAttribute(expression, attribute);
     }
 
     public static ILiteral createLiteral(TermType termType) {
@@ -304,8 +293,7 @@ public abstract class QueryObjectFactory {
         return new CustomFormula();
     }
 
-    public static IExpressionAttribute createExpressionAttribute(IExpressionId expressionId,
-            AttributeInterface attribute) {
+    public static IExpressionAttribute createExpressionAttribute(IExpression expression, AttributeInterface attribute) {
         AttributeTypeInformationInterface attrTypeInfo = attribute.getAttributeTypeInformation();
         TermType termType;
         if (attrTypeInfo instanceof NumericTypeInformationInterface) {
@@ -315,7 +303,7 @@ public abstract class QueryObjectFactory {
         } else {
             throw new UnsupportedOperationException("Only numeric and date attributes supported in custom formulas.");
         }
-        return new ExpressionAttribute(expressionId, attribute, termType);
+        return new ExpressionAttribute(expression, attribute, termType);
     }
 
     public static ITerm createTerm() {
@@ -331,8 +319,11 @@ public abstract class QueryObjectFactory {
     }
 
     public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(
-            IExpressionId expressionId, AttributeInterface attribute, T timeInterval) {
-        return new DateOffsetAttribute<T>(expressionId, attribute, timeInterval);
+            IExpression expression, AttributeInterface attribute, T timeInterval) {
+        if (!(attribute.getAttributeTypeInformation() instanceof NumericTypeInformationInterface)) {
+            throw new IllegalArgumentException("date offset attribute " + attribute + " is not numeric.");
+        }
+        return new DateOffsetAttribute<T>(expression, attribute, timeInterval);
     }
 
     public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(T timeInterval) {

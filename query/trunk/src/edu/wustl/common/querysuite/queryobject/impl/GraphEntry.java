@@ -6,7 +6,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.wustl.common.querysuite.metadata.associations.IAssociation;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 
 /**
  * 
@@ -19,9 +19,9 @@ import edu.wustl.common.querysuite.queryobject.IExpressionId;
 public class GraphEntry extends BaseQueryObject {
     private static final long serialVersionUID = 1L;
 
-    private IExpressionId sourceExpressionId;
+    private IExpression sourceExpression;
 
-    private IExpressionId targetExpressionId;
+    private IExpression targetExpression;
 
     private IAssociation association;
 
@@ -35,14 +35,14 @@ public class GraphEntry extends BaseQueryObject {
     /**
      * Parameterized Constructor
      * 
-     * @param sourceExpressionId
-     * @param targetExpressionId
+     * @param sourceExpression
+     * @param targetExpression
      * @param association
      */
-    public GraphEntry(IExpressionId sourceExpressionId, IExpressionId targetExpressionId, IAssociation association) {
+    public GraphEntry(IExpression sourceExpression, IExpression targetExpression, IAssociation association) {
         super();
-        this.sourceExpressionId = sourceExpressionId;
-        this.targetExpressionId = targetExpressionId;
+        this.sourceExpression = sourceExpression;
+        this.targetExpression = targetExpression;
         this.association = association;
     }
 
@@ -82,21 +82,21 @@ public class GraphEntry extends BaseQueryObject {
      * See also: 1-7 Description : Making cascade save-update from cascade all
      */
     /**
-     * @return the sourceExpressionId
+     * @return the sourceExpression
      * 
      * @hibernate.many-to-one column="SOURCE_EXPRESSIONID_ID"
-     *                        class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+     *                        class="edu.wustl.common.querysuite.queryobject.impl.Expression"
      *                        cascade="save-update" lazy="false"
      */
-    public IExpressionId getSourceExpressionId() {
-        return sourceExpressionId;
+    public IExpression getSourceExpression() {
+        return sourceExpression;
     }
 
     /**
-     * @param sourceExpressionId the sourceExpressionId to set
+     * @param sourceExpression the sourceExpression to set
      */
-    public void setSourceExpressionId(IExpressionId sourceExpressionId) {
-        this.sourceExpressionId = sourceExpressionId;
+    public void setSourceExpression(IExpression sourceExpression) {
+        this.sourceExpression = sourceExpression;
     }
 
     /**
@@ -105,21 +105,21 @@ public class GraphEntry extends BaseQueryObject {
      */
 
     /**
-     * @return the targetExpressionId
+     * @return the targetExpression
      * 
      * @hibernate.many-to-one column="TARGET_EXPRESSIONID_ID"
-     *                        class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+     *                        class="edu.wustl.common.querysuite.queryobject.impl.Expression"
      *                        cascade="save-update" lazy="false"
      */
-    public IExpressionId getTargetExpressionId() {
-        return targetExpressionId;
+    public IExpression getTargetExpression() {
+        return targetExpression;
     }
 
     /**
-     * @param targetExpressionId the targetExpressionId to set
+     * @param targetExpression the targetExpression to set
      */
-    public void setTargetExpressionId(IExpressionId targetExpressionId) {
-        this.targetExpressionId = targetExpressionId;
+    public void setTargetExpression(IExpression targetExpression) {
+        this.targetExpression = targetExpression;
     }
 
     /**
@@ -136,11 +136,11 @@ public class GraphEntry extends BaseQueryObject {
             isEqual = true;
         } else if (object != null && this.getClass() == object.getClass()) {
             GraphEntry graphEntry = (GraphEntry) object;
-            IExpressionId sourceExpressionId = graphEntry.getSourceExpressionId();
-            IExpressionId targetExpressionId = graphEntry.getTargetExpressionId();
+            IExpression sourceExpression = graphEntry.getSourceExpression();
+            IExpression targetExpression = graphEntry.getTargetExpression();
             IAssociation association = graphEntry.getAssociation();
-            if (this.getSourceExpressionId().equals(sourceExpressionId)
-                    && this.getTargetExpressionId().equals(targetExpressionId)
+            if (this.getSourceExpression().equals(sourceExpression)
+                    && this.getTargetExpression().equals(targetExpression)
                     && this.getAssociation().equals(association)) {
                 isEqual = true;
             }
@@ -156,7 +156,7 @@ public class GraphEntry extends BaseQueryObject {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(sourceExpressionId).append(targetExpressionId).append(association)
+        return new HashCodeBuilder().append(sourceExpression).append(targetExpression).append(association)
                 .toHashCode();
     }
 

@@ -267,7 +267,8 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     // for hibernate
-    protected List<V> getExpressionOperands() {
+    @SuppressWarnings("unused")
+    private List<V> getExpressionOperands() {
         return expressionOperands;
     }
 

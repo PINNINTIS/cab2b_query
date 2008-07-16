@@ -1,18 +1,17 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
-import java.util.Collection;
-import java.util.Enumeration;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import edu.wustl.common.querysuite.exceptions.MultipleRootsException;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IJoinGraph;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 
@@ -29,12 +28,11 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 public class Constraints extends BaseQueryObject implements IConstraints {
     private static final long serialVersionUID = 6169601255945564445L;
 
-    private Map<IExpressionId, IExpression> expressions = new HashMap<IExpressionId, IExpression>();
+    private transient Map<Integer, IExpression> exprIdToExpr = new HashMap<Integer, IExpression>();
 
-    // private Collection<IExpression> expressionCollection = new
-    // HashSet<IExpression>();
+    private Set<IExpression> expressions = new HashSet<IExpression>();
 
-    private IJoinGraph joinGraph = new JoinGraph();
+    private JoinGraph joinGraph = new JoinGraph();
 
     private int currentExpressionId = 0;
 
@@ -79,19 +77,12 @@ public class Constraints extends BaseQueryObject implements IConstraints {
     }
 
     /**
-     * @param joinGraph the joinGraph to set
-     */
-    public void setJoinGraph(IJoinGraph joinGraph) {
-        this.joinGraph = joinGraph;
-    }
-
-    /**
      * @return the root expression of the join graph.
      * @throws MultipleRootsException When there exists multiple roots in
      *             joingraph.
-     * @see edu.wustl.common.querysuite.queryobject.IConstraints#getRootExpressionId()
+     * @see edu.wustl.common.querysuite.queryobject.IConstraints#getRootExpression()
      */
-    public IExpressionId getRootExpressionId() throws MultipleRootsException {
+    public IExpression getRootExpression() throws MultipleRootsException {
         return joinGraph.getRoot();
     }
 
@@ -104,48 +95,48 @@ public class Constraints extends BaseQueryObject implements IConstraints {
     public IExpression addExpression(IQueryEntity constraintEntity) {
         IExpression expression = new Expression(constraintEntity, ++currentExpressionId);
 
-        expressions.put(expression.getExpressionId(), expression);
-
-        ((JoinGraph) joinGraph).addIExpressionId(expression.getExpressionId());
+        exprIdToExpr.put(expression.getExpressionId(), expression);
+        expressions.add(expression);
+        ((JoinGraph) joinGraph).addIExpression(expression);
         return expression;
     }
 
     /**
-     * @return an enumeration of the expressions' ids.
-     * @see edu.wustl.common.querysuite.queryobject.IConstraints#getExpressionIds()
-     */
-    public Enumeration<IExpressionId> getExpressionIds() {
-        Set<IExpressionId> set = expressions.keySet();
-        Vector<IExpressionId> vector = new Vector<IExpressionId>(set);
-        return vector.elements();
-    }
-
-    /**
-     * @param expressionId the id of the expression to be removed.
+     * @param expression the id of the expression to be removed.
      * @return the removed expression.
-     * @see edu.wustl.common.querysuite.queryobject.IConstraints#removeExpressionWithId(edu.wustl.common.querysuite.queryobject.IExpressionId)
+     * @see edu.wustl.common.querysuite.queryobject.IConstraints#removeExpressionWithId(edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public IExpression removeExpressionWithId(IExpressionId expressionId) {
+    public IExpression removeExpressionWithId(int expressionId) {
         JoinGraph theJoinGraph = (JoinGraph) joinGraph;
+        IExpression expression = getExpression(expressionId);
 
-        List<IExpressionId> parents = theJoinGraph.getParentList(expressionId);
-        for (int i = 0; i < parents.size(); i++) {
-            IExpression parentExpression = expressions.get(parents.get(i));
-            parentExpression.removeOperand(expressionId);
+        List<IExpression> parents = theJoinGraph.getParentList(expression);
+        for (IExpression parentExpression : parents) {
+            parentExpression.removeOperand(expression);
         }
-        theJoinGraph.removeIExpressionId(expressionId);
+        theJoinGraph.removeIExpression(expression);
 
-        return expressions.remove(expressionId);
+        expressions.remove(expression);
+        exprIdToExpr.remove(expressionId);
+        return expression;
+    }
+
+    public void removeExpression(IExpression expr) {
+        removeExpressionWithId(expr.getExpressionId());
     }
 
     /**
-     * @param id the id (usually obtained from getExpressionIds)
+     * @param id the id (usually obtained from getExpressions)
      * @return the reference to the IExpression associatied with the given
-     *         IExpressionId.
-     * @see edu.wustl.common.querysuite.queryobject.IConstraints#getExpression(edu.wustl.common.querysuite.queryobject.IExpressionId)
+     *         IExpression.
+     * @see edu.wustl.common.querysuite.queryobject.IConstraints#getExpression(edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public IExpression getExpression(IExpressionId id) {
-        return expressions.get(id);
+    public IExpression getExpression(int id) {
+        IExpression expr = exprIdToExpr.get(id);
+        if (expr == null) {
+            throw new IllegalArgumentException("expr with id " + id + " not present in constraints.");
+        }
+        return expr;
     }
 
     /**
@@ -157,14 +148,43 @@ public class Constraints extends BaseQueryObject implements IConstraints {
      */
     public Set<IQueryEntity> getQueryEntities() {
         Set<IQueryEntity> constraintEntitySet = new HashSet<IQueryEntity>();
-        Collection<IExpression> allExpressions = expressions.values();
-        for (IExpression expression : allExpressions) {
+        for (IExpression expression : expressions) {
             constraintEntitySet.add(expression.getQueryEntity());
         }
         return constraintEntitySet;
     }
 
+    /**
+     * @see edu.wustl.common.querysuite.queryobject.IConstraints#iterator()
+     */
+    public Iterator<IExpression> iterator() {
+        return new Iterator<IExpression>() {
+            private Iterator<IExpression> iter = expressions.iterator();
+
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            public IExpression next() {
+                return iter.next();
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+        };
+    }
+
     // for hibernate
+
+    /**
+     * @param joinGraph the joinGraph to set
+     */
+    @SuppressWarnings("unused")
+    private void setJoinGraph(JoinGraph joinGraph) {
+        this.joinGraph = joinGraph;
+    }
 
     /**
      * This method returns the List of IExpression associated with this
@@ -180,8 +200,8 @@ public class Constraints extends BaseQueryObject implements IConstraints {
      * @hibernate.cache usage="read-write"
      */
     @SuppressWarnings("unused")
-    private Collection<IExpression> getExpressionCollection() {
-        return new HashSet<IExpression>(expressions.values());
+    private Set<IExpression> getExpressions() {
+        return expressions;
     }
 
     /**
@@ -191,18 +211,23 @@ public class Constraints extends BaseQueryObject implements IConstraints {
      * @param expressionCollection the expressionCollection to set
      */
     @SuppressWarnings("unused")
-    private void setExpressionCollection(Collection<IExpression> expressionCollection) {
-        expressions.clear();
-        if (expressionCollection != null) {
-            for (IExpression expression : expressionCollection) {
-                expressions.put(expression.getExpressionId(), expression);
+    private void setExpressions(Set<IExpression> expressions) {
+        if (expressions == null) {
+            throw new NullPointerException();
+        }
+        this.expressions = expressions;
+        populateExprIdMap();
+    }
 
-                int expressionId = expression.getExpressionId().getInt();
-                if (expressionId > currentExpressionId) {
-                    currentExpressionId = expressionId;
-                }
-            }
+    private void populateExprIdMap() {
+        exprIdToExpr = new HashMap<Integer, IExpression>();
+        for (IExpression expression : expressions) {
+            exprIdToExpr.put(expression.getExpressionId(), expression);
         }
     }
 
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        populateExprIdMap();
+    }
 }

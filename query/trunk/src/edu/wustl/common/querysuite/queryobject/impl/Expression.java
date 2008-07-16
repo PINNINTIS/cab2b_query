@@ -15,7 +15,6 @@ import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
@@ -39,7 +38,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
 
     private boolean isVisible = true;
 
-    private IExpressionId expressionId;
+    private int expressionId;
 
     /**
      * Default Constructor
@@ -57,7 +56,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      */
     public Expression(IQueryEntity constraintEntity, int expressionId) {
         this.queryEntity = constraintEntity;
-        this.expressionId = new ExpressionId(expressionId);
+        this.expressionId = expressionId;
     }
 
     /**
@@ -90,7 +89,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      *                        unique="true" cascade="all-delete-orphan"
      *                        lazy="false"
      */
-    public IExpressionId getExpressionId() {
+    public int getExpressionId() {
         return expressionId;
     }
 
@@ -99,7 +98,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * 
      * @param expressionId the expressionId to set
      */
-    public void setExpressionId(IExpressionId expressionId) {
+    public void setExpressionId(int expressionId) {
         this.expressionId = expressionId;
     }
 
@@ -135,27 +134,53 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
     }
 
     @Override
+    public IExpressionOperand getOperand(int index) {
+        return unwrapSubExpr(super.getOperand(index));
+    }
+
+    @Override
+    public void setOperand(int index, IExpressionOperand operand) {
+        setContainingExpressionForRule(operand);
+        super.setOperand(index, wrapInSubExpr(operand));
+    }
+
+    @Override
+    public boolean removeOperand(IExpressionOperand operand) {
+        return super.removeOperand(wrapInSubExpr(operand));
+    }
+
+    @Override
+    public IExpressionOperand removeOperand(int index) {
+        return unwrapSubExpr(super.removeOperand(index));
+    }
+
+    @Override
+    public int indexOfOperand(IExpressionOperand operand) {
+        return super.indexOfOperand(wrapInSubExpr(operand));
+    }
+
+    @Override
     public int addOperand(IExpressionOperand operand) {
         setContainingExpressionForRule(operand);
-        return super.addOperand(operand);
+        return super.addOperand(wrapInSubExpr(operand));
     }
 
     @Override
     public int addOperand(IConnector<LogicalOperator> logicalConnector, IExpressionOperand operand) {
         setContainingExpressionForRule(operand);
-        return super.addOperand(logicalConnector, operand);
+        return super.addOperand(logicalConnector, wrapInSubExpr(operand));
     }
 
     @Override
     public void addOperand(int index, IConnector<LogicalOperator> logicalConnector, IExpressionOperand operand) {
         setContainingExpressionForRule(operand);
-        super.addOperand(index, logicalConnector, operand);
+        super.addOperand(index, logicalConnector, wrapInSubExpr(operand));
     }
 
     @Override
     public void addOperand(int index, IExpressionOperand operand, IConnector<LogicalOperator> logicalConnector) {
         setContainingExpressionForRule(operand);
-        super.addOperand(index, operand, logicalConnector);
+        super.addOperand(index, wrapInSubExpr(operand), logicalConnector);
     }
 
     /**
@@ -167,6 +192,23 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
         if (operand instanceof Rule) {
             Rule rule = (Rule) operand;
             rule.setContainingExpression(this);
+        }
+    }
+
+    private IExpressionOperand wrapInSubExpr(IExpressionOperand operand) {
+        if (operand instanceof IExpression) {
+            return new SubExpression((IExpression) operand);
+        } else {
+            return operand;
+        }
+    }
+
+    private IExpressionOperand unwrapSubExpr(IExpressionOperand operand) {
+        if (operand instanceof SubExpression) {
+            SubExpression subExpr = (SubExpression) operand;
+            return subExpr.getWrappedExpr();
+        } else {
+            return operand;
         }
     }
 
@@ -296,7 +338,7 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
 
         if (obj != null && this.getClass() == obj.getClass()) {
             Expression expression = (Expression) obj;
-            if (this.expressionId != null & this.expressionId.equals(expression.expressionId)) {
+            if (this.expressionId == expression.expressionId) {
                 return true;
             }
         }
@@ -327,15 +369,15 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
      * @throws IllegalArgumentException if the given Expression Id is not child
      *             of the Expression.
      */
-    public boolean isPseudoAnded(IExpressionId expressionId, IConstraints constraints) {
-        int index = expressionOperands.indexOf(expressionId);
-        IExpression currentExpression = constraints.getExpression((IExpressionId) expressionOperands.get(index));
+    public boolean isPseudoAnded(int expressionId, IConstraints constraints) {
+        IExpression currentExpression = constraints.getExpression(expressionId);
+        int index = expressionOperands.indexOf(currentExpression);
 
         if (index < -1) {
             throw new IllegalArgumentException("The given Expression Id not found!!!");
         }
 
-        int immediateOperandIndex = indexOfConnectorForOperand((IExpressionOperand) expressionId);
+        int immediateOperandIndex = indexOfConnectorForOperand(currentExpression);
 
         if (immediateOperandIndex == Expression.NO_LOGICAL_CONNECTOR) // there
         // is no
@@ -367,16 +409,16 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
             int postindex = index + 1;
 
             IExpressionOperand operand = expressionOperands.get(preIndex);
-            if (operand instanceof IExpressionId
+            if (operand instanceof IExpression
                     && LogicalOperator.And.equals(getConnector(preIndex, index).getOperator())) {
-                IExpression expression = constraints.getExpression((IExpressionId) operand);
+                IExpression expression = (IExpression) operand;
                 return isHavingSameClass(currentExpression, expression);
             }
 
             operand = expressionOperands.get(postindex);
-            if (operand instanceof IExpressionId
+            if (operand instanceof IExpression
                     && LogicalOperator.And.equals(getConnector(index, postindex).getOperator())) {
-                IExpression expression = constraints.getExpression((IExpressionId) operand);
+                IExpression expression = (IExpression) operand;
                 return isHavingSameClass(currentExpression, expression);
             }
         } else
@@ -393,8 +435,8 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
                 // is
                 // (index+1)
                 IExpressionOperand operand = expressionOperands.get(otherOperandIndex);
-                if (operand instanceof IExpressionId) {
-                    IExpression expression = constraints.getExpression((IExpressionId) operand);
+                if (operand instanceof IExpression) {
+                    IExpression expression = (IExpression) operand;
                     return isHavingSameClass(currentExpression, expression);
                 }
             }
@@ -450,6 +492,49 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
         super.setExpressionOperands(expressionOperands);
         for (IExpressionOperand operand : expressionOperands) {
             setContainingExpressionForRule(operand);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class SubExpression extends BaseQueryObject implements IExpressionOperand {
+        private static final long serialVersionUID = 8219009897032071466L;
+
+        private IExpression wrappedExpr;
+
+        private SubExpression() {
+
+        }
+
+        private SubExpression(IExpression wrappedExpr) {
+            setWrappedExpr(wrappedExpr);
+        }
+
+        private IExpression getWrappedExpr() {
+            return wrappedExpr;
+        }
+
+        private void setWrappedExpr(IExpression wrappedExpr) {
+            if (wrappedExpr == null) {
+                throw new NullPointerException();
+            }
+            this.wrappedExpr = wrappedExpr;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof SubExpression)) {
+                return false;
+            }
+            SubExpression o = (SubExpression) obj;
+            return wrappedExpr.equals(o.wrappedExpr);
+        }
+
+        @Override
+        public int hashCode() {
+            return wrappedExpr.hashCode();
         }
     }
 }

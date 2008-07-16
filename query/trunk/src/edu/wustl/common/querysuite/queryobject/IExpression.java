@@ -23,7 +23,7 @@ package edu.wustl.common.querysuite.queryobject;
  * @version 1.0
  * @updated 22-Dec-2006 2:50:17 PM
  */
-public interface IExpression extends IBaseExpression<LogicalOperator, IExpressionOperand> {
+public interface IExpression extends IBaseExpression<LogicalOperator, IExpressionOperand>, IExpressionOperand {
 
     /**
      * The entity to which this expression belongs.
@@ -38,7 +38,7 @@ public interface IExpression extends IBaseExpression<LogicalOperator, IExpressio
      * 
      * @return the id of this expression.
      */
-    IExpressionId getExpressionId();
+    int getExpressionId();
 
     /**
      * This expression is in view or not

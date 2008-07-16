@@ -1,7 +1,6 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -11,7 +10,7 @@ import edu.wustl.common.hibernate.PersistentGraph;
 import edu.wustl.common.querysuite.exceptions.CyclicException;
 import edu.wustl.common.querysuite.exceptions.MultipleRootsException;
 import edu.wustl.common.querysuite.metadata.associations.IAssociation;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IJoinGraph;
 import edu.wustl.common.util.Graph;
 
@@ -26,7 +25,7 @@ import edu.wustl.common.util.Graph;
 public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     private static final long serialVersionUID = 2671567170682456142L;
 
-    private Graph<IExpressionId, IAssociation> graph = new PersistentGraph<IExpressionId, IAssociation>();
+    private Graph<IExpression, IAssociation> graph = new PersistentGraph<IExpression, IAssociation>();
 
     // private Collection<GraphEntry> graphEntryCollection = new
     // HashSet<GraphEntry>();
@@ -46,32 +45,32 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     /**
      * To check wether there is an association between two Expression ids.
      * 
-     * @param parentExpressionId The parent Expression id.
-     * @param childExpressionId The child Expression id.
+     * @param parentExpression The parent Expression id.
+     * @param childExpression The child Expression id.
      * @return true if the graph contains an association between the specified
-     *         expressionIds.
-     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#containsAssociation(edu.wustl.common.querysuite.queryobject.IExpressionId,
-     *      edu.wustl.common.querysuite.queryobject.IExpressionId)
+     *         expressions.
+     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#containsAssociation(edu.wustl.common.querysuite.queryobject.IExpression,
+     *      edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public boolean containsAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId) {
-        return graph.containsEdge(parentExpressionId, childExpressionId);
+    public boolean containsAssociation(IExpression parentExpression, IExpression childExpression) {
+        return graph.containsEdge(parentExpression, childExpression);
     }
 
     /**
      * To get the association between two Expression ids.
      * 
-     * @param parentExpressionId The parent Expression id.
-     * @param childExpressionId The child Expression id.
+     * @param parentExpression The parent Expression id.
+     * @param childExpression The child Expression id.
      * @return The association betweent the thwo Expression ids.
-     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#getAssociation(edu.wustl.common.querysuite.queryobject.IExpressionId,
-     *      edu.wustl.common.querysuite.queryobject.IExpressionId)
+     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#getAssociation(edu.wustl.common.querysuite.queryobject.IExpression,
+     *      edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public IAssociation getAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId) {
-        return graph.getEdge(parentExpressionId, childExpressionId);
+    public IAssociation getAssociation(IExpression parentExpression, IExpression childExpression) {
+        return graph.getEdge(parentExpression, childExpression);
     }
 
     /**
-     * Checks if the graph is connected by getting the root IExpressionId The
+     * Checks if the graph is connected by getting the root IExpression The
      * traversing is done on root and if more than one root found, the graph is
      * considered to be disjoint and a MultipleRootsException is thrown
      * 
@@ -82,54 +81,54 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     }
 
     /**
-     * @param parentExpressionId The parent Expression id to be added in
+     * @param parentExpression The parent Expression id to be added in
      *            joingraph.
-     * @param childExpressionId The child Expression id to be added in
+     * @param childExpression The child Expression id to be added in
      *            joingraph.
      * @param association The association between two expression ids.
-     * @return previous association for the given expressionId's which was
+     * @return previous association for the given expression's which was
      *         overwritten by this association; null if no association existed
      *         previously.
      * @throws CyclicException if adding this edge will cause a cycle in the
      *             graph
-     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#putAssociation(edu.wustl.common.querysuite.queryobject.IExpressionId,
-     *      edu.wustl.common.querysuite.queryobject.IExpressionId,
+     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#putAssociation(edu.wustl.common.querysuite.queryobject.IExpression,
+     *      edu.wustl.common.querysuite.queryobject.IExpression,
      *      edu.wustl.common.querysuite.queryobject.IAssociation)
      */
-    public IAssociation putAssociation(IExpressionId parentExpressionId, IExpressionId childExpressionId,
+    public IAssociation putAssociation(IExpression parentExpression, IExpression childExpression,
             IAssociation association) throws CyclicException {
-        if (graph.willCauseNewCycle(parentExpressionId, childExpressionId)) {
+        if (graph.willCauseNewCycle(parentExpression, childExpression)) {
             throw new CyclicException("Adding this association causes a cycle in the graph.");
         }
-        return graph.putEdge(parentExpressionId, childExpressionId, association);
+        return graph.putEdge(parentExpression, childExpression, association);
     }
 
     /**
      * Removes the association from the graph.
      * 
-     * @param firstExpressionId The parent Expression id
-     * @param secondExpressionId The child Expression id
+     * @param firstExpression The parent Expression id
+     * @param secondExpression The child Expression id
      * @return true if the association between the specified expressions
      *         existed.
-     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#removeAssociation(edu.wustl.common.querysuite.queryobject.IExpressionId,
-     *      edu.wustl.common.querysuite.queryobject.IExpressionId)
+     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#removeAssociation(edu.wustl.common.querysuite.queryobject.IExpression,
+     *      edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public boolean removeAssociation(IExpressionId firstExpressionId, IExpressionId secondExpressionId) {
-        return graph.removeEdge(firstExpressionId, secondExpressionId) != null;
+    public boolean removeAssociation(IExpression firstExpression, IExpression secondExpression) {
+        return graph.removeEdge(firstExpression, secondExpression) != null;
     }
 
     /**
-     * Removes the specified id from the list of IExpressionId if one exists
+     * Removes the specified id from the list of IExpression if one exists
      * 
      * @param id The Expression id to be removed.
      * @return true upon removing specified existing id; false otherwise
      */
-    public boolean removeIExpressionId(IExpressionId id) {
+    public boolean removeIExpression(IExpression id) {
         return graph.removeVertex(id);
     }
 
     /**
-     * For each element in IExpressionId list, the root node will be checked for
+     * For each element in IExpression list, the root node will be checked for
      * incoming edges for that element.The node having no incomming edges will
      * be treated as Root node.
      * 
@@ -137,8 +136,8 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      *         expression tree
      * @throws MultipleRootsException if more than 1 roots exists.
      */
-    public IExpressionId getRoot() throws MultipleRootsException {
-        Set<IExpressionId> unReachableNode = graph.getUnreachableVertices();
+    public IExpression getRoot() throws MultipleRootsException {
+        Set<IExpression> unReachableNode = graph.getUnreachableVertices();
 
         if (unReachableNode.size() == 0) {
             return null;
@@ -156,53 +155,53 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     /**
      * To add vertex in joingraph.
      * 
-     * @param expressionId the expression to be added in join graph.
+     * @param expression the expression to be added in join graph.
      * @return true upon adding vertex to existing vertex list; false otherwise
      */
-    public boolean addIExpressionId(IExpressionId expressionId) {
-        return graph.addVertex(expressionId);
+    public boolean addIExpression(IExpression expression) {
+        return graph.addVertex(expression);
     }
 
     /**
-     * To get the list of Parents of the given ExpressionId.
+     * To get the list of Parents of the given Expression.
      * 
-     * @param childExpressionId the Child Expression Id reference.
-     * @return The List parent of ExpressionId for th given childExpressionId.
-     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#getParentList(edu.wustl.common.querysuite.queryobject.IExpressionId)
+     * @param childExpression the Child Expression Id reference.
+     * @return The List parent of Expression for th given childExpression.
+     * @see edu.wustl.common.querysuite.queryobject.IJoinGraph#getParentList(edu.wustl.common.querysuite.queryobject.IExpression)
      */
-    public List<IExpressionId> getParentList(IExpressionId childExpressionId) {
-        return asList(graph.getInNeighbours(childExpressionId), exprIdCmp);
+    public List<IExpression> getParentList(IExpression childExpression) {
+        return asList(graph.getInNeighbours(childExpression), exprIdCmp);
     }
 
     /**
-     * To get the path of the given ExpressionId from the root Expression.
+     * To get the path of the given Expression from the root Expression.
      * 
-     * @param expressionId reference to ExpressionId
-     * @return the List of paths of the given ExpressionId from root. returns
+     * @param expression reference to Expression
+     * @return the List of paths of the given Expression from root. returns
      *         empty path list if there is no path.
      * @throws MultipleRootsException if more than 1 roots exists.
      */
-    public List<List<IExpressionId>> getPaths(IExpressionId expressionId) throws MultipleRootsException {
-        return asList(graph.getVertexPaths(getRoot(), expressionId));
+    public List<List<IExpression>> getPaths(IExpression expression) throws MultipleRootsException {
+        return asList(graph.getVertexPaths(getRoot(), expression));
     }
 
     /**
-     * To the the List of intermediate ExpressionId between the given soure &
-     * target ExpressionIds with the given List of association.
+     * To the the List of intermediate Expression between the given soure &
+     * target Expressions with the given List of association.
      * 
      * @param source The Source Expression Id.
-     * @param target The Target ExpressionId.
+     * @param target The Target Expression.
      * @param associations The List of Associations.
-     * @return List of intermediate ExpressionIds for matching List of
+     * @return List of intermediate Expressions for matching List of
      *         Associations. null, if there is no path between source & target
      *         or There is no matching path with the given associations.
      */
-    public List<IExpressionId> getIntermediateExpressions(IExpressionId source, IExpressionId target,
+    public List<IExpression> getIntermediateExpressions(IExpression source, IExpression target,
             List<IAssociation> associations) {
         // getting path between two vertices.
-        Set<List<IExpressionId>> reachablePaths = graph.getVertexPaths(source, target);
+        Set<List<IExpression>> reachablePaths = graph.getVertexPaths(source, target);
 
-        for (List<IExpressionId> rechablePath : reachablePaths) {
+        for (List<IExpression> rechablePath : reachablePaths) {
             // compairing path size & the association list size.
             // This path includes source & target ExprssionIds.
             // For maching path, if there are 2 associations in list, there
@@ -211,8 +210,8 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
                 // check whether its matching ot not.
                 boolean isMatching = true;
                 for (int index = 0; index < rechablePath.size() - 1; index++) {
-                    IExpressionId fromExpId = rechablePath.get(index);
-                    IExpressionId toExpId = rechablePath.get(index + 1);
+                    IExpression fromExpId = rechablePath.get(index);
+                    IExpression toExpId = rechablePath.get(index + 1);
                     // check for association match
                     if (associations.get(index).equals(graph.getEdge(fromExpId, toExpId))) {
                         fromExpId = toExpId;
@@ -239,48 +238,48 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     }
 
     /**
-     * To get the first path of the given ExpressionId from the root Expression.
+     * To get the first path of the given Expression from the root Expression.
      * 
-     * @param expressionId regerence to ExpressionId
-     * @return the List of vertices representing path of the given ExpressionId
+     * @param expression regerence to Expression
+     * @return the List of vertices representing path of the given Expression
      *         from root. returns empty path list if there is no path.
      * @throws MultipleRootsException if more than 1 roots exists.
      */
-    public List<IExpressionId> getPath(IExpressionId expressionId) throws MultipleRootsException {
-        Set<List<IExpressionId>> paths = graph.getVertexPaths(getRoot(), expressionId);
+    public List<IExpression> getPath(IExpression expression) throws MultipleRootsException {
+        Set<List<IExpression>> paths = graph.getVertexPaths(getRoot(), expression);
 
         if (paths.isEmpty()) {
-            return new ArrayList<IExpressionId>();
+            return new ArrayList<IExpression>();
         }
         return paths.iterator().next();
     }
 
     /**
-     * To get the edge path of the given ExpressionId from the root Expression.
+     * To get the edge path of the given Expression from the root Expression.
      * 
-     * @param expressionId reference to ExpressionId
-     * @return the List of paths of the given ExpressionId from root. returns
+     * @param expression reference to Expression
+     * @return the List of paths of the given Expression from root. returns
      *         empty path list if there is no path.
      * @throws MultipleRootsException if there are multpile roots present in
      *             join graph.
      */
-    public List<List<IAssociation>> getEdgesPaths(IExpressionId expressionId) throws MultipleRootsException {
-        return asList(graph.getEdgePaths(getRoot(), expressionId));
+    public List<List<IAssociation>> getEdgesPaths(IExpression expression) throws MultipleRootsException {
+        return asList(graph.getEdgePaths(getRoot(), expression));
     }
 
     /**
-     * To get the first edge path of the given ExpressionId from the root
+     * To get the first edge path of the given Expression from the root
      * Expression.
      * 
-     * @param expressionId regerence to ExpressionId
+     * @param expression regerence to Expression
      * @return the List of Associations representing path of the given
-     *         ExpressionId from root. returns empty path list if there is no
+     *         Expression from root. returns empty path list if there is no
      *         path.
      * @throws MultipleRootsException if there are multpile roots present in
      *             join graph.
      */
-    public List<IAssociation> getEdgePath(IExpressionId expressionId) throws MultipleRootsException {
-        Set<List<IAssociation>> paths = graph.getEdgePaths(getRoot(), expressionId);
+    public List<IAssociation> getEdgePath(IExpression expression) throws MultipleRootsException {
+        Set<List<IAssociation>> paths = graph.getEdgePaths(getRoot(), expression);
 
         if (paths.isEmpty()) {
             return new ArrayList<IAssociation>();
@@ -289,13 +288,13 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
     }
 
     /**
-     * @param expressionId the expr id whose children are to be found.
+     * @param expression the expr id whose children are to be found.
      * @return List of Vertices directly reachable from the given vertex.
      *         Returns null if vertex is not present in graph, Returns empty
      *         list if vertex has no directly reachable node.
      */
-    public List<IExpressionId> getChildrenList(IExpressionId expressionId) {
-        return asList(graph.getOutNeighbours(expressionId), exprIdCmp);
+    public List<IExpression> getChildrenList(IExpression expression) {
+        return asList(graph.getOutNeighbours(expression), exprIdCmp);
     }
 
     /**
@@ -303,9 +302,9 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
      * 
      * @return the List of expression ids having multiple parent nodes.
      */
-    public List<IExpressionId> getNodesWithMultipleParents() {
-        List<IExpressionId> nodes = new ArrayList<IExpressionId>();
-        for (IExpressionId expression : graph.getVertices()) {
+    public List<IExpression> getNodesWithMultipleParents() {
+        List<IExpression> nodes = new ArrayList<IExpression>();
+        for (IExpression expression : graph.getVertices()) {
             if (graph.getInNeighbours(expression).size() > 1) {
                 nodes.add(expression);
             }
@@ -313,7 +312,7 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
         return nodes;
     }
 
-    public List<IExpressionId> getAllRoots() {
+    public List<IExpression> getAllRoots() {
         return asList(graph.getUnreachableVertices(), exprIdCmp);
     }
 
@@ -327,23 +326,23 @@ public class JoinGraph extends BaseQueryObject implements IJoinGraph {
         return res;
     }
 
-    private static final Comparator<IExpressionId> exprIdCmp = new Comparator<IExpressionId>() {
+    private static final Comparator<IExpression> exprIdCmp = new Comparator<IExpression>() {
 
-        public int compare(IExpressionId o1, IExpressionId o2) {
-            Integer i1 = o1.getInt();
-            Integer i2 = o2.getInt();
+        public int compare(IExpression o1, IExpression o2) {
+            Integer i1 = o1.getExpressionId();
+            Integer i2 = o2.getExpressionId();
             return i1.compareTo(i2);
         }
     };
 
     // for hibernate
     @SuppressWarnings("unused")
-    private Graph<IExpressionId, IAssociation> getGraph() {
+    private Graph<IExpression, IAssociation> getGraph() {
         return graph;
     }
 
     @SuppressWarnings("unused")
-    private void setGraph(Graph<IExpressionId, IAssociation> graph) {
+    private void setGraph(Graph<IExpression, IAssociation> graph) {
         this.graph = graph;
     }
 }

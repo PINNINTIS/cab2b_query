@@ -2,14 +2,14 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.cab2b.common.cache.AbstractEntityCache;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.TermType;
 
 public class ExpressionAttribute extends ArithmeticOperand implements IExpressionAttribute {
     private static final long serialVersionUID = 2376055279144184693L;
 
-    private IExpressionId expressionId;
+    private IExpression expression;
 
     private AttributeInterface attribute;
 
@@ -17,8 +17,8 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
     // for hibernate
     }
 
-    public ExpressionAttribute(IExpressionId expressionId, AttributeInterface attribute, TermType termType) {
-        setExpressionId(expressionId);
+    public ExpressionAttribute(IExpression expression, AttributeInterface attribute, TermType termType) {
+        setExpression(expression);
         setAttribute(attribute);
         setTermType(termType);
     }
@@ -39,20 +39,20 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
         this.attribute = attribute;
     }
 
-    public IExpressionId getExpressionId() {
-        return expressionId;
+    public IExpression getExpression() {
+        return expression;
     }
 
-    public void setExpressionId(IExpressionId expressionId) {
-        if (expressionId == null) {
+    public void setExpression(IExpression expression) {
+        if (expression == null) {
             throw new NullPointerException();
         }
-        this.expressionId = expressionId;
+        this.expression = expression;
     }
 
     @Override
     public String toString() {
-        return "ExprId: " + expressionId + ", Attribute: " + attribute;
+        return "ExprId: " + expression.getExpressionId() + ", Attribute: " + attribute;
     }
 
     // for hibernate

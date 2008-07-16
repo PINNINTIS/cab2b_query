@@ -6,7 +6,7 @@
 <hibernate-mapping auto-import="false" default-lazy="false"
 	package="edu.wustl.common.querysuite.queryobject.impl">
 	<subclass name="CustomFormula" discriminator-value="form"
-		extends="ExpressionOperand">
+		extends="edu.wustl.common.querysuite.queryobject.IExpressionOperand">
 		<list name="rhs" lazy="false" inverse="false"
 			cascade="all-delete-orphan" table="QUERY_FORMULA_RHS">
 			<cache usage="read-write" />

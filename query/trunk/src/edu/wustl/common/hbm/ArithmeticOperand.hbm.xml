@@ -48,8 +48,8 @@
 				<key column="IDENTIFIER" />
 				<property name="attributeId" type="long"
 					column="DE_ATTRIBUTE_ID" />
-				<many-to-one name="expressionId" class="ExpressionId"
-					column="QUERY_EXPRESSIONID_ID" cascade="save-update"/>
+				<many-to-one name="expression" class="Expression"
+					column="EXPRESSION_ID" cascade="save-update" />
 				<property name="termType" column="TERM_TYPE">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">
@@ -72,8 +72,8 @@
 				</property>
 				<property name="attributeId" type="long"
 					column="DE_ATTRIBUTE_ID" />
-				<many-to-one name="expressionId" class="ExpressionId"
-					column="QUERY_EXPRESSIONID_ID" cascade="save-update"/>
+				<many-to-one name="expression" class="Expression"
+					column="EXPRESSION_ID" cascade="save-update" />
 				<property name="termType" column="TERM_TYPE">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">

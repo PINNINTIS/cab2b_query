@@ -8,6 +8,7 @@ import edu.common.dynamicextensions.domaininterface.AttributeTypeInformationInte
 import edu.common.dynamicextensions.domaininterface.DateTypeInformationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterface;
+import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.TermType;
 
 public class DynExtnMockUtil {
@@ -28,6 +29,8 @@ public class DynExtnMockUtil {
                 will(returnValue(name));
                 allowing(attribute).getEntity();
                 will(returnValue(entity));
+                allowing(attribute).getAttributeTypeInformation();
+                will(returnValue(context.mock(NumericTypeInformationInterface.class, getI())));
             }
         });
         return attribute;
@@ -86,5 +89,16 @@ public class DynExtnMockUtil {
             }
         });
         return entity;
+    }
+    
+    public static IExpression createExpression(final int id) {
+        final IExpression expr = context.mock(IExpression.class, getI());
+        context.checking(new Expectations() {
+            {
+                allowing(expr).getExpressionId();
+                will(returnValue(id));
+            }
+        });
+        return expr;
     }
 }

@@ -26,7 +26,7 @@ import edu.wustl.common.querysuite.queryobject.LogicalOperator;
  * @hibernate.joined-subclass table="QUERY_RULE"
  * @hibernate.joined-subclass-key column="IDENTIFIER"
  */
-public class Rule extends ExpressionOperand implements IRule {
+public class Rule extends BaseQueryObject implements IRule {
 
     private static final long serialVersionUID = 7408369497435719981L;
 

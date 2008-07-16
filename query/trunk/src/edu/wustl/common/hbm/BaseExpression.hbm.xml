@@ -22,7 +22,7 @@
 			<cache usage="read-write" />
 			<key column="BASE_EXPRESSION_ID" />
 			<index column="POSITION" />
-			<many-to-many column="OPERAND_ID" unique="true"
+			<many-to-many column="OPERAND_ID"
 				class="edu.wustl.common.querysuite.queryobject.IOperand" />
 		</list>
 
@@ -31,7 +31,7 @@
 			<cache usage="read-write" />
 			<key column="BASE_EXPRESSION_ID" />
 			<index column="POSITION" />
-			<many-to-many column="CONNECTOR_ID" unique="true"
+			<many-to-many column="CONNECTOR_ID"
 				class="edu.wustl.common.querysuite.queryobject.impl.Connector" />
 		</list>
 

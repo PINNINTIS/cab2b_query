@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createAttribute;
 import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createEntity;
+import static edu.wustl.common.querysuite.utils.DynExtnMockUtil.createExpression;
 import junit.framework.TestCase;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
@@ -9,7 +10,6 @@ import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
@@ -100,35 +100,12 @@ public abstract class AbstractTermProcessorTest extends TestCase {
 
     protected <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetExpressionAttribute(
             String attrName, String entityName, T timeInterval) {
-        return QueryObjectFactory.createDateOffsetAttribute(exprId(1), createAttribute(attrName,
+        return QueryObjectFactory.createDateOffsetAttribute(createExpression(1), createAttribute(attrName,
                 createEntity(entityName)), timeInterval);
     }
 
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {
-        return QueryObjectFactory.createExpressionAttribute(exprId(1), createAttribute(attrName,
+        return QueryObjectFactory.createExpressionAttribute(createExpression(1), createAttribute(attrName,
                 createEntity(entityName), termType));
-    }
-
-    private IExpressionId exprId(final int i) {
-        return new IExpressionId() {
-
-            public int getInt() {
-                return i;
-            }
-
-            public boolean isSubExpressionOperand() {
-                return false;
-            }
-
-            public Long getId() {
-                throw new UnsupportedOperationException();
-            }
-
-            public void setId(Long id) {
-                throw new UnsupportedOperationException();
-
-            }
-
-        };
-    }
+    }    
 }

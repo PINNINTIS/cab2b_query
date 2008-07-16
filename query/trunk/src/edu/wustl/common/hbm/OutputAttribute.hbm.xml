@@ -25,13 +25,13 @@
         </id>
 
         <many-to-one
-            name="expressionId"
-            class="edu.wustl.common.querysuite.queryobject.impl.ExpressionId"
+            name="expression"
+            class="edu.wustl.common.querysuite.queryobject.impl.Expression"
             cascade="save-update,persist"
             outer-join="auto"
             update="true"
             insert="true"
-            column="EXPRESSIONID_ID"
+            column="EXPRESSION_ID"
         />
 
         <property

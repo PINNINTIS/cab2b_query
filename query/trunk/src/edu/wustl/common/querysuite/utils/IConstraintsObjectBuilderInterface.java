@@ -24,7 +24,6 @@ import edu.wustl.common.querysuite.exceptions.CyclicException;
 import edu.wustl.common.querysuite.metadata.associations.IAssociation;
 import edu.wustl.common.querysuite.metadata.path.IPath;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.IExpressionId;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
@@ -60,9 +59,9 @@ public interface IConstraintsObjectBuilderInterface {
      * @param secondValues The second values for the conditions in the rule.
      * @param entity the entity for which the new expression is to be created
      *            (can be different from conditions' attribute's entity).
-     * @return The IExpressionId of the expression added.
+     * @return The int of the expression added.
      */
-    public IExpressionId addExpression(IRule rule, EntityInterface entity);
+    public int addExpression(IRule rule, EntityInterface entity);
 
     /**
      * Edits the expression with the given expression id with the conditions
@@ -73,7 +72,7 @@ public interface IConstraintsObjectBuilderInterface {
      *            expression.
      * @return The expression added.
      */
-    public IExpression editExpression(IExpressionId iExpressionId, IRule rule);
+    public IExpression editExpression(int iExpressionId, IRule rule);
 
     /**
      * Removes the expression with the specified expression id from the query.
@@ -82,7 +81,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param iExpressionId The id of the expression to be removed.
      * @return true if the expression is removed else returns false.
      */
-    public IExpression removeExpression(IExpressionId iExpressionId);
+    public IExpression removeExpression(int iExpressionId);
 
     /**
      * Adds the path between the source and destination expressions.
@@ -91,7 +90,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param destExpressionId The destination expression.
      * @param association The association to be set.
      */
-    public List<IExpressionId> addPath(IExpressionId sourceExpressionId, IExpressionId destExpressionId, IPath path)
+    public List<Integer> addPath(int sourceExpressionId, int destExpressionId, IPath path)
             throws CyclicException;
 
     /**
@@ -101,7 +100,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param destExpressionId The destination expression.
      * @param association The association to be set.
      */
-    public void addAssociation(IExpressionId sourceExpressionId, IExpressionId destExpressionId,
+    public void addAssociation(int sourceExpressionId, int destExpressionId,
             IAssociation association) throws CyclicException;
 
     /**
@@ -114,7 +113,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @return true if the association are removed successfully else returns
      *         false.
      */
-    public boolean removeAssociation(IExpressionId sourceExpressionId, IExpressionId destExpressionId);
+    public boolean removeAssociation(int sourceExpressionId, int destExpressionId);
 
     /**
      * Sets the logical operator between the parent and child expressions.
@@ -123,7 +122,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param childExpressionId The child expression id.
      * @param logicalOperator The logical operator to be set.
      */
-    public void setLogicalConnector(IExpressionId parentExpressionId, IExpressionId childExpressionId,
+    public void setLogicalConnector(int parentExpressionId, int childExpressionId,
             LogicalOperator logicalOperator, boolean isUpdate);
 
     /**
@@ -133,7 +132,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param sourceExpression The source expression.
      * @return The expression id of the new expression created.
      */
-    public IExpressionId createExpressionCopy(IExpression sourceExpression);
+    public int createExpressionCopy(IExpression sourceExpression);
 
     /**
      * Returns all the entities in the constraints of the query.
@@ -148,7 +147,7 @@ public interface IConstraintsObjectBuilderInterface {
      * 
      * @param entity The entity for which the expression is to be created.
      */
-    public IExpressionId createDummyExpression(EntityInterface entity);
+    public int createDummyExpression(EntityInterface entity);
 
     /**
      * Adds the rule for the given conditions.
@@ -160,7 +159,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param entity the entity for which the new expression is to be created
      *            (can be different from conditions' attribute's entity).
      */
-    public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
+    public int addRule(List<AttributeInterface> attributes, List<String> operators,
             List<String> firstValues, List<String> secondValues, EntityInterface entity);
 
     /**
@@ -173,7 +172,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param entity the entity for which the new expression is to be created
      *            (can be different from conditions' attribute's entity).
      */
-    public IExpressionId addRule(List<AttributeInterface> attributes, List<String> operators,
+    public int addRule(List<AttributeInterface> attributes, List<String> operators,
             List<List<String>> Values, EntityInterface entity);
 
     /**
@@ -184,7 +183,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param child1Id The first child operand id.
      * @param child2Id The second child operand id.
      */
-    public void addParantheses(IExpressionId parentId, IExpressionId child1Id, IExpressionId child2Id);
+    public void addParantheses(int parentId, int child1Id, int child2Id);
 
     /**
      * Removes parantheses around operands with ids child1Id and child2Id which
@@ -194,28 +193,28 @@ public interface IConstraintsObjectBuilderInterface {
      * @param child1Id The first child operand id.
      * @param child2Id The second child operand id.
      */
-    public void removeParantheses(IExpressionId parentId, IExpressionId child1Id, IExpressionId child2Id);
+    public void removeParantheses(int parentId, int child1Id, int child2Id);
 
     /**
      * Method to get all the user added expression Ids in query object
      * 
      * @return List of visible expressionIds
      */
-    public Set<IExpressionId> getVisibleExressionIds();
+    public Set<Integer> getVisibleExressionIds();
 
     /**
      * Method to add the user added expression Id to visible list
      * 
      * @param expressionId ExpressionId to be added to visible list
      */
-    public void addExressionIdToVisibleList(IExpressionId expressionId);
+    public void addExressionIdToVisibleList(int expressionId);
 
     /**
      * Method to remove the user added expression Id from visible list
      * 
      * @param expressionId ExpressionId to be removed from visible list
      */
-    public void removeExressionIdFromVisibleList(IExpressionId expressionId);
+    public void removeExressionIdFromVisibleList(int expressionId);
 
     /**
      * Method to check if adding the path generates cyclic graph in the query
@@ -225,7 +224,7 @@ public interface IConstraintsObjectBuilderInterface {
      * @param path The path to added between source and destination node
      * @return true if addition of this path generates cyclic query
      */
-    public boolean isPathCreatesCyclicGraph(IExpressionId sourceExpressionId, IExpressionId destExpressionId,
+    public boolean isPathCreatesCyclicGraph(int sourceExpressionId, int destExpressionId,
             IPath path);
 
 }
