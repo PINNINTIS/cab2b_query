@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
@@ -25,7 +26,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException e) {
 
         }
     }
@@ -42,7 +43,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testInvalidRHS() {
         addRhs(dateOffsetLiteral("off", YMInterval.Month));
-        customFormula.setOperator(RelationalOperator.Equals);
+        setOperator(RelationalOperator.Equals);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -53,7 +54,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testIncompatibleRHS() {
         addRhs(dateLiteral("2008-01-01"));
-        customFormula.setOperator(RelationalOperator.Equals);
+        setOperator(RelationalOperator.Equals);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -65,7 +66,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     public void testIncompatibleRHSBetweenIn() {
         addRhs(2);
         addRhs(dateLiteral("2008-01-01"));
-        customFormula.setOperator(RelationalOperator.Between);
+        setOperator(RelationalOperator.Between);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -73,7 +74,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
         }
         customFormula.getAllRhs().add(1, newTerm(3));
-        customFormula.setOperator(RelationalOperator.In);
+        setOperator(RelationalOperator.In);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -94,10 +95,10 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testNoRHS() {
         RelationalOperator o = RelationalOperator.IsNull;
-        customFormula.setOperator(o);
+        setOperator(o);
         check("1 " + sql(o));
         o = RelationalOperator.IsNotNull;
-        customFormula.setOperator(o);
+        setOperator(o);
         check("1 " + sql(o));
     }
 
@@ -106,16 +107,16 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testOneRHS() {
-        customFormula.setOperator(RelationalOperator.Equals);
+        setOperator(RelationalOperator.Equals);
         checkIllegal();
         addRhs(2);
         check("1 = 2");
-        customFormula.setOperator(RelationalOperator.LessThan);
+        setOperator(RelationalOperator.LessThan);
         check("1 < 2");
     }
 
     public void testBetween() {
-        customFormula.setOperator(RelationalOperator.Between);
+        setOperator(RelationalOperator.Between);
         checkIllegal();
         addRhs(2);
         checkIllegal();
@@ -126,7 +127,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testIn() {
-        customFormula.setOperator(RelationalOperator.In);
+        setOperator(RelationalOperator.In);
         checkIllegal();
         addRhs(2);
         check("1 = 2");
@@ -137,7 +138,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testNotIn() {
-        customFormula.setOperator(RelationalOperator.NotIn);
+        setOperator(RelationalOperator.NotIn);
         checkIllegal();
         addRhs(2);
         check("1 != 2");
@@ -147,12 +148,67 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
         check("1 != 2 and 1 != 3 and 1 != 4");
     }
 
+    public void testYMIntervalIllegal() {
+        setOperator(RelationalOperator.IsNull);
+        customFormula.setLhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
+        // 1month isnull
+        checkIllegal();
+        setOperator(RelationalOperator.Equals);
+
+        addRhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
+        // 1month = 1month
+        checkIllegal();
+
+        customFormula.setLhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
+        // 1day = 1month
+        checkIllegal();
+
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
+        // 1day - '2008-01-01' = 1month
+        checkIllegal();
+
+        customFormula.getLhs().setConnector(0, 1, conn(ArithmeticOperator.Plus, 0));
+        // 1day + '2008-01-01' = 1month
+        checkIllegal();
+
+        customFormula.getLhs().setOperand(0, dateLiteral("2008-01-02"));
+        // '2008-01-02 + '2008-01-01' = 1month
+        checkIllegal();
+
+        customFormula.setLhs(newTerm(1));
+        // 1 = YMInterval
+        checkIllegal();
+    }
+
+    public void testYMInterval() {
+        setOperator(RelationalOperator.Equals);
+        customFormula.setLhs(newTerm(dateLiteral("2008-01-02")));
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
+        addRhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
+        check("'2008-01-02' = 1Month + '2008-01-01'");
+
+        setOperator(RelationalOperator.Between);
+        addRhs(newTerm(dateOffsetLiteral("2", DSInterval.Day)));
+        check("('2008-01-02' >= 1Month + '2008-01-01' and '2008-01-02' <= 2Day + '2008-01-01') or ('2008-01-02' <= 1Month + '2008-01-01' and '2008-01-02' >= 2Day + '2008-01-01')");
+
+        setOperator(RelationalOperator.In);
+        check("'2008-01-02' = 1Month + '2008-01-01' or '2008-01-02' = 2Day + '2008-01-01'");
+    }
+
     private void addRhs(int i) {
-        customFormula.addRhs(newTerm(i));
+        addRhs(newTerm(i));
     }
 
     private void addRhs(IArithmeticOperand opnd) {
-        customFormula.addRhs(newTerm(opnd));
+        addRhs(newTerm(opnd));
+    }
+
+    private void addRhs(ITerm term) {
+        customFormula.addRhs(term);
+    }
+
+    private void setOperator(RelationalOperator operator) {
+        customFormula.setOperator(operator);
     }
 
     private String sql(RelationalOperator o) {

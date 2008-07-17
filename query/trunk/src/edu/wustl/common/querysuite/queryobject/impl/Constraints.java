@@ -14,6 +14,7 @@ import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IJoinGraph;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
+import edu.wustl.common.util.Collections;
 
 /**
  * @author Mandar Shidhore
@@ -158,22 +159,7 @@ public class Constraints extends BaseQueryObject implements IConstraints {
      * @see edu.wustl.common.querysuite.queryobject.IConstraints#iterator()
      */
     public Iterator<IExpression> iterator() {
-        return new Iterator<IExpression>() {
-            private Iterator<IExpression> iter = expressions.iterator();
-
-            public boolean hasNext() {
-                return iter.hasNext();
-            }
-
-            public IExpression next() {
-                return iter.next();
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-
-        };
+        return Collections.removalForbiddenIterator(expressions);
     }
 
     // for hibernate

@@ -31,4 +31,6 @@ public interface ICustomFormula extends IExpressionOperand {
     RelationalOperator getOperator();
 
     void setOperator(RelationalOperator relationalOperator);
+
+    boolean isValid();
 }

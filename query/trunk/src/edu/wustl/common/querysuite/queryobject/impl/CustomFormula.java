@@ -7,6 +7,7 @@ import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
+import edu.wustl.common.querysuite.utils.CustomFormulaProcessor;
 
 public class CustomFormula extends BaseQueryObject implements ICustomFormula {
     private static final long serialVersionUID = -8565812494510602507L;
@@ -58,4 +59,7 @@ public class CustomFormula extends BaseQueryObject implements ICustomFormula {
         this.rhs = rhs;
     }
 
+    public boolean isValid() {
+        return new CustomFormulaProcessor().isValid(this);
+    }
 }

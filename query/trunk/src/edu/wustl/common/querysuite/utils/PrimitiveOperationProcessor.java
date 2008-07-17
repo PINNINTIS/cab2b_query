@@ -15,7 +15,7 @@ class PrimitiveOperationProcessor {
     }
 
     String getIntervalString(String s, ITimeIntervalEnum timeInterval) {
-        return s;
+        return s + timeInterval;
     }
 
     String dateToTimestamp(String s) {

@@ -32,7 +32,8 @@ import edu.wustl.common.querysuite.queryobject.ITerm;
 public class QueryUtility {
 
     /**
-     * This method returns all the selected Condition for a given query.  
+     * This method returns all the selected Condition for a given query.
+     * 
      * @param query
      * @return Map of ExpressionId -> Collection of Condition
      */
@@ -42,7 +43,7 @@ public class QueryUtility {
             expressionIdConditionCollectionMap = new HashMap<IExpression, Collection<ICondition>>();
 
             IConstraints constraints = query.getConstraints();
-            for(IExpression expression : constraints) {
+            for (IExpression expression : constraints) {
                 for (int index = 0; index < expression.numberOfOperands(); index++) {
                     IExpressionOperand expressionOperand = expression.getOperand(index);
                     if (expressionOperand instanceof IRule) {
@@ -59,23 +60,23 @@ public class QueryUtility {
     }
 
     /**
-     * This method returns all the selected Condition for a given query.  
+     * This method returns all the selected Condition for a given query.
+     * 
      * @param query
      * @return Map of ExpressionId -> Collection of Condition
      */
-    public static Map<IExpression, Collection<IParameterizedCondition>> getAllParameterizedConditions(
-                                                                                                        IQuery query) {
+    public static Map<IExpression, Collection<IParameterizedCondition>> getAllParameterizedConditions(IQuery query) {
         Map<IExpression, Collection<IParameterizedCondition>> expressionIdConditionCollectionMap = null;
         if (query != null) {
             expressionIdConditionCollectionMap = new HashMap<IExpression, Collection<IParameterizedCondition>>();
 
             IConstraints constraints = query.getConstraints();
-            for(IExpression expression : constraints) {
+            for (IExpression expression : constraints) {
                 for (int index = 0; index < expression.numberOfOperands(); index++) {
                     IExpressionOperand expressionOperand = expression.getOperand(index);
                     if (expressionOperand instanceof IRule) {
                         IRule rule = (IRule) expressionOperand;
-                        
+
                         Collection<IParameterizedCondition> parameterizedConditions = new ArrayList<IParameterizedCondition>();
 
                         Collection<ICondition> conditionList = rule.getConditions();
@@ -85,8 +86,7 @@ public class QueryUtility {
                             }
                         }
                         if (!parameterizedConditions.isEmpty()) {
-                            expressionIdConditionCollectionMap.put(expression,
-                                                                   parameterizedConditions);
+                            expressionIdConditionCollectionMap.put(expression, parameterizedConditions);
                         }
                     }
                 }
@@ -97,17 +97,19 @@ public class QueryUtility {
     }
 
     /**
-     * This method returns all the attributes of the expressions involved in a given query.
+     * This method returns all the attributes of the expressions involved in a
+     * given query.
+     * 
      * @param query
      * @return Map of ExpressionId -> Collection of Attribute
      */
     public static Map<IExpression, Collection<AttributeInterface>> getAllAttributes(IQuery query) {
         Map<IExpression, Collection<AttributeInterface>> expressionIdAttributeCollectionMap = null;
-        if (query != null) { 
+        if (query != null) {
             expressionIdAttributeCollectionMap = new HashMap<IExpression, Collection<AttributeInterface>>();
 
             IConstraints constraints = query.getConstraints();
-            for(IExpression expression: constraints){
+            for (IExpression expression : constraints) {
                 IQueryEntity queryEntity = expression.getQueryEntity();
                 EntityInterface deEntity = queryEntity.getDynamicExtensionsEntity();
                 Collection<AttributeInterface> attributeCollection = deEntity.getEntityAttributesForQuery();
@@ -171,6 +173,16 @@ public class QueryUtility {
         for (IArithmeticOperand operand : term) {
             if (operand instanceof ITerm) {
                 res.add((IExpressionAttribute) operand);
+            }
+        }
+        return res;
+    }
+
+    public static Set<IExpression> getContainingExpressions(IConstraints constraints, ICustomFormula formula) {
+        Set<IExpression> res = new HashSet<IExpression>();
+        for (IExpression expression : constraints) {
+            if (expression.containsOperand(formula)) {
+                res.add(expression);
             }
         }
         return res;

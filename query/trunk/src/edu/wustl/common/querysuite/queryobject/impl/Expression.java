@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
+import edu.wustl.common.querysuite.queryobject.IBaseExpression;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
@@ -536,5 +537,15 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
         public int hashCode() {
             return wrappedExpr.hashCode();
         }
+    }
+
+    @Override
+    protected IBaseExpression<LogicalOperator, IExpressionOperand> createEmpty() {
+        return new Expression();
+    }
+
+    @Override
+    public boolean containsOperand(IExpressionOperand operand) {
+        return super.containsOperand(wrapInSubExpr(operand));
     }
 }

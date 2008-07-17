@@ -1,12 +1,14 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IBaseExpression;
 import edu.wustl.common.querysuite.queryobject.IBinaryOperator;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.IOperand;
+import edu.wustl.common.util.Collections;
 
 abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> extends BaseQueryObject
         implements
@@ -285,5 +287,42 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     @SuppressWarnings("unused")
     private void setConnectors(List<IConnector<P>> connectors) {
         this.connectors = connectors;
+    }
+
+    public Iterator<V> iterator() {
+        return Collections.removalForbiddenIterator(expressionOperands);
+    }
+
+    public void addAll(IConnector<P> precedingConn, IBaseExpression<P, V> other) {
+        int numOpnds = other.numberOfOperands();
+        if (numOpnds == 0) {
+            return;
+        }
+        addOperand(precedingConn, other.getOperand(0));
+        if (numOpnds > 0) {
+            for (int i = 1; i < numOpnds; i++) {
+                addOperand(other.getConnector(i - 1, i), other.getOperand(i));
+            }
+        }
+    }
+
+    public IBaseExpression<P, V> subExpression(int startIdx, int endIdx) {
+        IBaseExpression<P, V> res = createEmpty();
+        res.addOperand(getOperand(startIdx));
+        for (int i = startIdx + 1; i <= endIdx; i++) {
+            res.addOperand(getConnector(i - 1, i), getOperand(i));
+        }
+        return res;
+    }
+
+    protected abstract IBaseExpression<P, V> createEmpty();
+
+    public void clear() {
+        connectors.clear();
+        expressionOperands.clear();
+    }
+
+    public boolean containsOperand(V operand) {
+        return expressionOperands.contains(operand);
     }
 }

@@ -242,7 +242,7 @@ public class TermProcessor {
         }
         if (term.numberOfOperands() == 1) {
             IArithmeticOperand opnd = term.getOperand(0);
-            if (opnd.getTermType() == TermType.YMInterval || opnd.getTermType() == TermType.Invalid) {
+            if (opnd.getTermType() == TermType.Invalid) {
                 return TermString.INVALID;
             }
             if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {

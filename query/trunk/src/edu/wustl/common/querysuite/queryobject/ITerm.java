@@ -1,7 +1,6 @@
 package edu.wustl.common.querysuite.queryobject;
 
 import edu.wustl.common.querysuite.utils.TermProcessor;
-import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 /**
  * A list of arithmetic operands connected by arithmetic operators. Every term
@@ -22,5 +21,7 @@ public interface ITerm extends IBaseExpression<ArithmeticOperator, IArithmeticOp
      * @return the string representation of this term.
      * @see TermProcessor#convertTerm(ITerm)
      */
-    TermString getStringRepresentation();
+    String getStringRepresentation();
+
+    TermType getTermType();
 }

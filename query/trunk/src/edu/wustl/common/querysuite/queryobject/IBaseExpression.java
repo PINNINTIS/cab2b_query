@@ -1,5 +1,7 @@
 package edu.wustl.common.querysuite.queryobject;
 
+import java.util.Iterator;
+
 /**
  * Represents a generic expression consisting of binary operators and operands
  * connected by these operators.<br>
@@ -20,7 +22,7 @@ package edu.wustl.common.querysuite.queryobject;
  * @see IExpression
  * @see ITerm
  */
-public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> extends IBaseQueryObject {
+public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> extends IBaseQueryObject, Iterable<V> {
 
     /**
      * To get the operand indexed by index in the operand list of Expression.
@@ -181,4 +183,26 @@ public interface IBaseExpression<P extends IBinaryOperator, V extends IOperand> 
      * @return the nesting of the operand.
      */
     int nestingNumberOfOperand(int i);
+
+    /**
+     * DOES NOT support element removal.
+     * 
+     * @see java.lang.Iterable#iterator()
+     */
+    Iterator<V> iterator();
+
+    void addAll(IConnector<P> precedingConn, IBaseExpression<P, V> other);
+
+    /**
+     * Both indices inclusive.
+     * 
+     * @param startIdx starting operand index.
+     * @param endIdx ending operand index.
+     * @return
+     */
+    IBaseExpression<P, V> subExpression(int startIdx, int endIdx);
+
+    void clear();
+
+    boolean containsOperand(V operand);
 }

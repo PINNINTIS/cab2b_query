@@ -38,8 +38,6 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         ITerm term = QueryObjectFactory.createTerm();
         term.addOperand(dateOffsetLiteral("1"));
         check(term, "maketime((1)*24, 0, 0)", TermType.DSInterval);
-        term.setOperand(0, dateOffsetLiteral("1", YMInterval.Month));
-        checkInvalid(term);
 
         ILiteral d1 = dateLiteral("2008-01-01");
         String d1S = "timestamp(STR_TO_DATE('2008-01-01', " + mySqlQuotedDateFormat + "))";
