@@ -13,7 +13,9 @@ import edu.wustl.common.querysuite.utils.CustomFormulaProcessor;
  * operator, the RHS can contain any no. of {@link ITerm}s; e.g.
  * <tt>=, &lt;</tt> etc. need one RHS, <tt>Between</tt> needs two RHSes
  * while <tt>In</tt> and <tt>NotIn</tt> can have any no. of RHSes. Thus the
- * RHS is generically represented by a list of {@link ITerm}s.
+ * RHS is generically represented by a list of {@link ITerm}s.<br>
+ * Note the the LHS of a custom formula should not be of
+ * <tt>TermType YMInterval</tt>.
  * 
  * @author srinath_k
  * @see ITerm
