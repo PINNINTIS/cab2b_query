@@ -62,6 +62,13 @@ public interface IConstraintsObjectBuilderInterface {
      * @return The int of the expression added.
      */
     public int addExpression(IRule rule, EntityInterface entity);
+    
+    /**
+     * Creates a new empty expression on the specified entity.
+     * @param entity the entity for which the new expression is to be created
+     * @return the if of the new expression.
+     */
+    public int addExpression(EntityInterface entity);
 
     /**
      * Edits the expression with the given expression id with the conditions
