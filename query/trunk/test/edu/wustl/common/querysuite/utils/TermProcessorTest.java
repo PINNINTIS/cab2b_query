@@ -13,13 +13,13 @@ import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
 
 public class TermProcessorTest extends AbstractTermProcessorTest {
 
-    public void test() {
+    public void testBasics() {
         ITerm term = newTerm();
         term.addOperand(dateOffsetLiteral("1", YMInterval.Month));
-        check(term,"1", TermType.YMInterval);
+        check(term,"1Month", TermType.YMInterval);
 
         term.setOperand(0, dateOffsetLiteral("1"));
-        check(term, "1", TermType.DSInterval);
+        check(term, "1Day", TermType.DSInterval);
 
         term.setOperand(0, numericLiteral("1"));
         checkNumeric(term, "1");
@@ -40,7 +40,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         checkNumeric(term, "1 + (2 * 3) + 5");
     }
 
-    public void test2() {
+    public void testBasics2() {
         ITerm term = newTerm();
         term.addOperand(numericLiteral("1"));
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("2"));
@@ -124,26 +124,26 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         IDateOffsetLiteral<?> dateOffset1 = dateOffsetLiteral("off1");
         term.setOperand(1, dateOffset1);
         // d1 + off1
-        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, dateOffset1.getOffset()), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, "off1Day"), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 + d1
-        check(term, concat(dateOffset1.getOffset(), ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
+        check(term, concat("off1Day", ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
         INumericLiteral numLiteral1 = numericLiteral("1");
         term.setOperand(1, numLiteral1);
         // d1 + 1
-        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, numLiteral1.getNumber()), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Plus, "1Day"), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 + d1
-        check(term, concat(numLiteral1.getNumber(), ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
+        check(term, concat("1Day", ArithmeticOperator.Plus, dateStr(date1)), TermType.Timestamp);
         swapOperands(term, 0, 1);
 
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
 
         term.setOperand(1, dateOffset1);
         // d1 - off1
-        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, dateOffset1.getOffset()), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, "off1Day"), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // off1 - d1
         checkInvalid(term);
@@ -151,7 +151,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         term.setOperand(1, numLiteral1);
         // d1 - 1
-        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, numLiteral1.getNumber()), TermType.Timestamp);
+        check(term, concat(dateStr(date1), ArithmeticOperator.Minus, "1Day"), TermType.Timestamp);
         swapOperands(term, 0, 1);
         // 1 - d1
         checkInvalid(term);
@@ -188,22 +188,22 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         checkInvalid(term);
 
         term.addParantheses(1, 2);
-        check(term, "'2008-01-01' - (f1 + '2008-01-02')", TermType.DSInterval);
+        check(term, "'2008-01-01' - (f1Day + '2008-01-02')", TermType.DSInterval);
 
         term.removeParantheses(1, 2);
         term.getConnector(1, 2).setOperator(ArithmeticOperator.Minus);
-        check(term, "'2008-01-01' - f1 - '2008-01-02'", TermType.DSInterval);
+        check(term, "'2008-01-01' - f1Day - '2008-01-02'", TermType.DSInterval);
         swapOperands(term, 0, 1);
         checkInvalid(term);
         swapOperands(term, 0, 1);
         term.setOperand(1, n1);
-        check(term, "'2008-01-01' - n1 - '2008-01-02'", TermType.DSInterval);
+        check(term, "'2008-01-01' - n1Day - '2008-01-02'", TermType.DSInterval);
         swapOperands(term, 1, 2);
-        check(term, "'2008-01-01' - '2008-01-02' - n1", TermType.DSInterval);
+        check(term, "'2008-01-01' - '2008-01-02' - n1Day", TermType.DSInterval);
 
         term.addParantheses(1, 2);
         term.addOperand(1, conn(ArithmeticOperator.Plus, 1), f1);
-        check(term, "('2008-01-01' + f1) - ('2008-01-02' - n1)", TermType.DSInterval);
+        check(term, "('2008-01-01' + f1Day) - ('2008-01-02' - n1Day)", TermType.DSInterval);
     }
 
     public void testExprAttr() {

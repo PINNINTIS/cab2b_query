@@ -102,30 +102,33 @@ public class CustomFormulaProcessor {
 
     private ICustomFormula modifyYMInterval(ICustomFormula formula) {
         ITerm lhs = formula.getLhs();
-        if (!isValidNonYMInterval(lhs)) {
+        TermType lhsType = lhs.getTermType();
+        if (lhsType == TermType.Invalid || lhsType == TermType.YMInterval) {
             return null;
         }
-        boolean ymRhsPresent = false;
-        for (ITerm rhs : formula.getAllRhs()) {
-            if (!isValidTermType(rhs)) {
-                return null;
-            }
-            if (isYMInterval(rhs)) {
-                ymRhsPresent = true;
-            }
-        }
-        if (!ymRhsPresent) {
+        if (lhsType != TermType.DSInterval) {
             return formula;
         }
-        // YMinterval present in atleast one rhs.
-        if (lhs.getTermType() != TermType.DSInterval || lhs.numberOfOperands() == 1) {
+        // LHS is DSInterval; check if can be split
+        if (lhs.numberOfOperands() == 1) {
             return null;
         }
-        formula = ObjectCloner.clone(formula);
-
         SplitTerm splitTerm = new SplitTerm(lhs);
+        if (splitTerm.term1.getTermType() == TermType.DSInterval
+                || splitTerm.term2.getTermType() == TermType.DSInterval) {
+            // can't support this in MYSQL.
+            // TODO code database specific support. e.g. can support this in
+            // ORACLE.
+            return null;
+        }
+        // here, LHS must of type date1 - date2
+        if (splitTerm.operator != ArithmeticOperator.Minus) {
+            throw new RuntimeException("something wrong in code.");
+        }
+
+        formula = ObjectCloner.clone(formula);
         splitTerm.term2.addParantheses();
-        IConnector<ArithmeticOperator> conn = conn(negate(splitTerm.operator));
+        IConnector<ArithmeticOperator> conn = conn(ArithmeticOperator.Plus);
         for (ITerm rhs : formula.getAllRhs()) {
             rhs.addParantheses();
             rhs.addAll(conn, splitTerm.term2);
@@ -137,29 +140,6 @@ public class CustomFormulaProcessor {
 
     private IConnector<ArithmeticOperator> conn(ArithmeticOperator operator) {
         return QueryObjectFactory.createArithmeticConnector(operator, 0);
-    }
-
-    private ArithmeticOperator negate(ArithmeticOperator operator) {
-        switch (operator) {
-            case Minus :
-                return ArithmeticOperator.Plus;
-            case Plus :
-                return ArithmeticOperator.Minus;
-            default :
-                throw new RuntimeException("problem in code.");
-        }
-    }
-
-    private boolean isYMInterval(ITerm term) {
-        return term.getTermType() == TermType.YMInterval;
-    }
-
-    private boolean isValidTermType(ITerm term) {
-        return term.getTermType() != TermType.Invalid;
-    }
-
-    private boolean isValidNonYMInterval(ITerm term) {
-        return isValidTermType(term) && !isYMInterval(term);
     }
 
     private static class SplitTerm {

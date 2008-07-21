@@ -195,6 +195,30 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
         check("'2008-01-02' = 1Month + '2008-01-01' or '2008-01-02' = 2Day + '2008-01-01'");
     }
 
+    public void testDSIntervalIllegal() {
+        setOperator(RelationalOperator.IsNull);
+        customFormula.setLhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
+        // 1day isnull
+        checkIllegal();
+        setOperator(RelationalOperator.Equals);
+
+        addRhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
+        // 1day = 1day
+        checkIllegal();
+
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("2", DSInterval.Day));
+        // 1day + 2Day = 1day
+        checkIllegal();
+    }
+
+    public void testDSInterval() {
+        setOperator(RelationalOperator.Equals);
+        customFormula.setLhs(newTerm(dateLiteral("2008-01-02")));
+        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
+        addRhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
+        check("'2008-01-02' = 1Day + '2008-01-01'");
+    }
+
     private void addRhs(int i) {
         addRhs(newTerm(i));
     }
