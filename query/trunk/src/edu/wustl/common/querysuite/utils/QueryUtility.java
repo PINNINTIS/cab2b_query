@@ -171,7 +171,7 @@ public class QueryUtility {
     public static Set<IExpressionAttribute> getAttributesInTerm(ITerm term) {
         Set<IExpressionAttribute> res = new HashSet<IExpressionAttribute>();
         for (IArithmeticOperand operand : term) {
-            if (operand instanceof ITerm) {
+            if (operand instanceof IExpressionAttribute) {
                 res.add((IExpressionAttribute) operand);
             }
         }
