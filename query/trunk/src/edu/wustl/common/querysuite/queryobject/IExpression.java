@@ -9,12 +9,10 @@ package edu.wustl.common.querysuite.queryobject;
  * <br>
  * Conversely, if an expression has a subexpression, there must an association
  * in the join graph from the parent expression to the subexpression. <br>
- * Note: "subexpression" refers to an operand that is the IExpressionId of the
- * child expression. The entity of the subexpression will generally be different
+ * The entity of the subexpression will generally be different
  * from the entity of this expression (exception is when a class is associated
  * to itself, e.g. Specimen). <br>
- * The expression for an expressionId is found from
- * {@link edu.wustl.common.querysuite.queryobject.IConstraints}.
+ * 
  * 
  * @see IBaseExpression
  * @see edu.wustl.common.querysuite.queryobject.IJoinGraph
