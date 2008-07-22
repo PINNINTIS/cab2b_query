@@ -78,4 +78,9 @@ public interface IConstraints extends IBaseQueryObject, Iterable<IExpression> {
      * @see java.lang.Iterable#iterator()
      */
     Iterator<IExpression> iterator();
+
+    /**
+     * @return no. of expressions.
+     */
+    int size();
 }

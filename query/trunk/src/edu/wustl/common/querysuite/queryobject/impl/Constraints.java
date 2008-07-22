@@ -162,6 +162,10 @@ public class Constraints extends BaseQueryObject implements IConstraints {
         return Collections.removalForbiddenIterator(expressions);
     }
 
+    public int size() {
+        return expressions.size();
+    }
+
     // for hibernate
 
     /**
