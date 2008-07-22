@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
 
 class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
@@ -16,7 +17,8 @@ class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     @Override
-    String getDateOffsetString(String s, ITimeIntervalEnum timeInterval) {
+    String getDateOffsetString(String s, TimeInterval<?> compoundTimeInterval) {
+        ITimeIntervalEnum timeInterval = compoundTimeInterval.primitiveEnum();
         if (timeInterval == YMInterval.Quarter) {
             s = mult(s, 3);
             timeInterval = YMInterval.Month;

@@ -10,5 +10,15 @@ package edu.wustl.common.querysuite.queryobject;
  * @see DSInterval
  */
 public enum YMInterval implements ITimeIntervalEnum {
-    Month, Quarter, Year
+    Month(DSInterval.Day.numSeconds() * 30), Quarter(Month.numSeconds * 3), Year(DSInterval.Day.numSeconds() * 365);
+
+    private int numSeconds;
+
+    private YMInterval(int numSeconds) {
+        this.numSeconds = numSeconds;
+    }
+
+    public int numSeconds() {
+        return numSeconds;
+    }
 }

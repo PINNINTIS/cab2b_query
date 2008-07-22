@@ -5,12 +5,10 @@ package edu.wustl.common.querysuite.queryobject;
  * 
  * @author srinath_k
  * 
- * @param <T> the type of the time interval ({@link DSInterval} or
- *            {@link YMInterval}).
  * @see IDateOffset
  * @see ILiteral
  */
-public interface IDateOffsetLiteral<T extends ITimeIntervalEnum> extends IDateOffset<T>, ILiteral {
+public interface IDateOffsetLiteral extends IDateOffset, ILiteral {
     String getOffset();
 
     void setOffset(String offset);

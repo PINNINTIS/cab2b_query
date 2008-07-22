@@ -3,41 +3,34 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.common.querysuite.queryobject.IDateOffsetAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
-public class DateOffsetAttribute<T extends Enum<?> & ITimeIntervalEnum> extends ExpressionAttribute
-        implements
-            IDateOffsetAttribute<T> {
+public class DateOffsetAttribute extends ExpressionAttribute implements IDateOffsetAttribute {
     private static final long serialVersionUID = 3883684246378982941L;
 
-    private TimeIntervalCompoundEnum<T> compoundTimeInterval;
+    private TimeInterval<?> timeInterval;
 
     protected DateOffsetAttribute() {
 
     }
 
-    public DateOffsetAttribute(IExpression expression, AttributeInterface attribute, T timeInterval) {
+    public DateOffsetAttribute(IExpression expression, AttributeInterface attribute, TimeInterval timeInterval) {
         super(expression, attribute, TermType.termType(timeInterval));
         if (timeInterval == null) {
             throw new NullPointerException();
         }
-        this.compoundTimeInterval = TimeIntervalCompoundEnum.compoundEnum(timeInterval);
+        this.timeInterval = timeInterval;
     }
 
-    public T getTimeInterval() {
-        return compoundTimeInterval.primitiveEnum();
+    public TimeInterval<?> getTimeInterval() {
+        return timeInterval;
     }
 
     // for hibernate
     @SuppressWarnings("unused")
-    private TimeIntervalCompoundEnum<T> getCompoundTimeInterval() {
-        return compoundTimeInterval;
-    }
-
-    @SuppressWarnings("unused")
-    private void setCompoundTimeInterval(TimeIntervalCompoundEnum<T> timeIntervalCompoundEnum) {
-        this.compoundTimeInterval = timeIntervalCompoundEnum;
+    private void setTimeInterval(TimeInterval<?> timeInterval) {
+        this.timeInterval = timeInterval;
     }
 
 }

@@ -32,10 +32,10 @@ import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.ITerm;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.queryobject.impl.Condition;
 import edu.wustl.common.querysuite.queryobject.impl.Connector;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
@@ -307,21 +307,20 @@ public abstract class QueryObjectFactory {
         return new OutputTerm(name, term);
     }
 
-    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetAttribute(
-            IExpression expression, AttributeInterface attribute, T timeInterval) {
+    public static IDateOffsetAttribute createDateOffsetAttribute(IExpression expression, AttributeInterface attribute,
+            TimeInterval timeInterval) {
         if (!(attribute.getAttributeTypeInformation() instanceof NumericTypeInformationInterface)) {
             throw new IllegalArgumentException("date offset attribute " + attribute + " is not numeric.");
         }
-        return new DateOffsetAttribute<T>(expression, attribute, timeInterval);
+        return new DateOffsetAttribute(expression, attribute, timeInterval);
     }
 
-    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(T timeInterval) {
-        return new DateOffsetLiteral<T>(timeInterval);
+    public static IDateOffsetLiteral createDateOffsetLiteral(TimeInterval timeInterval) {
+        return new DateOffsetLiteral(timeInterval);
     }
 
-    public static <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetLiteral<T> createDateOffsetLiteral(String s,
-            T timeInterval) {
-        IDateOffsetLiteral<T> res = new DateOffsetLiteral<T>(timeInterval);
+    public static IDateOffsetLiteral createDateOffsetLiteral(String s, TimeInterval timeInterval) {
+        IDateOffsetLiteral res = new DateOffsetLiteral(timeInterval);
         res.setOffset(s);
         return res;
     }

@@ -39,8 +39,7 @@ public enum TermType {
      * @param operator the operator.
      * @return the resultant term type.
      */
-    public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType,
-            ArithmeticOperator operator) {
+    public static TermType getResultTermType(TermType leftOpndType, TermType rightOpndType, ArithmeticOperator operator) {
         if (leftOpndType == Invalid || rightOpndType == Invalid) {
             return Invalid;
         }
@@ -93,7 +92,13 @@ public enum TermType {
     /**
      * @return <tt>timeInterval instanceof DSInterval ? DSInterval : YMInterval</tt>
      */
-    public static TermType termType(ITimeIntervalEnum timeInterval) {
-        return timeInterval instanceof DSInterval ? DSInterval : YMInterval;
+    public static TermType termType(TimeInterval<?> timeInterval) {
+        if (timeInterval.primitiveEnum() instanceof DSInterval) {
+            return DSInterval;
+        } else if (timeInterval.primitiveEnum() instanceof YMInterval) {
+            return YMInterval;
+        } else {
+            throw new RuntimeException("can't occur.");
+        }
     }
 }

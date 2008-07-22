@@ -2,7 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IDateLiteral;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 class PrimitiveOperationProcessor {
@@ -14,7 +14,7 @@ class PrimitiveOperationProcessor {
         return "'" + literal.getDate().toString() + "'";
     }
 
-    String getIntervalString(String s, ITimeIntervalEnum timeInterval) {
+    String getIntervalString(String s, TimeInterval<?> timeInterval) {
         return s + timeInterval;
     }
 

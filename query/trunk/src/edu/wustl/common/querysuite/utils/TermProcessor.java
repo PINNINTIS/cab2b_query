@@ -15,8 +15,8 @@ import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.ILiteral;
 import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
 /**
  * Provides string representation and term type of an {@link ITerm}. It
@@ -144,7 +144,7 @@ public class TermProcessor {
 
         private final TermType termType;
 
-        private final ITimeIntervalEnum timeInterval;
+        private final TimeInterval<?> timeInterval;
 
         static final TermStringOpnd INVALID_TERM_STRING_OPND = new TermStringOpnd("", TermType.Invalid);
 
@@ -152,13 +152,13 @@ public class TermProcessor {
             this.string = string;
             this.termType = termType;
             if (TermType.isInterval(termType)) {
-                timeInterval = DSInterval.Day;
+                timeInterval = TimeInterval.compoundEnum(DSInterval.Day);
             } else {
                 timeInterval = null;
             }
         }
 
-        TermStringOpnd(String string, ITimeIntervalEnum timeInterval) {
+        TermStringOpnd(String string, TimeInterval<?> timeInterval) {
             this.string = string;
             this.timeInterval = timeInterval;
             this.termType = TermType.termType(timeInterval);
@@ -172,7 +172,7 @@ public class TermProcessor {
             return termType;
         }
 
-        public ITimeIntervalEnum getTimeInterval() {
+        public TimeInterval<?> getTimeInterval() {
             if (!TermType.isInterval(termType)) {
                 throw new UnsupportedOperationException();
             }
@@ -246,7 +246,7 @@ public class TermProcessor {
                 return TermString.INVALID;
             }
             if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {
-                IDateOffsetLiteral<DSInterval> lit = (IDateOffsetLiteral<DSInterval>) opnd;
+                IDateOffsetLiteral lit = (IDateOffsetLiteral) opnd;
                 String s = primitiveOperationProcessor.getIntervalString(lit.getOffset(), lit.getTimeInterval());
                 return new TermString(s, TermType.DSInterval);
             }
@@ -361,8 +361,9 @@ public class TermProcessor {
 
     private TermStringOpnd numToDateOffset(IArithmeticOperand opnd) {
         TermStringOpnd strOpnd = convertOperand(opnd);
-        String res = primitiveOperationProcessor.getIntervalString(strOpnd.getString(), DSInterval.Day);
-        return new TermStringOpnd(res, DSInterval.Day);
+        String res = primitiveOperationProcessor.getIntervalString(strOpnd.getString(), TimeInterval
+                .compoundEnum(DSInterval.Day));
+        return new TermStringOpnd(res, TimeInterval.compoundEnum(DSInterval.Day));
     }
 
     private TermStringOpnd convertBasicTerm(IArithmeticOperand leftOpnd, ArithmeticOperator operator,
@@ -411,7 +412,7 @@ public class TermProcessor {
             INumericLiteral literal = (INumericLiteral) operand;
             termStr = literal.getNumber();
         } else if (operand instanceof IDateOffsetLiteral) {
-            IDateOffsetLiteral<?> literal = (IDateOffsetLiteral<?>) operand;
+            IDateOffsetLiteral literal = (IDateOffsetLiteral) operand;
             termStr = literal.getOffset();
         } else if (operand instanceof SubTerm) {
             SubTerm subTerm = (SubTerm) operand;

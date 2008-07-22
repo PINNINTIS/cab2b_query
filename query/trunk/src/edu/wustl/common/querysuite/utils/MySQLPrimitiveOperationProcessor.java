@@ -3,6 +3,7 @@ package edu.wustl.common.querysuite.utils;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.DSInterval;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
@@ -17,7 +18,8 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     @Override
-    String getDateOffsetString(String s, ITimeIntervalEnum timeInterval) {
+    String getDateOffsetString(String s, TimeInterval<?> compoundTimeInterval) {
+        ITimeIntervalEnum timeInterval = compoundTimeInterval.primitiveEnum();
         if (timeInterval instanceof DSInterval) {
             return getDSIntervalString(s, (DSInterval) timeInterval);
         } else if (timeInterval instanceof YMInterval) {

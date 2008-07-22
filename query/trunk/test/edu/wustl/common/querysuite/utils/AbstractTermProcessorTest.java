@@ -21,6 +21,7 @@ import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermString;
 
 public abstract class AbstractTermProcessorTest extends TestCase {
@@ -67,12 +68,12 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return QueryObjectFactory.createDateLiteral(Date.valueOf(s));
     }
 
-    protected IDateOffsetLiteral<?> dateOffsetLiteral(String s) {
-        return QueryObjectFactory.createDateOffsetLiteral(s, DSInterval.Day);
+    protected IDateOffsetLiteral dateOffsetLiteral(String s) {
+        return QueryObjectFactory.createDateOffsetLiteral(s, TimeInterval.compoundEnum(DSInterval.Day));
     }
 
     protected <T extends Enum<?> & ITimeIntervalEnum> ILiteral dateOffsetLiteral(String s, T timeInterval) {
-        return QueryObjectFactory.createDateOffsetLiteral(s, timeInterval);
+        return QueryObjectFactory.createDateOffsetLiteral(s, TimeInterval.compoundEnum(timeInterval));
     }
 
     // protected ILiteral literal(String s, TermType termType) {
@@ -105,10 +106,10 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return createExpressionAttribute(attrName, entityName, TermType.Timestamp);
     }
 
-    protected <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute<T> createDateOffsetExpressionAttribute(
+    protected <T extends Enum<?> & ITimeIntervalEnum> IDateOffsetAttribute createDateOffsetExpressionAttribute(
             String attrName, String entityName, T timeInterval) {
         return QueryObjectFactory.createDateOffsetAttribute(createExpression(1), createAttribute(attrName,
-                createEntity(entityName)), timeInterval);
+                createEntity(entityName)), TimeInterval.compoundEnum(timeInterval));
     }
 
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {

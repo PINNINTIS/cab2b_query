@@ -38,10 +38,10 @@
 		<subclass name="DateOffsetLiteral" discriminator-value="doLit">
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
-				<property name="compoundTimeInterval" column="TIME_INTERVAL">
+				<property name="timeInterval" column="TIME_INTERVAL">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">
-							edu.wustl.common.querysuite.queryobject.IDateOffset$TimeIntervalCompoundEnum
+							edu.wustl.common.querysuite.queryobject.TimeInterval
 						</param>
 					</type>
 				</property>
@@ -76,10 +76,10 @@
 		<subclass name="DateOffsetAttribute" discriminator-value="doExAt">
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
-				<property name="compoundTimeInterval" column="TIME_INTERVAL">
+				<property name="timeInterval" column="TIME_INTERVAL">
 					<type name="edu.wustl.common.hibernate.EnumType">
 						<param name="enum-name">
-							edu.wustl.common.querysuite.queryobject.IDateOffset$TimeIntervalCompoundEnum
+							edu.wustl.common.querysuite.queryobject.TimeInterval
 						</param>
 					</type>
 				</property>

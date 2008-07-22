@@ -4,6 +4,7 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcessor {
@@ -116,12 +117,12 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         }
     }
 
-    abstract String getDateOffsetString(String s, ITimeIntervalEnum timeInterval);
+    abstract String getDateOffsetString(String s, TimeInterval<?> timeInterval);
 
     abstract String getDateDiffString(String leftStr, String rightStr);
 
     @Override
-    final String getIntervalString(String s, ITimeIntervalEnum timeInterval) {
+    final String getIntervalString(String s, TimeInterval<?> timeInterval) {
         return getDateOffsetString(s, timeInterval);
     }
 

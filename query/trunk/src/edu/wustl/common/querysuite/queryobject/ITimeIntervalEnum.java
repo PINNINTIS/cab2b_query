@@ -8,5 +8,5 @@ package edu.wustl.common.querysuite.queryobject;
  * @see YMInterval
  */
 public interface ITimeIntervalEnum {
-
+    int numSeconds();
 }

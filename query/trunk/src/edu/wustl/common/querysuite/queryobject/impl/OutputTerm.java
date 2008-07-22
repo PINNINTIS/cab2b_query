@@ -3,6 +3,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 
 public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     private static final long serialVersionUID = 5063978137285352552L;
@@ -10,6 +11,8 @@ public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     private String name;
 
     private ITerm term;
+
+    private ITimeIntervalEnum timeInterval;
 
     public OutputTerm() {
 
@@ -45,5 +48,13 @@ public class OutputTerm extends BaseQueryObject implements IOutputTerm {
     @Override
     public String toString() {
         return "term : " + term + "; name : " + name;
+    }
+
+    public ITimeIntervalEnum getTimeInterval() {
+        return timeInterval;
+    }
+
+    public void setTimeInterval(ITimeIntervalEnum timeInterval) {
+        this.timeInterval = timeInterval;
     }
 }

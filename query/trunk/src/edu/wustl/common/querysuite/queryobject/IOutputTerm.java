@@ -16,4 +16,8 @@ public interface IOutputTerm extends IBaseQueryObject {
     String getName();
 
     void setName(String name);
+
+    ITimeIntervalEnum getTimeInterval();
+
+    void setTimeInterval(ITimeIntervalEnum timeInterval);
 }

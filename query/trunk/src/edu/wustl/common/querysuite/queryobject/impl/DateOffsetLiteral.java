@@ -1,15 +1,13 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
-public class DateOffsetLiteral<T extends Enum<?> & ITimeIntervalEnum> extends ArithmeticOperand
-        implements
-            IDateOffsetLiteral<T> {
+public class DateOffsetLiteral extends ArithmeticOperand implements IDateOffsetLiteral {
     private static final long serialVersionUID = -7510642736372664817L;
 
-    private TimeIntervalCompoundEnum<T> compoundTimeInterval;
+    private TimeInterval timeInterval;
 
     private String offset;
 
@@ -17,27 +15,22 @@ public class DateOffsetLiteral<T extends Enum<?> & ITimeIntervalEnum> extends Ar
         super(TermType.DSInterval);
     }
 
-    public DateOffsetLiteral(T timeInterval) {
+    public DateOffsetLiteral(TimeInterval<?> timeInterval) {
         super(TermType.termType(timeInterval));
         if (timeInterval == null) {
             throw new NullPointerException();
         }
-        this.compoundTimeInterval = TimeIntervalCompoundEnum.compoundEnum(timeInterval);
+        this.timeInterval = timeInterval;
     }
 
-    public T getTimeInterval() {
-        return compoundTimeInterval.primitiveEnum();
+    public TimeInterval<?> getTimeInterval() {
+        return timeInterval;
     }
 
     // for hibernate
     @SuppressWarnings("unused")
-    private TimeIntervalCompoundEnum<T> getCompoundTimeInterval() {
-        return compoundTimeInterval;
-    }
-
-    @SuppressWarnings("unused")
-    private void setCompoundTimeInterval(TimeIntervalCompoundEnum<T> timeIntervalCompoundEnum) {
-        this.compoundTimeInterval = timeIntervalCompoundEnum;
+    private void setTimeInterval(TimeInterval<?> timeInterval) {
+        this.timeInterval = timeInterval;
     }
 
     public String getOffset() {
