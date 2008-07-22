@@ -13,6 +13,13 @@
 			</generator>
 		</id>
 		<property name="name" type="string" column="NAME" />
+		<property name="timeInterval" column="TIME_INTERVAL">
+			<type name="edu.wustl.common.hibernate.EnumType">
+				<param name="enum-name">
+					edu.wustl.common.querysuite.queryobject.TimeInterval
+				</param>
+			</type>
+		</property>
 		<many-to-one name="term" class="Term" cascade="save-update"
 			column="TERM_ID" />
 	</class>

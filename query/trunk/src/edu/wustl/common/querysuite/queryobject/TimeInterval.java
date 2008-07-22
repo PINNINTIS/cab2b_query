@@ -51,6 +51,9 @@ public class TimeInterval<T extends Enum<?> & ITimeIntervalEnum> extends Compoun
     public static final TimeInterval<YMInterval> Year = new TimeInterval<YMInterval>(YMInterval.Year,
             Day.numSeconds * 365);
 
+    public int numSeconds() {
+        return numSeconds;
+    }
     // all the compound enum values in this compound enum
     // this method is mandated by the CompoundEnum contract
     public static TimeInterval<?>[] values() {
