@@ -158,12 +158,14 @@ public abstract class QueryObjectFactory {
         return createParameter(dateOffsetLiteral, name);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> IParameter<T> createParameter(T t, String name) {
         if (!(t instanceof IParameterizable)) {
             throw new IllegalArgumentException("can't create parameter of type " + t.getClass());
         }
         IParameter<T> parameter = new Parameter<T>(t);
         parameter.setName(name);
+        ((IParameterizable) t).setParameter(parameter);
         return parameter;
     }
 
