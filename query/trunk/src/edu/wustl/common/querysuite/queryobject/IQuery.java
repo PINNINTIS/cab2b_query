@@ -25,5 +25,5 @@ public interface IQuery extends IBaseQueryObject {
 
     List<IOutputTerm> getOutputTerms();
 
-    void setOutputTerms(List<IOutputTerm> terms);
+    List<IParameter<?>> getParameters();
 }

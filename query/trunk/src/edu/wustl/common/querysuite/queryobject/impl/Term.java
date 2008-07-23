@@ -5,6 +5,7 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IBaseExpression;
 import edu.wustl.common.querysuite.queryobject.IConnector;
+import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor;
@@ -39,5 +40,14 @@ public class Term extends BaseExpression<ArithmeticOperator, IArithmeticOperand>
     @Override
     protected IBaseExpression<ArithmeticOperator, IArithmeticOperand> createEmpty() {
         return new Term();
+    }
+
+    @Override
+    public IArithmeticOperand removeOperand(int index) {
+        IArithmeticOperand res = super.removeOperand(index);
+        if (res instanceof IParameterizable<?>) {
+            ((IParameterizable<?>) res).setParameter(null);
+        }
+        return res;
     }
 }

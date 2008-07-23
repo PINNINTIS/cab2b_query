@@ -26,7 +26,8 @@ import edu.wustl.common.querysuite.queryobject.INumericLiteral;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
-import edu.wustl.common.querysuite.queryobject.IParameterizedCondition;
+import edu.wustl.common.querysuite.queryobject.IParameter;
+import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
@@ -48,7 +49,7 @@ import edu.wustl.common.querysuite.queryobject.impl.NumericLiteral;
 import edu.wustl.common.querysuite.queryobject.impl.OutputAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.OutputEntity;
 import edu.wustl.common.querysuite.queryobject.impl.OutputTerm;
-import edu.wustl.common.querysuite.queryobject.impl.ParameterizedCondition;
+import edu.wustl.common.querysuite.queryobject.impl.Parameter;
 import edu.wustl.common.querysuite.queryobject.impl.ParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.impl.Query;
 import edu.wustl.common.querysuite.queryobject.impl.QueryEntity;
@@ -135,36 +136,35 @@ public abstract class QueryObjectFactory {
     }
 
     /**
-     * To create an empty Condition.
-     * 
-     * @return The instance of the Condition class.
-     */
-    public static IParameterizedCondition createParameterizedCondition() {
-        return new ParameterizedCondition();
-    }
-
-    /**
      * To create an ParameterizedCondition object out of Condition object.
      * 
      * @return The instance of the ParameterizedCondition class.
      */
-    public static IParameterizedCondition createParameterizedCondition(ICondition condition) {
-        return new ParameterizedCondition(condition);
+    public static IParameter<ICondition> createParameterizedCondition(ICondition condition, String name) {
+        return createParameter(condition, name);
     }
 
-    /**
-     * To instantiate ParameterizedCondition object.
-     * 
-     * @param attribute The reference to Dynamic Extension attribute on which
-     *            condition to be created.
-     * @param relationalOperator The relational operator between attribute &
-     *            values.
-     * @param values The List of String representing values of the condition.
-     * @return The instance of the Condition class.
-     */
-    public static IParameterizedCondition createParameterizedCondition(AttributeInterface attribute,
-            RelationalOperator relationalOperator, List<String> values, Integer index, String name) {
-        return new ParameterizedCondition(attribute, relationalOperator, values, index, name);
+    public static IParameter<INumericLiteral> createParameterizedNumericLiteral(INumericLiteral numericLiteral,
+            String name) {
+        return createParameter(numericLiteral, name);
+    }
+
+    public static IParameter<IDateLiteral> createParameterizedDateLiteral(IDateLiteral dateLiteral, String name) {
+        return createParameter(dateLiteral, name);
+    }
+
+    public static IParameter<IDateOffsetLiteral> createParameterizedDateOffsetLiteral(
+            IDateOffsetLiteral dateOffsetLiteral, String name) {
+        return createParameter(dateOffsetLiteral, name);
+    }
+
+    private static <T> IParameter<T> createParameter(T t, String name) {
+        if (!(t instanceof IParameterizable)) {
+            throw new IllegalArgumentException("can't create parameter of type " + t.getClass());
+        }
+        IParameter<T> parameter = new Parameter<T>(t);
+        parameter.setName(name);
+        return parameter;
     }
 
     /**

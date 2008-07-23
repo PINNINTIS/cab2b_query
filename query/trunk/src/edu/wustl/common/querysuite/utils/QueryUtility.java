@@ -3,7 +3,6 @@
  */
 package edu.wustl.common.querysuite.utils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,11 +18,11 @@ import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
-import edu.wustl.common.querysuite.queryobject.IParameterizedCondition;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.ITerm;
+import edu.wustl.common.util.Collections;
 
 /**
  * @author chetan_patil
@@ -48,46 +47,7 @@ public class QueryUtility {
                     IExpressionOperand expressionOperand = expression.getOperand(index);
                     if (expressionOperand instanceof IRule) {
                         IRule rule = (IRule) expressionOperand;
-                        Collection<ICondition> conditionList = rule.getConditions();
-
-                        expressionIdConditionCollectionMap.put(expression, conditionList);
-                    }
-                }
-            }
-        }
-
-        return expressionIdConditionCollectionMap;
-    }
-
-    /**
-     * This method returns all the selected Condition for a given query.
-     * 
-     * @param query
-     * @return Map of ExpressionId -> Collection of Condition
-     */
-    public static Map<IExpression, Collection<IParameterizedCondition>> getAllParameterizedConditions(IQuery query) {
-        Map<IExpression, Collection<IParameterizedCondition>> expressionIdConditionCollectionMap = null;
-        if (query != null) {
-            expressionIdConditionCollectionMap = new HashMap<IExpression, Collection<IParameterizedCondition>>();
-
-            IConstraints constraints = query.getConstraints();
-            for (IExpression expression : constraints) {
-                for (int index = 0; index < expression.numberOfOperands(); index++) {
-                    IExpressionOperand expressionOperand = expression.getOperand(index);
-                    if (expressionOperand instanceof IRule) {
-                        IRule rule = (IRule) expressionOperand;
-
-                        Collection<IParameterizedCondition> parameterizedConditions = new ArrayList<IParameterizedCondition>();
-
-                        Collection<ICondition> conditionList = rule.getConditions();
-                        for (ICondition condition : conditionList) {
-                            if (condition instanceof IParameterizedCondition) {
-                                parameterizedConditions.add((IParameterizedCondition) condition);
-                            }
-                        }
-                        if (!parameterizedConditions.isEmpty()) {
-                            expressionIdConditionCollectionMap.put(expression, parameterizedConditions);
-                        }
+                        expressionIdConditionCollectionMap.put(expression, Collections.list(rule));
                     }
                 }
             }

@@ -146,11 +146,6 @@ public class Expression extends BaseExpression<LogicalOperator, IExpressionOpera
     }
 
     @Override
-    public boolean removeOperand(IExpressionOperand operand) {
-        return super.removeOperand(wrapInSubExpr(operand));
-    }
-
-    @Override
     public IExpressionOperand removeOperand(int index) {
         return unwrapSubExpr(super.removeOperand(index));
     }

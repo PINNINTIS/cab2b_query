@@ -8,6 +8,7 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -15,6 +16,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.IExpression;
+import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 
@@ -65,11 +67,15 @@ public class Rule extends BaseQueryObject implements IRule {
      * @hibernate.cache usage="read-write"
      * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.Condition"
      */
-    public List<ICondition> getConditions() {
+    @SuppressWarnings("unused")
+    // for hibernate
+    private List<ICondition> getConditions() {
         return conditions;
     }
 
-    public void setConditions(List<ICondition> conditions) {
+    @SuppressWarnings("unused")
+    // for hibernate
+    private void setConditions(List<ICondition> conditions) {
         this.conditions = conditions;
     }
 
@@ -154,6 +160,28 @@ public class Rule extends BaseQueryObject implements IRule {
         return rule;
     }
 
+    public Iterator<ICondition> iterator() {
+        return new Iterator<ICondition>() {
+            private Iterator<ICondition> iter = conditions.iterator();
+
+            private ICondition curr;
+
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            public ICondition next() {
+                return curr = iter.next();
+            }
+
+            public void remove() {
+                iter.remove();
+                ((IParameterizable<?>) curr).setParameter(null);
+            }
+
+        };
+    }
+
     /**
      * @return String representation of Rule object in the form: [[conditions]]
      * @see java.lang.Object#toString()
@@ -203,4 +231,5 @@ public class Rule extends BaseQueryObject implements IRule {
         }
         return false;
     }
+
 }
