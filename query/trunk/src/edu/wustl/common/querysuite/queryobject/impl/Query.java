@@ -112,7 +112,7 @@ public class Query extends BaseQueryObject implements IQuery {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends IParameterizable<T>, X> void setParameter(IParameter<?> parameter,
+    private <T extends IParameterizable<T>, X> void setParameter(IParameter<X> parameter,
             IParameterizable<T> parameterized) {
         IParameter<T> tParameter = (IParameter<T>) parameter;
         parameterized.setParameter(tParameter);
