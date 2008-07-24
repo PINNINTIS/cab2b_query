@@ -38,26 +38,5 @@
 				unique="false" />
 
 		</list>
-
-		<!--
-			To add non XDoclet property mappings, create a file named
-			hibernate-properties-Condition.xml
-			containing the additional properties and place it in your merge dir.
-		-->
-
-		<joined-subclass
-			name="edu.wustl.common.querysuite.queryobject.impl.ParameterizedCondition"
-			table="QUERY_PARAMETERIZED_CONDITION" dynamic-update="false"
-			dynamic-insert="false">
-			<key column="IDENTIFIER" />
-			<property name="index" type="integer" update="true" insert="true"
-				column="CONDITION_INDEX" />
-
-			<property name="name" type="string" update="true" insert="true"
-				column="CONDITION_NAME" length="255" />
-
-		</joined-subclass>
-
 	</class>
-
 </hibernate-mapping>
