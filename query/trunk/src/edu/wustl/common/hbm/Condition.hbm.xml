@@ -30,7 +30,7 @@
 			inverse="false" cascade="all-delete-orphan">
 			<cache usage="read-write" />
 
-			<key column="QUERY_CONDITION_ID" />
+			<key column="CONDITION_ID" />
 
 			<index column="POSITION" type="int" />
 
