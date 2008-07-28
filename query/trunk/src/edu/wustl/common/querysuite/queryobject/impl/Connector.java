@@ -102,8 +102,6 @@ public class Connector<P extends Enum<?> & IBinaryOperator> extends BaseQueryObj
 
     private BinaryOperatorCompoundEnum<P> compoundOperator;
 
-    private String operatorString;
-
     private int nestingNumber = 0;
 
     /**
@@ -163,23 +161,6 @@ public class Connector<P extends Enum<?> & IBinaryOperator> extends BaseQueryObj
      */
     public void setOperator(P operator) {
         this.compoundOperator = BinaryOperatorCompoundEnum.compoundEnum(operator);
-    }
-
-    /**
-     * @return the operatorString
-     * 
-     * @hibernate.property name="operatorString" column="LOGICAL_OPERATOR"
-     *                     type="string" update="true" Insert="true"
-     */
-    public String getOperatorString() {
-        return operatorString;
-    }
-
-    /**
-     * @param operatorString the operatorString to set
-     */
-    public void setOperatorString(String operatorString) {
-        this.operatorString = operatorString;
     }
 
     /**
