@@ -27,9 +27,7 @@ public class DateOffsetAttribute extends ExpressionAttribute implements IDateOff
         return timeInterval;
     }
 
-    // for hibernate
-    @SuppressWarnings("unused")
-    private void setTimeInterval(TimeInterval<?> timeInterval) {
+    public void setTimeInterval(TimeInterval<?> timeInterval) {
         this.timeInterval = timeInterval;
     }
 

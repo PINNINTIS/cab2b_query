@@ -18,7 +18,7 @@ abstract class ArithmeticOperand extends BaseQueryObject implements IArithmeticO
         return termType;
     }
 
-    public void setTermType(TermType termType) {
+    protected void setTermType(TermType termType) {
         if (termType == null) {
             throw new NullPointerException("term type is null.");
         }

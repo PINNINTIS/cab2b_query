@@ -34,10 +34,9 @@ public class DateOffsetLiteral extends ArithmeticOperand
         return timeInterval;
     }
 
-    // for hibernate
-    @SuppressWarnings("unused")
-    private void setTimeInterval(TimeInterval<?> timeInterval) {
+    public void setTimeInterval(TimeInterval<?> timeInterval) {
         this.timeInterval = timeInterval;
+        setTermType(TermType.termType(timeInterval));
     }
 
     public String getOffset() {
