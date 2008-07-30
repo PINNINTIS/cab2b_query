@@ -29,6 +29,7 @@ public class DateOffsetAttribute extends ExpressionAttribute implements IDateOff
 
     public void setTimeInterval(TimeInterval<?> timeInterval) {
         this.timeInterval = timeInterval;
+        setTermType(TermType.termType(timeInterval));
     }
 
 }
