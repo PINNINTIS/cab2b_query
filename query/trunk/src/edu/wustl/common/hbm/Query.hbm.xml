@@ -18,13 +18,7 @@
 		<many-to-one name="constraints"
 			class="edu.wustl.common.querysuite.queryobject.impl.Constraints"
 			cascade="all" outer-join="auto" update="true" insert="true"
-			column="QUERY_CONSTRAINTS_ID" unique="true" />
-
-		<!--
-			To add non XDoclet property mappings, create a file named
-			hibernate-properties-Query.xml
-			containing the additional properties and place it in your merge dir.
-		-->
+			column="CONSTRAINTS_ID" unique="true" />
 
 		<list name="outputTerms" cascade="all-delete-orphan"
 			table="QUERY_TO_OUTPUT_TERMS">
@@ -33,14 +27,6 @@
 			<index column="POSITION" />
 			<many-to-many column="OUTPUT_TERM_ID" unique="true"
 				class="edu.wustl.common.querysuite.queryobject.impl.OutputTerm" />
-		</list>
-		<list name="parameters" cascade="all-delete-orphan"
-			table="QUERY_TO_PARAMETERS">
-			<cache usage="read-write" />
-			<key column="QUERY_ID" />
-			<index column="POSITION" />
-			<many-to-many column="PARAMETER_ID" unique="true"
-				class="edu.wustl.common.querysuite.queryobject.impl.Parameter" />
 		</list>
 		<joined-subclass
 			name="edu.wustl.common.querysuite.queryobject.impl.ParameterizedQuery"
@@ -62,7 +48,14 @@
 				<one-to-many
 					class="edu.wustl.common.querysuite.queryobject.impl.OutputAttribute" />
 			</list>
-
+			<list name="parameters" cascade="all-delete-orphan"
+				table="QUERY_TO_PARAMETERS">
+				<cache usage="read-write" />
+				<key column="QUERY_ID" />
+				<index column="POSITION" />
+				<many-to-many column="PARAMETER_ID" unique="true"
+					class="edu.wustl.common.querysuite.queryobject.impl.Parameter" />
+			</list>
 		</joined-subclass>
 	</class>
 

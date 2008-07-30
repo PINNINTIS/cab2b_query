@@ -14,7 +14,7 @@
 			<property name="expressionId" type="integer" column="UI_EXPR_ID" />
 
 			<many-to-one name="queryEntity" class="QueryEntity"
-				cascade="save-update,delete" column="QUERY_QUERY_ENTITY_ID" />
+				cascade="save-update,delete" column="QUERY_ENTITY_ID" />
 		</join>
 	</subclass>
 </hibernate-mapping>
