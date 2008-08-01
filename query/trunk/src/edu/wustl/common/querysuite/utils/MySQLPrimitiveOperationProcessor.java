@@ -14,7 +14,7 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
     @Override
     String getDateDiffString(String leftStr, String rightStr) {
-        return "timediff(" + leftStr + ", " + rightStr + ")";
+        return "timestampdiff(SECOND, " + rightStr + ", " + leftStr + ")";
     }
 
     @Override
@@ -29,33 +29,9 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     private String getDSIntervalString(String s, DSInterval interval) {
-        String hour = "0";
-        String minute = "0";
-        String sec = "0";
         s = "(" + s + ")";
-        switch (interval) {
-            case Second :
-                sec = s + "%60";
-                minute = "(" + s + "%3600)/60";
-                hour = s + "/3600";
-                break;
-            case Minute :
-                minute = s + "%60";
-                hour = s + "/60";
-                break;
-            case Hour :
-                hour = s;
-                break;
-            case Day :
-                hour = s + "*24";
-                break;
-            case Week :
-                hour = s + "*24*7";
-                break;
-            default :
-                throw new RuntimeException("can't occur.");
-        }
-        return "maketime(" + hour + ", " + minute + ", " + sec + ")";
+        s = s + "*" + interval.numSeconds();
+        return s;
     }
 
     @Override
@@ -72,18 +48,20 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     @Override
     String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
         if (operator == ArithmeticOperator.Minus) {
-            offsetStr = negativeMaketimeString(offsetStr);
+            // TODO check
+            offsetStr = "-" + offsetStr;
         }
-        return "timestamp(" + timeStr + ", " + offsetStr + ")";
+        return "timestampadd(SECOND, " + offsetStr + ", " + timeStr + ")";
     }
 
-    @Override
-    String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
-        if (operator == ArithmeticOperator.Minus) {
-            rightStr = negativeMaketimeString(rightStr);
-        }
-        return "addtime(" + leftStr + ", " + rightStr + ")";
-    }
+    // @Override
+    // String getIntervalOp(String leftStr, ArithmeticOperator operator, String
+    // rightStr) {
+    // if (operator == ArithmeticOperator.Minus) {
+    // rightStr = negativeMaketimeString(rightStr);
+    // }
+    // return "addtime(" + leftStr + ", " + rightStr + ")";
+    // }
 
     private String negativeMaketimeString(String s) {
         return "concat('-',time_format(" + s + ",'%H:%i:%s'))";
