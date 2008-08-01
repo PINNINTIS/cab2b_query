@@ -21,35 +21,29 @@ public class TimeInterval<T extends Enum<?> & ITimeIntervalEnum> extends Compoun
     private final int numSeconds;
 
     // private constructor because this is an enum
-    private TimeInterval(T primitiveEnum, int numSeconds) {
+    private TimeInterval(T primitiveEnum) {
         super(primitiveEnum, nextOrdinal++, primitiveEnum.name());
         primitiveValues.add(primitiveEnum);
         values.add(this);
-        this.numSeconds = numSeconds;
+        this.numSeconds = ((ITimeIntervalEnum)primitiveEnum).numSeconds();
     }
 
     // the compound enum values
-    public static final TimeInterval<DSInterval> Second = new TimeInterval<DSInterval>(DSInterval.Second, 1);
+    public static final TimeInterval<DSInterval> Second = new TimeInterval<DSInterval>(DSInterval.Second);
 
-    public static final TimeInterval<DSInterval> Minute = new TimeInterval<DSInterval>(DSInterval.Minute, 60);
+    public static final TimeInterval<DSInterval> Minute = new TimeInterval<DSInterval>(DSInterval.Minute);
 
-    public static final TimeInterval<DSInterval> Hour = new TimeInterval<DSInterval>(DSInterval.Hour,
-            Minute.numSeconds * 60);
+    public static final TimeInterval<DSInterval> Hour = new TimeInterval<DSInterval>(DSInterval.Hour);
 
-    public static final TimeInterval<DSInterval> Day = new TimeInterval<DSInterval>(DSInterval.Day,
-            Hour.numSeconds * 24);
+    public static final TimeInterval<DSInterval> Day = new TimeInterval<DSInterval>(DSInterval.Day);
 
-    public static final TimeInterval<DSInterval> Week = new TimeInterval<DSInterval>(DSInterval.Week,
-            Day.numSeconds * 7);
+    public static final TimeInterval<DSInterval> Week = new TimeInterval<DSInterval>(DSInterval.Week);
 
-    public static final TimeInterval<YMInterval> Month = new TimeInterval<YMInterval>(YMInterval.Month,
-            Day.numSeconds * 30);
+    public static final TimeInterval<YMInterval> Month = new TimeInterval<YMInterval>(YMInterval.Month);
 
-    public static final TimeInterval<YMInterval> Quarter = new TimeInterval<YMInterval>(YMInterval.Quarter,
-            Month.numSeconds * 3);
+    public static final TimeInterval<YMInterval> Quarter = new TimeInterval<YMInterval>(YMInterval.Quarter);
 
-    public static final TimeInterval<YMInterval> Year = new TimeInterval<YMInterval>(YMInterval.Year,
-            Day.numSeconds * 365);
+    public static final TimeInterval<YMInterval> Year = new TimeInterval<YMInterval>(YMInterval.Year);
 
     public int numSeconds() {
         return numSeconds;
@@ -91,4 +85,9 @@ public class TimeInterval<T extends Enum<?> & ITimeIntervalEnum> extends Compoun
         return values.get(ordinal());
     }
 
+    public static void main(String[] args) {
+        for(TimeInterval t : values()) {
+            System.out.println(t.numSeconds);
+        }
+    }
 }
