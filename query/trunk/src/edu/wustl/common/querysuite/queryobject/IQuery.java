@@ -1,6 +1,5 @@
 package edu.wustl.common.querysuite.queryobject;
 
-import java.util.List;
 
 /**
  * The query object... this is the unit built from UI, persisted, and from which
@@ -22,8 +21,4 @@ public interface IQuery extends IBaseQueryObject {
      * @param constraints the constraints to set.
      */
     void setConstraints(IConstraints constraints);
-
-    List<IOutputTerm> getOutputTerms();
-
-    List<IParameter<?>> getParameters();
 }

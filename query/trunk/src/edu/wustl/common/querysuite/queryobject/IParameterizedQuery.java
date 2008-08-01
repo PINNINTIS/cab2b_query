@@ -19,14 +19,11 @@ public interface IParameterizedQuery extends IQuery {
 
     void setDescription(String description);
 
-    @Deprecated// added setter method for list of outputAttribute ojects
-    boolean addOutputAttribute(IOutputAttribute outputAttribute);
-    
-    @Deprecated// added setter method for list of outputAttribute ojects
-    boolean removeOutputAttribute(IOutputAttribute outputAttribute);
-    
-    public List<IOutputAttribute> getOutputAttributeList() ;
+    List<IOutputAttribute> getOutputAttributeList();
 
-    public void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
+    void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
 
+    List<IOutputTerm> getOutputTerms();
+
+    List<IParameter<?>> getParameters();
 }
