@@ -23,7 +23,5 @@ public interface IParameterizedQuery extends IQuery {
 
     void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
 
-    List<IOutputTerm> getOutputTerms();
-
     List<IParameter<?>> getParameters();
 }
