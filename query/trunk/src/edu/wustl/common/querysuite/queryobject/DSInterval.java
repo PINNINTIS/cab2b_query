@@ -8,7 +8,7 @@ package edu.wustl.common.querysuite.queryobject;
  * @see YMInterval
  */
 public enum DSInterval implements ITimeIntervalEnum {
-    Second(1), Minute(60), Hour(60 * 60), Day(Hour.numSeconds * 60), Week(Day.numSeconds * 7);
+    Second(1), Minute(60), Hour(60 * 60), Day(Hour.numSeconds * 24), Week(Day.numSeconds * 7);
 
     private int numSeconds;
 
