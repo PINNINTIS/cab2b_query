@@ -9,16 +9,10 @@
 		discriminator-value="expr">
 		<join table="QUERY_EXPRESSION">
 			<key column="IDENTIFIER" />
-			<!-- the sql-type has to be specified for mysql 5.0
-				see http://www.databasesandlife.com/hibernate-boolean-fields-mysql-50
-			-->
-			<property name="isInView" type="boolean">
-				<column name="IS_IN_VIEW" sql-type="BOOLEAN" />
-			</property>
-			<property name="isVisible" type="boolean">
-				<column name="IS_VISIBLE" sql-type="BOOLEAN" />
-			</property>
+			<property name="isInView" type="boolean" column="IS_IN_VIEW" />
+			<property name="isVisible" type="boolean" column="IS_VISIBLE" />
 			<property name="expressionId" type="integer" column="UI_EXPR_ID" />
+
 			<many-to-one name="queryEntity" class="QueryEntity"
 				cascade="save-update,delete" column="QUERY_ENTITY_ID" />
 		</join>
