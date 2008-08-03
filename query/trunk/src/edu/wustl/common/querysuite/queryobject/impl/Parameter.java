@@ -2,7 +2,9 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.wustl.common.querysuite.queryobject.IParameter;
 
-public class Parameter<T> implements IParameter<T> {
+public class Parameter<T> extends BaseQueryObject implements IParameter<T> {
+    private static final long serialVersionUID = 626816287100504757L;
+
     private T parameterizedObject;
 
     private String name;
