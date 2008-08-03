@@ -242,10 +242,11 @@ public class TermProcessor {
         }
         if (term.numberOfOperands() == 1) {
             IArithmeticOperand opnd = term.getOperand(0);
-            if (opnd.getTermType() == TermType.Invalid) {
+            if (opnd.getTermType() == TermType.Invalid || opnd.getTermType() == TermType.YMInterval) {
                 return TermString.INVALID;
             }
             if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {
+                // TODO this NEVER occurs while processing a custom formula.
                 IDateOffsetLiteral lit = (IDateOffsetLiteral) opnd;
                 String s = primitiveOperationProcessor.getIntervalString(lit.getOffset(), lit.getTimeInterval());
                 return new TermString(s, TermType.DSInterval);

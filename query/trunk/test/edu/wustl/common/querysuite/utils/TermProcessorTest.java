@@ -16,7 +16,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
     public void testBasics() {
         ITerm term = newTerm();
         term.addOperand(dateOffsetLiteral("1", YMInterval.Month));
-        check(term, "1Month", TermType.YMInterval);
+        checkInvalid(term);
 
         term.setOperand(0, dateOffsetLiteral("1"));
         check(term, "1Day", TermType.DSInterval);
