@@ -4,9 +4,12 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
+import edu.wustl.common.querysuite.queryobject.IParameter;
+import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 
@@ -15,7 +18,7 @@ import edu.wustl.common.querysuite.queryobject.IQuery;
  * @created Aug 31, 2007, 4:22:00 PM
  * 
  * @hibernate.joined-subclass table="QUERY_PARAMETERIZED_QUERY"
- * @hibernate.joined-subclass-key column="IDENTIFIER" 
+ * @hibernate.joined-subclass-key column="IDENTIFIER"
  */
 public class ParameterizedQuery extends Query implements IParameterizedQuery {
     private static final long serialVersionUID = 1L;
@@ -26,6 +29,8 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
     private String description;
 
+    private List<IParameter<?>> parameters;
+
     /**
      * Default Constructor
      */
@@ -34,7 +39,9 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     }
 
     /**
-     * Parameterized Constructor. This constructor will be used by Hibernate internally.
+     * Parameterized Constructor. This constructor will be used by Hibernate
+     * internally.
+     * 
      * @param id
      * @param name
      * @param description
@@ -47,6 +54,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
     /**
      * Parameterized Constructor
+     * 
      * @param query
      */
     public ParameterizedQuery(IQuery query) {
@@ -55,6 +63,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
     /**
      * Parameterized Constructor
+     * 
      * @param name
      * @param description
      * @param query
@@ -76,7 +85,8 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     /**
      * @see edu.wustl.common.querysuite.queryobject.IDescribable#getName()
      * 
-     * @hibernate.property name="name" column="QUERY_NAME" type="string" length="255" unique="true" 
+     * @hibernate.property name="name" column="QUERY_NAME" type="string"
+     *                     length="255" unique="true"
      */
     public String getName() {
         return name;
@@ -92,7 +102,8 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     /**
      * @see edu.wustl.common.querysuite.queryobject.IDescribable#getDescription()
      * 
-     * @hibernate.property name="description" column="DESCRIPTION" type="string" length="1024"
+     * @hibernate.property name="description" column="DESCRIPTION" type="string"
+     *                     length="1024"
      */
     public String getDescription() {
         return description;
@@ -108,7 +119,8 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     /**
      * @return the outputAttributeList
      * 
-     * @hibernate.list name="outputAttributeList" table="OUTPUT_ATTRIBUTES" cascade="all-delete-orphan" inverse="false" lazy="false"
+     * @hibernate.list name="outputAttributeList" table="OUTPUT_ATTRIBUTES"
+     *                 cascade="all-delete-orphan" inverse="false" lazy="false"
      * @hibernate.collection-key column="PARAMETERIZED_QUERY_ID"
      * @hibernate.collection-index column="POSITION" type="int"
      * @hibernate.collection-one-to-many class="edu.wustl.common.querysuite.queryobject.impl.OutputAttribute"
@@ -122,15 +134,15 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
      * @param outputAttributeList the outputAttributeList to set
      */
     public void setOutputAttributeList(List<IOutputAttribute> outputAttributeList) {
-    	if (outputAttributeList==null)
-    	{
-    		outputAttributeList = new ArrayList<IOutputAttribute>();
-    	}
+        if (outputAttributeList == null) {
+            outputAttributeList = new ArrayList<IOutputAttribute>();
+        }
         this.outputAttributeList = outputAttributeList;
     }
 
     /**
      * This method adds a given OutputAttribute into the OutputAtributeList.
+     * 
      * @param outputAttribute
      * @return
      */
@@ -146,6 +158,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
     /**
      * This method removes a given OutputAttribute from the OutputAtributeList
+     * 
      * @param outputAttribute
      * @return
      */
@@ -158,5 +171,34 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
         return isRemovevd;
     }
+    public List<IParameter<?>> getParameters() {
+        if (parameters == null) {
+            parameters = new ArrayList<IParameter<?>>();
+        }
+        for (Iterator<IParameter<?>> iter = parameters.iterator(); iter.hasNext();) {
+            IParameter<?> parameter = iter.next();
+            IParameterizable<?> parameterizedObject = (IParameterizable<?>) parameter.getParameterizedObject();
+            if (parameterizedObject.getParameter() != parameter) {
+                iter.remove();
+            }
+        }
+        return parameters;
+    }
 
+    // for hibernate
+    @SuppressWarnings("unused")
+    private void setParameters(List<IParameter<?>> parameters) {
+        this.parameters = parameters;
+        for (IParameter<?> parameter : parameters) {
+            IParameterizable<?> parameterized = (IParameterizable<?>) parameter.getParameterizedObject();
+            setParameter(parameter, parameterized);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends IParameterizable<T>, X> void setParameter(IParameter<X> parameter,
+            IParameterizable<T> parameterized) {
+        IParameter<T> tParameter = (IParameter<T>) parameter;
+        parameterized.setParameter(tParameter);
+    }
 }

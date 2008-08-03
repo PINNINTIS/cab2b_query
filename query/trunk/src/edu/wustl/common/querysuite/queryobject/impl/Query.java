@@ -28,8 +28,6 @@ public class Query extends BaseQueryObject implements IQuery {
 
     private List<IOutputTerm> outputTerms;
 
-    private List<IParameter<?>> parameters;
-
     /**
      * Default Constructor
      */
@@ -85,36 +83,5 @@ public class Query extends BaseQueryObject implements IQuery {
             outputTerms = new ArrayList<IOutputTerm>();
         }
         return outputTerms;
-    }
-
-    public List<IParameter<?>> getParameters() {
-        if (parameters == null) {
-            parameters = new ArrayList<IParameter<?>>();
-        }
-        for (Iterator<IParameter<?>> iter = parameters.iterator(); iter.hasNext();) {
-            IParameter<?> parameter = iter.next();
-            IParameterizable<?> parameterizedObject = (IParameterizable<?>) parameter.getParameterizedObject();
-            if (parameterizedObject.getParameter() != parameter) {
-                iter.remove();
-            }
-        }
-        return parameters;
-    }
-
-    // for hibernate
-    @SuppressWarnings("unused")
-    private void setParameters(List<IParameter<?>> parameters) {
-        this.parameters = parameters;
-        for (IParameter<?> parameter : parameters) {
-            IParameterizable<?> parameterized = (IParameterizable<?>) parameter.getParameterizedObject();
-            setParameter(parameter, parameterized);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends IParameterizable<T>, X> void setParameter(IParameter<X> parameter,
-            IParameterizable<T> parameterized) {
-        IParameter<T> tParameter = (IParameter<T>) parameter;
-        parameterized.setParameter(tParameter);
     }
 }
