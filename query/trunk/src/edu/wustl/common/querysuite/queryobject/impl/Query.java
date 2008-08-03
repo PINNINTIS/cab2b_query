@@ -1,13 +1,10 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IConstraints;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
-import edu.wustl.common.querysuite.queryobject.IParameter;
-import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 
 /**
