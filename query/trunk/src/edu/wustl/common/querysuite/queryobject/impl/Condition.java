@@ -8,8 +8,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.ICondition;
-import edu.wustl.common.querysuite.queryobject.IParameter;
-import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 
 /**
@@ -20,7 +18,7 @@ import edu.wustl.common.querysuite.queryobject.RelationalOperator;
  * @hibernate.class table="QUERY_CONDITION"
  * @hibernate.cache usage="read-write"
  */
-public class Condition extends BaseQueryObject implements ICondition, IParameterizable<Condition> {
+public class Condition extends BaseQueryObject implements ICondition {
     private static final long serialVersionUID = -307627971270099316L;
 
     /**
@@ -43,8 +41,6 @@ public class Condition extends BaseQueryObject implements ICondition, IParameter
      * Stores the values of the condition
      */
     private List<String> values = new ArrayList<String>();
-
-    private IParameter<Condition> parameter;
 
     /**
      * Default constructor
@@ -189,14 +185,6 @@ public class Condition extends BaseQueryObject implements ICondition, IParameter
         } else {
             values.set(0, value);
         }
-    }
-
-    public IParameter<Condition> getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(IParameter<Condition> parameter) {
-        this.parameter = parameter;
     }
 
     /**

@@ -140,33 +140,8 @@ public abstract class QueryObjectFactory {
      * 
      * @return The instance of the ParameterizedCondition class.
      */
-    public static IParameter<ICondition> createParameterizedCondition(ICondition condition, String name) {
-        return createParameter(condition, name);
-    }
-
-    public static IParameter<INumericLiteral> createParameterizedNumericLiteral(INumericLiteral numericLiteral,
-            String name) {
-        return createParameter(numericLiteral, name);
-    }
-
-    public static IParameter<IDateLiteral> createParameterizedDateLiteral(IDateLiteral dateLiteral, String name) {
-        return createParameter(dateLiteral, name);
-    }
-
-    public static IParameter<IDateOffsetLiteral> createParameterizedDateOffsetLiteral(
-            IDateOffsetLiteral dateOffsetLiteral, String name) {
-        return createParameter(dateOffsetLiteral, name);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> IParameter<T> createParameter(T t, String name) {
-        if (!(t instanceof IParameterizable)) {
-            throw new IllegalArgumentException("can't create parameter of type " + t.getClass());
-        }
-        IParameter<T> parameter = new Parameter<T>(t);
-        parameter.setName(name);
-        ((IParameterizable) t).setParameter(parameter);
-        return parameter;
+    public static <T extends IParameterizable> IParameter<T> createParameter(T parameterizedObject, String name) {
+        return new Parameter<T>(parameterizedObject, name);
     }
 
     /**

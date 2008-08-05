@@ -16,7 +16,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.IExpression;
-import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IRule;
 import edu.wustl.common.querysuite.queryobject.LogicalOperator;
 
@@ -161,25 +160,7 @@ public class Rule extends BaseQueryObject implements IRule {
     }
 
     public Iterator<ICondition> iterator() {
-        return new Iterator<ICondition>() {
-            private Iterator<ICondition> iter = conditions.iterator();
-
-            private ICondition curr;
-
-            public boolean hasNext() {
-                return iter.hasNext();
-            }
-
-            public ICondition next() {
-                return curr = iter.next();
-            }
-
-            public void remove() {
-                iter.remove();
-                ((IParameterizable<?>) curr).setParameter(null);
-            }
-
-        };
+        return conditions.iterator();
     }
 
     /**

@@ -1,22 +1,15 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
-import edu.wustl.common.querysuite.queryobject.IParameter;
-import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
-public class DateOffsetLiteral extends ArithmeticOperand
-        implements
-            IDateOffsetLiteral,
-            IParameterizable<DateOffsetLiteral> {
+public class DateOffsetLiteral extends ArithmeticOperand implements IDateOffsetLiteral {
     private static final long serialVersionUID = -7510642736372664817L;
 
     private TimeInterval timeInterval;
 
     private String offset;
-
-    private IParameter<DateOffsetLiteral> parameter;
 
     private DateOffsetLiteral() {
         super(TermType.DSInterval);
@@ -48,13 +41,5 @@ public class DateOffsetLiteral extends ArithmeticOperand
 
     public void setOffset(String offset) {
         this.offset = offset;
-    }
-
-    public IParameter<DateOffsetLiteral> getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(IParameter<DateOffsetLiteral> parameter) {
-        this.parameter = parameter;
     }
 }

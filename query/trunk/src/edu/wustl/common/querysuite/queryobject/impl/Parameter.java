@@ -1,8 +1,9 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.wustl.common.querysuite.queryobject.IParameter;
+import edu.wustl.common.querysuite.queryobject.IParameterizable;
 
-public class Parameter<T> extends BaseQueryObject implements IParameter<T> {
+public class Parameter<T extends IParameterizable> extends BaseQueryObject implements IParameter<T> {
     private static final long serialVersionUID = 626816287100504757L;
 
     private T parameterizedObject;
@@ -13,8 +14,9 @@ public class Parameter<T> extends BaseQueryObject implements IParameter<T> {
     // for hibernate
     }
 
-    public Parameter(T parameterizedObject) {
-        this.parameterizedObject = parameterizedObject;
+    public Parameter(T parameterizedObject, String name) {
+        setParameterizedObject(parameterizedObject);
+        setName(name);
     }
 
     public String getName() {

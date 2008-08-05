@@ -21,7 +21,7 @@ import edu.wustl.common.querysuite.utils.CustomFormulaProcessor;
  * @see ITerm
  * @see CustomFormulaProcessor
  */
-public interface ICustomFormula extends IExpressionOperand {
+public interface ICustomFormula extends IExpressionOperand, IParameterizable {
     ITerm getLhs();
 
     void setLhs(ITerm lhs);

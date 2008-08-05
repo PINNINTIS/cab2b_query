@@ -1,14 +1,10 @@
 package edu.wustl.common.querysuite.queryobject;
 
 /**
- * NOT TO BE USED by clients of the query API. This is for internal use ONLY.
+ * Marker to represent parameterizable classes.
  * 
  * @author srinath_k
- * 
- * @param <T>
  */
-public interface IParameterizable<T extends IParameterizable<T>> {
-    IParameter<T> getParameter();
+public interface IParameterizable {
 
-    void setParameter(IParameter<T> parameter);
 }

@@ -12,7 +12,7 @@ import edu.common.dynamicextensions.domaininterface.AttributeInterface;
  * @version 1.0
  * @updated 11-Oct-2006 02:56:07 PM
  */
-public interface ICondition extends IBaseQueryObject
+public interface ICondition extends IBaseQueryObject, IParameterizable
 {
 
 	/**

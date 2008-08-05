@@ -4,12 +4,10 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IParameter;
-import edu.wustl.common.querysuite.queryobject.IParameterizable;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 
@@ -171,16 +169,10 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
 
         return isRemovevd;
     }
+
     public List<IParameter<?>> getParameters() {
         if (parameters == null) {
             parameters = new ArrayList<IParameter<?>>();
-        }
-        for (Iterator<IParameter<?>> iter = parameters.iterator(); iter.hasNext();) {
-            IParameter<?> parameter = iter.next();
-            IParameterizable<?> parameterizedObject = (IParameterizable<?>) parameter.getParameterizedObject();
-            if (parameterizedObject.getParameter() != parameter) {
-                iter.remove();
-            }
         }
         return parameters;
     }
@@ -189,16 +181,5 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     @SuppressWarnings("unused")
     private void setParameters(List<IParameter<?>> parameters) {
         this.parameters = parameters;
-        for (IParameter<?> parameter : parameters) {
-            IParameterizable<?> parameterized = (IParameterizable<?>) parameter.getParameterizedObject();
-            setParameter(parameter, parameterized);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends IParameterizable<T>, X> void setParameter(IParameter<X> parameter,
-            IParameterizable<T> parameterized) {
-        IParameter<T> tParameter = (IParameter<T>) parameter;
-        parameterized.setParameter(tParameter);
     }
 }
