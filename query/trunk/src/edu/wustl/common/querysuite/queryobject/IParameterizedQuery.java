@@ -9,16 +9,7 @@ import java.util.List;
  * @author chetan_patil
  * @created Aug 31, 2007, 1:46:07 PM
  */
-public interface IParameterizedQuery extends IQuery {
-
-    String getName();
-
-    void setName(String name);
-
-    String getDescription();
-
-    void setDescription(String description);
-
+public interface IParameterizedQuery extends IQuery, INameable, IDescribable {
     List<IOutputAttribute> getOutputAttributeList();
 
     void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
