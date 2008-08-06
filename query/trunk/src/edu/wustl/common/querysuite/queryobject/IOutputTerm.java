@@ -7,15 +7,11 @@ package edu.wustl.common.querysuite.queryobject;
  * @author srinath_k
  * @see IQuery#getOutputTerms()
  */
-public interface IOutputTerm extends IBaseQueryObject {
+public interface IOutputTerm extends IBaseQueryObject, INameable {
 
     ITerm getTerm();
 
     void setTerm(ITerm term);
-
-    String getName();
-
-    void setName(String name);
 
     TimeInterval<?> getTimeInterval();
 
