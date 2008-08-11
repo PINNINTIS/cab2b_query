@@ -57,6 +57,7 @@
 			<configuration configurationfile="conf/mysql.cfg.xml" />
 			<hbm2ddl export="false" drop="true" outputfilename="mysql.ddl" />
 		</hibernatetool>
+		<replaceregexp file="${build.dir}/ddl/mysql.ddl" match="bit" replace="BOOLEAN" flags="g"/>
 		<hibernatetool destdir="${build.dir}/ddl">
 			<configuration configurationfile="conf/oracle.cfg.xml" />
 			<hbm2ddl export="false" drop="true" outputfilename="oracle.ddl" />
@@ -66,7 +67,9 @@
 	<target name="exportSchema" depends="compile">
 		<hibernatetool destdir="${build.dir}/ddl">
 			<configuration configurationfile="conf/mysql.cfg.xml" />
-			<hbm2ddl export="true" drop="false" outputfilename="sql.ddl" />
+			<hbm2ddl export="true" drop="false" outputfilename="mysql.ddl" />
 		</hibernatetool>
+		<replaceregexp file="${build.dir}/ddl/mysql.ddl" match="bit" replace="BOOLEAN" />		
 	</target>
+
 </project>
