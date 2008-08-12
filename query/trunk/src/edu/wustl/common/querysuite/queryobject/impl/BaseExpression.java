@@ -28,7 +28,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
      * @see edu.wustl.common.querysuite.queryobject.IBaseExpression#removeOperand(edu.wustl.common.querysuite.queryobject.IOperand)
      */
     public boolean removeOperand(V operand) {
-        int index = expressionOperands.indexOf(operand);
+        int index = indexOfOperand(operand);
         return removeOperand(index) != null;
     }
 
@@ -222,7 +222,7 @@ abstract class BaseExpression<P extends IBinaryOperator, V extends IOperand> ext
     }
 
     public int indexOfConnectorForOperand(V operand) {
-        int index = expressionOperands.indexOf(operand);
+        int index = indexOfOperand(operand);
 
         if (index != -1) {
             if (expressionOperands.size() == 1) // if there is only one
