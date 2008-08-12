@@ -83,7 +83,7 @@ public class Connector<P extends Enum<?> & IBinaryOperator> extends BaseQueryObj
                     return oper;
                 }
             }
-            throw new IllegalArgumentException("no compound enum AllDataTypes." + name);
+            throw new IllegalArgumentException("no compound enum BinaryOperatorCompoundEnum." + name);
         }
 
         public static IBinaryOperator[] primitiveValues() {
