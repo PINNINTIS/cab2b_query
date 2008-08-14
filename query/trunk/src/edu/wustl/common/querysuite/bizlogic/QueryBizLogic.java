@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.hibernate.HibernateDatabaseOperations;
+import edu.wustl.common.hibernate.HibernateUtil;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
 import edu.wustl.common.querysuite.queryobject.impl.Query;
@@ -44,7 +45,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     public final void saveQuery(Q query) {
         try {
             preProcessQuery(query);
-            new HibernateDatabaseOperations<Q>().insert(query);
+            dbOperations().insert(query);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,7 +59,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     public final void updateQuery(Q query) {
         try {
             preProcessQuery(query);
-            new HibernateDatabaseOperations<Q>().update(query);
+            dbOperations().update(query);
         } catch (Exception e) {
             throw new RuntimeException("Unable to update query, Exception:" + e.getMessage());
         }
@@ -71,7 +72,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * @return The Category for given id. @ EBJ specific Exception
      */
     public Q getQueryById(Long queryId) {
-        List<Q> queryList = new HibernateDatabaseOperations<Q>().retrieve(getQueryClassName(), "id", queryId);
+        List<Q> queryList = dbOperations().retrieve(getQueryClassName(), "id", queryId);
 
         Q query = null;
         if (queryList != null && !queryList.isEmpty()) {
@@ -92,7 +93,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * @return List of all categories.
      */
     public List<Q> getAllQueries() {
-        List<Q> queryList = new HibernateDatabaseOperations<Q>().retrieve(getQueryClassName());
+        List<Q> queryList = dbOperations().retrieve(getQueryClassName());
         for (Q query : queryList) {
             postProcessQuery(query);
         }
@@ -399,6 +400,11 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     // }
     public void delete(Q query) {
         // TODO check this.
-        new HibernateDatabaseOperations<Q>().delete(query);
+        dbOperations().delete(query);
+    }
+
+    private HibernateDatabaseOperations<Q> dbOperations() {
+        // TODO Auto-generated method stub
+        return new HibernateDatabaseOperations<Q>(HibernateUtil.currentSession());
     }
 }
