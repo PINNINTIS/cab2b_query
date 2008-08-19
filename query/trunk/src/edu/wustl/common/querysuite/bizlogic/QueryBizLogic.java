@@ -91,6 +91,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     }
 
     private HibernateDatabaseOperations<Q> dbOperations() {
+        // TODO probably new session is OK...
         return new HibernateDatabaseOperations<Q>(HibernateUtil.currentSession());
     }
 }
