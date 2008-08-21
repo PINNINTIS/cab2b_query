@@ -3,9 +3,11 @@
  */
 package edu.wustl.common.querysuite.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +20,8 @@ import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
+import edu.wustl.common.querysuite.queryobject.IParameter;
+import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
@@ -54,6 +58,37 @@ public class QueryUtility {
         }
 
         return expressionIdConditionCollectionMap;
+    }
+
+    /**
+     * This method returns the collection of all non-parameterized conditions form a given query.
+     * 
+     * @param paramQuery parameterized query
+     * @return collection of non-parameterized conditions
+     */
+    public static Collection<ICondition> getAllNonParameteriedConditions(IParameterizedQuery paramQuery) {
+        Map<IExpression, Collection<ICondition>> conditionsMap = getAllSelectedConditions(paramQuery);
+        Collection<ICondition> nonParamConditions = new ArrayList<ICondition>();
+        for (Collection<ICondition> conditions : conditionsMap.values()) {
+            nonParamConditions.addAll(conditions);
+        }
+
+        nonParamConditions.removeAll(getAllParameterizedConditions(paramQuery));
+
+        return nonParamConditions;
+    }
+
+    public static Collection<ICondition> getAllParameterizedConditions(IParameterizedQuery paramQuery) {
+        Collection<ICondition> paramConditions = new ArrayList<ICondition>();
+
+        List<IParameter<?>> parameters = paramQuery.getParameters();
+        for (IParameter<?> parameter : parameters) {
+            if (parameter.getParameterizedObject() instanceof ICondition) {
+                paramConditions.add((ICondition) parameter.getParameterizedObject());
+            }
+        }
+
+        return paramConditions;
     }
 
     /**
