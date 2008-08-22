@@ -29,12 +29,15 @@
 		<delete>
 			<fileset dir="${build.dir}/jar" includes="**/*" />
 		</delete>
-
+		<tstamp />
 		<jar jarfile="${build.dir}/jar/query.jar">
 			<fileset dir="${classes.dir}">
 				<include name="**/*" />
 				<exclude name="**/*Test" />
 			</fileset>
+			<manifest>
+				<attribute name="Built-At-Time" value="${TODAY} ${TSTAMP}" />
+			</manifest>
 		</jar>
 	</target>
 	<path id="toolslib">
