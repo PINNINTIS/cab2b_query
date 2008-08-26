@@ -2,28 +2,29 @@
 /* this may be app specific */
 
 /* catissue */
-alter table QUERY_PARAMETERIZED_QUERY drop foreign key FKA272176BBC7298A9, drop index FKA272176BBC7298A9;
-alter table QUERY_INTRA_MODEL_ASSOCIATION drop foreign key FKF1EDBDD3BC7298A9, drop index FKF1EDBDD3BC7298A9;
-alter table QUERY_CONSTRAINTS drop foreign key FKE364FCFFD3C625EA, drop index FKE364FCFFD3C625EA;
-alter table QUERY_PARAMETERIZED_CONDITION drop foreign key FK9BE75A3EBC7298A9, drop index FK9BE75A3EBC7298A9;
-alter table QUERY_CONDITION drop foreign key FKACCE6246104CA7, drop index FKACCE6246104CA7;
-alter table QUERY_RULE drop foreign key FK14A6503365F8F4CB, drop index FK14A6503365F8F4CB;
-alter table QUERY_RULE drop foreign key FK14A65033BC7298A9, drop index FK14A65033BC7298A9;
-alter table QUERY drop foreign key FK49D20A8251EDC5B, drop index FK49D20A8251EDC5B;
-alter table QUERY_LOGICAL_CONNECTOR drop foreign key FKCF30478065F8F4CB, drop index FKCF30478065F8F4CB;
-alter table QUERY_EXPRESSION drop foreign key FK1B473A8FCA571190, drop index FK1B473A8FCA571190;
-alter table QUERY_EXPRESSION drop foreign key FK1B473A8F9E19EF66, drop index FK1B473A8F9E19EF66;
-alter table QUERY_EXPRESSION drop foreign key FK1B473A8F1CF7F689, drop index FK1B473A8F1CF7F689;
-alter table QUERY_CONDITION_VALUES drop foreign key FK9997379DDA532516, drop index FK9997379DDA532516;
-alter table QUERY_OUTPUT_ATTRIBUTE drop foreign key FK22C9DB75BF5EEB27, drop index FK22C9DB75BF5EEB27;
-alter table QUERY_OUTPUT_ATTRIBUTE drop foreign key FK22C9DB75C4E818F8, drop index FK22C9DB75C4E818F8;
-alter table QUERY_INTER_MODEL_ASSOCIATION drop foreign key FKD70658D1BC7298A9, drop index FKD70658D1BC7298A9;
-alter table QUERY_EXPRESSION_OPERAND drop foreign key FKA3B976F965F8F4CB, drop index FKA3B976F965F8F4CB;
-alter table QUERY_GRAPH_ENTRY drop foreign key FKF055E4EA955C60E6, drop index FKF055E4EA955C60E6;
-alter table QUERY_GRAPH_ENTRY drop foreign key FKF055E4EAD3C625EA, drop index FKF055E4EAD3C625EA;
-alter table QUERY_GRAPH_ENTRY drop foreign key FKF055E4EA7A5E6479, drop index FKF055E4EA7A5E6479;
-alter table QUERY_GRAPH_ENTRY drop foreign key FKF055E4EAEE560703, drop index FKF055E4EAEE560703;
-alter table QUERY_EXPRESSIONID drop foreign key FK6662DBEABC7298A9, drop index FK6662DBEABC7298A9;
+alter table QUERY_PARAMETERIZED_QUERY drop constraint FKA272176BBC7298A9;
+alter table QUERY_INTRA_MODEL_ASSOCIATION drop constraint FKF1EDBDD3BC7298A9;
+alter table QUERY_CONSTRAINTS drop constraint FKE364FCFFD3C625EA;
+alter table QUERY_PARAMETERIZED_CONDITION drop constraint FK9BE75A3EBC7298A9;
+alter table QUERY_CONDITION drop constraint FKACCE6246104CA7;
+alter table QUERY_RULE drop constraint FK14A6503365F8F4CB;
+alter table QUERY_RULE drop constraint FK14A65033BC7298A9;
+alter table QUERY drop constraint FK49D20A8251EDC5B;
+alter table QUERY_LOGICAL_CONNECTOR drop constraint FKCF30478065F8F4CB;
+alter table QUERY_EXPRESSION drop constraint FK1B473A8FCA571190;
+alter table QUERY_EXPRESSION drop constraint FK1B473A8F9E19EF66;
+alter table QUERY_EXPRESSION drop constraint FK1B473A8F1CF7F689;
+alter table QUERY_CONDITION_VALUES drop constraint FK9997379DDA532516;
+alter table QUERY_OUTPUT_ATTRIBUTE drop constraint FK22C9DB75BF5EEB27;
+alter table QUERY_OUTPUT_ATTRIBUTE drop constraint FK22C9DB75C4E818F8;
+alter table QUERY_INTER_MODEL_ASSOCIATION drop constraint FKD70658D1BC7298A9;
+alter table QUERY_EXPRESSION_OPERAND drop constraint FKA3B976F965F8F4CB;
+alter table QUERY_GRAPH_ENTRY drop constraint FKF055E4EA955C60E6;
+alter table QUERY_GRAPH_ENTRY drop constraint FKF055E4EAD3C625EA;
+alter table QUERY_GRAPH_ENTRY drop constraint FKF055E4EA7A5E6479;
+alter table QUERY_GRAPH_ENTRY drop constraint FKF055E4EAEE560703;
+alter table QUERY_EXPRESSIONID drop constraint FK6662DBEABC7298A9;
+
 
 /* rename of columns */
 alter table query_condition_values rename column value_list to VALUE;
@@ -60,11 +61,10 @@ update QUERY_SUBEXPR_OPERAND sub set EXPRESSION_ID =
 (select expr.identifier from QUERY_BASE_EXPRESSION expr 
 where expr.QUERY_EXPRESSIONID_ID = sub.identifier);
 
-create table tmp_expressionId (select * from QUERY_SUBEXPR_OPERAND);
+create table tmp_expressionId as (select * from QUERY_SUBEXPR_OPERAND);
 /* incorrect rows */
-delete QUERY_SUBEXPR_OPERAND exprId, opnd 
-from QUERY_SUBEXPR_OPERAND exprId, QUERY_OPERAND opnd
-where exprId.identifier = opnd.identifier and opnd.position is null;
+delete from QUERY_SUBEXPR_OPERAND where identifier in (select identifier from QUERY_OPERAND where position is null);
+delete from QUERY_OPERAND where position is null;
 
 /* expression */
 create table QUERY_EXPRESSION (IDENTIFIER number(19,0) not null, IS_IN_VIEW number(1,0), IS_VISIBLE number(1,0), UI_EXPR_ID number(10,0), QUERY_ENTITY_ID number(19,0), primary key (IDENTIFIER));
@@ -99,8 +99,8 @@ create table COMMONS_GRAPH_EDGE (IDENTIFIER number(19,0) not null, SOURCE_VERTEX
 create table COMMONS_GRAPH_TO_EDGES (GRAPH_ID number(19,0) not null, EDGE_ID number(19,0) not null unique, primary key (GRAPH_ID, EDGE_ID));
 create table COMMONS_GRAPH_TO_VERTICES (GRAPH_ID number(19,0) not null, VERTEX_CLASS varchar2(255 char), VERTEX_ID number(19,0));
 
-create sequence COMMONS_GRAPH_EDGE_SEQ; /* old GRAPH_ENTRY_SEQ */
-create sequence COMMONS_GRAPH_SEQ;      /* old GRAPH_ENTRY_SEQ */
+create sequence COMMONS_GRAPH_EDGE_SEQ;
+create sequence COMMONS_GRAPH_SEQ;
 
 alter table COMMONS_GRAPH add (JOIN_GRAPH_ID number(19,0));
 insert into COMMONS_GRAPH(IDENTIFIER, JOIN_GRAPH_ID) (select COMMONS_GRAPH_SEQ.NEXTVAL, identifier from QUERY_JOIN_GRAPH);
@@ -110,15 +110,14 @@ update QUERY_JOIN_GRAPH joinGraph set COMMONS_GRAPH_ID =
 (select cg.identifier from COMMONS_GRAPH cg where cg.JOIN_GRAPH_ID = joinGraph.identifier);
 alter table COMMONS_GRAPH drop column JOIN_GRAPH_ID;
 
-/* TODO distinct ?? */
 insert into commons_graph_to_vertices (graph_id, vertex_class, vertex_id)
-(select cg.identifier, 'edu.wustl.common.querysuite.queryobject.impl.Expression', sub.expression_id
+(select distinct cg.identifier, 'edu.wustl.common.querysuite.queryobject.impl.Expression', sub.expression_id
 from COMMONS_GRAPH cg 
 join QUERY_JOIN_GRAPH joinGraph on cg.identifier = joinGraph.COMMONS_GRAPH_ID
 join QUERY_GRAPH_ENTRY entry on entry.QUERY_JOIN_GRAPH_ID = joinGraph.identifier
 join tmp_expressionId sub on (sub.identifier = entry.SOURCE_EXPRESSIONID_ID or sub.identifier = entry.TARGET_EXPRESSIONID_ID));
 
-alter table commons_graph_edge add column OLD_ENTRY_ID bigint;
+alter table commons_graph_edge add (OLD_ENTRY_ID number(19,0));
 insert into commons_graph_edge (IDENTIFIER, SOURCE_VERTEX_CLASS, SOURCE_VERTEX_ID, TARGET_VERTEX_CLASS, TARGET_VERTEX_ID, EDGE_CLASS, EDGE_ID, OLD_ENTRY_ID)
 (select COMMONS_GRAPH_EDGE_SEQ.NEXTVAL, 'edu.wustl.common.querysuite.queryobject.impl.Expression', srcExpr.expression_id,
 'edu.wustl.common.querysuite.queryobject.impl.Expression', targetExpr.expression_id,
@@ -131,7 +130,7 @@ join tmp_expressionId srcExpr on (srcExpr.identifier = entry.SOURCE_EXPRESSIONID
 join tmp_expressionId targetExpr on (targetExpr.identifier = entry.TARGET_EXPRESSIONID_ID)
 join QUERY_INTRA_MODEL_ASSOCIATION assoc on (assoc.identifier = entry.QUERY_MODEL_ASSOCIATION_ID));
 
-insert into commons_graph_edge (SOURCE_VERTEX_CLASS, SOURCE_VERTEX_ID, TARGET_VERTEX_CLASS, TARGET_VERTEX_ID, EDGE_CLASS, EDGE_ID, OLD_ENTRY_ID)
+insert into commons_graph_edge (IDENTIFIER, SOURCE_VERTEX_CLASS, SOURCE_VERTEX_ID, TARGET_VERTEX_CLASS, TARGET_VERTEX_ID, EDGE_CLASS, EDGE_ID, OLD_ENTRY_ID)
 (select COMMONS_GRAPH_EDGE_SEQ.NEXTVAL, 'edu.wustl.common.querysuite.queryobject.impl.Expression', srcExpr.expression_id,
 'edu.wustl.common.querysuite.queryobject.impl.Expression', targetExpr.expression_id,
 'edu.wustl.common.querysuite.metadata.associations.impl.InterModelAssociation', assoc.identifier,
@@ -186,7 +185,7 @@ join QUERY_PARAMETER param on param.object_id = cond.identifier);
 drop table query_parameterized_condition;
 
 /* output attributes */
-alter table query_output_attribute add (EXPRESSION_ID bigint);
+alter table query_output_attribute add (EXPRESSION_ID number(19,0));
 update query_output_attribute outAttr set EXPRESSION_ID = 
 (select sub.expression_id 
 from tmp_expressionId sub where sub.identifier = outAttr.expressionid_id);
@@ -195,47 +194,47 @@ alter table query_output_attribute drop column EXPRESSIONID_ID;
 drop table tmp_expressionId;
 /* new tables */
 create table QUERY_TO_OUTPUT_TERMS (QUERY_ID number(19,0) not null, OUTPUT_TERM_ID number(19,0) not null unique, POSITION number(10,0) not null, primary key (QUERY_ID, POSITION));
-create table QUERY_OUTPUT_TERM (IDENTIFIER bigint not null auto_increment, NAME varchar(255), TIME_INTERVAL varchar(255), TERM_ID bigint, primary key (IDENTIFIER));
+create table QUERY_OUTPUT_TERM (IDENTIFIER number(19,0) not null, NAME varchar2(255 char), TIME_INTERVAL varchar2(255 char), TERM_ID number(19,0), primary key (IDENTIFIER));
 create table QUERY_FORMULA_RHS (CUSTOM_FORMULA_ID number(19,0) not null, RHS_TERM_ID number(19,0) not null, POSITION number(10,0) not null, primary key (CUSTOM_FORMULA_ID, POSITION));
 create table QUERY_CUSTOM_FORMULA (IDENTIFIER number(19,0) not null, OPERATOR varchar2(255 char), LHS_TERM_ID number(19,0), primary key (IDENTIFIER));
 create table QUERY_ARITHMETIC_OPERAND (IDENTIFIER number(19,0) not null, LITERAL varchar2(255 char), TERM_TYPE varchar2(255 char), DATE_LITERAL date, TIME_INTERVAL varchar2(255 char), DE_ATTRIBUTE_ID number(19,0), EXPRESSION_ID number(19,0), primary key (IDENTIFIER));
 
 /* new indexes */
-alter table COMMONS_GRAPH_TO_EDGES add index FKA6B0D8BAA0494B1D (GRAPH_ID), add constraint FKA6B0D8BAA0494B1D foreign key (GRAPH_ID) references COMMONS_GRAPH (IDENTIFIER);
-alter table COMMONS_GRAPH_TO_EDGES add index FKA6B0D8BAFAEF80D (EDGE_ID), add constraint FKA6B0D8BAFAEF80D foreign key (EDGE_ID) references COMMONS_GRAPH_EDGE (IDENTIFIER);
-alter table COMMONS_GRAPH_TO_VERTICES add index FK2C4412F5A0494B1D (GRAPH_ID), add constraint FK2C4412F5A0494B1D foreign key (GRAPH_ID) references COMMONS_GRAPH (IDENTIFIER);
-alter table QUERY add index FK49D20A89E2FD9C7 (CONSTRAINTS_ID), add constraint FK49D20A89E2FD9C7 foreign key (CONSTRAINTS_ID) references QUERY_CONSTRAINTS (IDENTIFIER);
-alter table QUERY_ARITHMETIC_OPERAND add index FK262AEB0BD635BD31 (IDENTIFIER), add constraint FK262AEB0BD635BD31 foreign key (IDENTIFIER) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_ARITHMETIC_OPERAND add index FK262AEB0BE92C814D (EXPRESSION_ID), add constraint FK262AEB0BE92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_BASEEXPR_TO_CONNECTORS add index FK3F0043482FCE1DA7 (CONNECTOR_ID), add constraint FK3F0043482FCE1DA7 foreign key (CONNECTOR_ID) references QUERY_CONNECTOR (IDENTIFIER);
-alter table QUERY_BASEEXPR_TO_CONNECTORS add index FK3F00434848BA6890 (BASE_EXPRESSION_ID), add constraint FK3F00434848BA6890 foreign key (BASE_EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_BASE_EXPR_OPND add index FKAE67EAF0712A4C (OPERAND_ID), add constraint FKAE67EAF0712A4C foreign key (OPERAND_ID) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_BASE_EXPR_OPND add index FKAE67EA48BA6890 (BASE_EXPRESSION_ID), add constraint FKAE67EA48BA6890 foreign key (BASE_EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_CONDITION_VALUES add index FK9997379D6458C2E7 (CONDITION_ID), add constraint FK9997379D6458C2E7 foreign key (CONDITION_ID) references QUERY_CONDITION (IDENTIFIER);
-alter table QUERY_CONSTRAINTS add index FKE364FCFF1C7EBF3B (QUERY_JOIN_GRAPH_ID), add constraint FKE364FCFF1C7EBF3B foreign key (QUERY_JOIN_GRAPH_ID) references QUERY_JOIN_GRAPH (IDENTIFIER);
-alter table QUERY_CONSTRAINT_TO_EXPR add index FK2BD705CEA0A5F4C0 (CONSTRAINT_ID), add constraint FK2BD705CEA0A5F4C0 foreign key (CONSTRAINT_ID) references QUERY_CONSTRAINTS (IDENTIFIER);
-alter table QUERY_CONSTRAINT_TO_EXPR add index FK2BD705CEE92C814D (EXPRESSION_ID), add constraint FK2BD705CEE92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_CUSTOM_FORMULA add index FK5C0EEAEFBE674D45 (LHS_TERM_ID), add constraint FK5C0EEAEFBE674D45 foreign key (LHS_TERM_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_CUSTOM_FORMULA add index FK5C0EEAEF12D455EB (IDENTIFIER), add constraint FK5C0EEAEF12D455EB foreign key (IDENTIFIER) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_EXPRESSION add index FK1B473A8F40EB75D4 (IDENTIFIER), add constraint FK1B473A8F40EB75D4 foreign key (IDENTIFIER) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_EXPRESSION add index FK1B473A8F635766D8 (QUERY_ENTITY_ID), add constraint FK1B473A8F635766D8 foreign key (QUERY_ENTITY_ID) references QUERY_QUERY_ENTITY (IDENTIFIER);
-alter table QUERY_FORMULA_RHS add index FKAE90F94D3BC37DCB (RHS_TERM_ID), add constraint FKAE90F94D3BC37DCB foreign key (RHS_TERM_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_FORMULA_RHS add index FKAE90F94D9A0B7164 (CUSTOM_FORMULA_ID), add constraint FKAE90F94D9A0B7164 foreign key (CUSTOM_FORMULA_ID) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_INTER_MODEL_ASSOCIATION add index FKD70658D15F5AB67E (IDENTIFIER), add constraint FKD70658D15F5AB67E foreign key (IDENTIFIER) references QUERY_MODEL_ASSOCIATION (IDENTIFIER);
-alter table QUERY_INTRA_MODEL_ASSOCIATION add index FKF1EDBDD35F5AB67E (IDENTIFIER), add constraint FKF1EDBDD35F5AB67E foreign key (IDENTIFIER) references QUERY_MODEL_ASSOCIATION (IDENTIFIER);
-alter table QUERY_JOIN_GRAPH add index FK2B41B5D09DBC4D94 (COMMONS_GRAPH_ID), add constraint FK2B41B5D09DBC4D94 foreign key (COMMONS_GRAPH_ID) references COMMONS_GRAPH (IDENTIFIER);
-alter table QUERY_OUTPUT_ATTRIBUTE add index FK22C9DB75604D4BDA (PARAMETERIZED_QUERY_ID), add constraint FK22C9DB75604D4BDA foreign key (PARAMETERIZED_QUERY_ID) references QUERY_PARAMETERIZED_QUERY (IDENTIFIER);
-alter table QUERY_OUTPUT_ATTRIBUTE add index FK22C9DB75E92C814D (EXPRESSION_ID), add constraint FK22C9DB75E92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_OUTPUT_TERM add index FK13C8A3D388C86B0D (TERM_ID), add constraint FK13C8A3D388C86B0D foreign key (TERM_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_PARAMETERIZED_QUERY add index FKA272176B76177EFE (IDENTIFIER), add constraint FKA272176B76177EFE foreign key (IDENTIFIER) references QUERY (IDENTIFIER);
-alter table QUERY_RULE_COND add index FKC32D37AE6458C2E7 (CONDITION_ID), add constraint FKC32D37AE6458C2E7 foreign key (CONDITION_ID) references QUERY_CONDITION (IDENTIFIER);
-alter table QUERY_RULE_COND add index FKC32D37AE39F0A10D (RULE_ID), add constraint FKC32D37AE39F0A10D foreign key (RULE_ID) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_SUBEXPR_OPERAND add index FK2BF760E832E875C8 (IDENTIFIER), add constraint FK2BF760E832E875C8 foreign key (IDENTIFIER) references QUERY_OPERAND (IDENTIFIER);
-alter table QUERY_SUBEXPR_OPERAND add index FK2BF760E8E92C814D (EXPRESSION_ID), add constraint FK2BF760E8E92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION (IDENTIFIER);
-alter table QUERY_TO_OUTPUT_TERMS add index FK8A70E2565E5B9430 (OUTPUT_TERM_ID), add constraint FK8A70E2565E5B9430 foreign key (OUTPUT_TERM_ID) references QUERY_OUTPUT_TERM (IDENTIFIER);
-alter table QUERY_TO_OUTPUT_TERMS add index FK8A70E25691051647 (QUERY_ID), add constraint FK8A70E25691051647 foreign key (QUERY_ID) references QUERY (IDENTIFIER);
-alter table QUERY_TO_PARAMETERS add index FK8060DAD7F84B9027 (PARAMETER_ID), add constraint FK8060DAD7F84B9027 foreign key (PARAMETER_ID) references QUERY_PARAMETER (IDENTIFIER);
-alter table QUERY_TO_PARAMETERS add index FK8060DAD739F0A314 (QUERY_ID), add constraint FK8060DAD739F0A314 foreign key (QUERY_ID) references QUERY_PARAMETERIZED_QUERY (IDENTIFIER);
+alter table COMMONS_GRAPH_TO_EDGES add constraint FKA6B0D8BAA0494B1D foreign key (GRAPH_ID) references COMMONS_GRAPH;
+alter table COMMONS_GRAPH_TO_EDGES add constraint FKA6B0D8BAFAEF80D foreign key (EDGE_ID) references COMMONS_GRAPH_EDGE;
+alter table COMMONS_GRAPH_TO_VERTICES add constraint FK2C4412F5A0494B1D foreign key (GRAPH_ID) references COMMONS_GRAPH;
+alter table QUERY add constraint FK49D20A89E2FD9C7 foreign key (CONSTRAINTS_ID) references QUERY_CONSTRAINTS;
+alter table QUERY_ARITHMETIC_OPERAND add constraint FK262AEB0BD635BD31 foreign key (IDENTIFIER) references QUERY_OPERAND;
+alter table QUERY_ARITHMETIC_OPERAND add constraint FK262AEB0BE92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_BASEEXPR_TO_CONNECTORS add constraint FK3F0043482FCE1DA7 foreign key (CONNECTOR_ID) references QUERY_CONNECTOR;
+alter table QUERY_BASEEXPR_TO_CONNECTORS add constraint FK3F00434848BA6890 foreign key (BASE_EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_BASE_EXPR_OPND add constraint FKAE67EAF0712A4C foreign key (OPERAND_ID) references QUERY_OPERAND;
+alter table QUERY_BASE_EXPR_OPND add constraint FKAE67EA48BA6890 foreign key (BASE_EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_CONDITION_VALUES add constraint FK9997379D6458C2E7 foreign key (CONDITION_ID) references QUERY_CONDITION;
+alter table QUERY_CONSTRAINTS add constraint FKE364FCFF1C7EBF3B foreign key (QUERY_JOIN_GRAPH_ID) references QUERY_JOIN_GRAPH;
+alter table QUERY_CONSTRAINT_TO_EXPR add constraint FK2BD705CEA0A5F4C0 foreign key (CONSTRAINT_ID) references QUERY_CONSTRAINTS;
+alter table QUERY_CONSTRAINT_TO_EXPR add constraint FK2BD705CEE92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_CUSTOM_FORMULA add constraint FK5C0EEAEFBE674D45 foreign key (LHS_TERM_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_CUSTOM_FORMULA add constraint FK5C0EEAEF12D455EB foreign key (IDENTIFIER) references QUERY_OPERAND;
+alter table QUERY_EXPRESSION add constraint FK1B473A8F40EB75D4 foreign key (IDENTIFIER) references QUERY_BASE_EXPRESSION;
+alter table QUERY_EXPRESSION add constraint FK1B473A8F635766D8 foreign key (QUERY_ENTITY_ID) references QUERY_QUERY_ENTITY;
+alter table QUERY_FORMULA_RHS add constraint FKAE90F94D3BC37DCB foreign key (RHS_TERM_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_FORMULA_RHS add constraint FKAE90F94D9A0B7164 foreign key (CUSTOM_FORMULA_ID) references QUERY_OPERAND;
+alter table QUERY_INTER_MODEL_ASSOCIATION add constraint FKD70658D15F5AB67E foreign key (IDENTIFIER) references QUERY_MODEL_ASSOCIATION;
+alter table QUERY_INTRA_MODEL_ASSOCIATION add constraint FKF1EDBDD35F5AB67E foreign key (IDENTIFIER) references QUERY_MODEL_ASSOCIATION;
+alter table QUERY_JOIN_GRAPH add constraint FK2B41B5D09DBC4D94 foreign key (COMMONS_GRAPH_ID) references COMMONS_GRAPH;
+alter table QUERY_OUTPUT_ATTRIBUTE add constraint FK22C9DB75604D4BDA foreign key (PARAMETERIZED_QUERY_ID) references QUERY_PARAMETERIZED_QUERY;
+alter table QUERY_OUTPUT_ATTRIBUTE add constraint FK22C9DB75E92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_OUTPUT_TERM add constraint FK13C8A3D388C86B0D foreign key (TERM_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_PARAMETERIZED_QUERY add constraint FKA272176B76177EFE foreign key (IDENTIFIER) references QUERY;
+alter table QUERY_RULE_COND add constraint FKC32D37AE6458C2E7 foreign key (CONDITION_ID) references QUERY_CONDITION;
+alter table QUERY_RULE_COND add constraint FKC32D37AE39F0A10D foreign key (RULE_ID) references QUERY_OPERAND;
+alter table QUERY_SUBEXPR_OPERAND add constraint FK2BF760E832E875C8 foreign key (IDENTIFIER) references QUERY_OPERAND;
+alter table QUERY_SUBEXPR_OPERAND add constraint FK2BF760E8E92C814D foreign key (EXPRESSION_ID) references QUERY_BASE_EXPRESSION;
+alter table QUERY_TO_OUTPUT_TERMS add constraint FK8A70E2565E5B9430 foreign key (OUTPUT_TERM_ID) references QUERY_OUTPUT_TERM;
+alter table QUERY_TO_OUTPUT_TERMS add constraint FK8A70E25691051647 foreign key (QUERY_ID) references QUERY;
+alter table QUERY_TO_PARAMETERS add constraint FK8060DAD7F84B9027 foreign key (PARAMETER_ID) references QUERY_PARAMETER;
+alter table QUERY_TO_PARAMETERS add constraint FK8060DAD739F0A314 foreign key (QUERY_ID) references QUERY_PARAMETERIZED_QUERY;
 
 /* enum values modified */
 /* rel oper */
@@ -253,16 +252,28 @@ update query_condition set RELATIONAL_OPERATOR = 'NotIn' where RELATIONAL_OPERAT
 update query_connector set OPERATOR = 'And' where OPERATOR = 'AND';
 update query_connector set OPERATOR = 'Or' where OPERATOR = 'OR';
 
-/* new sequences */
-create sequence OUTPUT_TERM_SEQ;
+/* new sequences with no data */
+create sequence QUERY_OUTPUT_TERM_SEQ;
 
-/* modified sequences */
-create sequence CONNECTOR_SEQ start with LOGICAL_CONNECTOR_SEQ.NEXTVAL;
-create sequence BASE_EXPRESSION_SEQ start with EXPRESSION_SEQ.NEXTVAL;
-create sequence OPERAND_SEQ start with EXPRESSION_OPERAND_SEQ.NEXTVAL;
+/* rename sequences */
+rename EXPRESSION_SEQ to QUERY_BASE_EXPRESSION_SEQ;
+rename CONDITION_SEQ to QUERY_CONDITION_SEQ;
+rename LOGICAL_CONNECTOR_SEQ to QUERY_CONNECTOR_SEQ;
+rename CONSTRAINT_SEQ to QUERY_CONSTRAINT_SEQ;
+rename JOIN_GRAPH_SEQ to QUERY_JOIN_GRAPH_SEQ;
+rename MODEL_ASSOCIATION_SEQ to QUERY_MODEL_ASSOCIATION_SEQ;
+rename EXPRESSION_OPERAND_SEQ to QUERY_OPERAND_SEQ;
+rename OUTPUT_ATTRIBUTE_SEQ to QUERY_OUTPUT_ATTRIBUTE_SEQ;
 
 /* old sequences */
 drop sequence GRAPH_ENTRY_SEQ;
-drop sequence LOGICAL_CONNECTOR_SEQ;
-drop sequence EXPRESSION_SEQ;
-drop sequence EXPRESSION_OPERAND_SEQ;
+
+/* shifted query_seq off constraint_seq */
+declare
+    i number :=1;
+    sql_stmt varchar2(50);
+begin
+    select nvl(max(identifier)+1,1) into i from query;
+    sql_stmt :='create sequence QUERY_SEQ start with ' || i ;
+    execute immediate sql_stmt;
+end;
