@@ -11,7 +11,7 @@
 		<id name="id" column="IDENTIFIER" type="long" length="30"
 			unsaved-value="null">
 			<generator class="native">
-				<param name="sequence">OPERAND_SEQ</param>
+				<param name="sequence">QUERY_OPERAND_SEQ</param>
 			</generator>
 		</id>
 		<discriminator column="OPND_TYPE" type="string" />

@@ -11,7 +11,7 @@
 		<id name="id" column="IDENTIFIER" type="long" length="30"
 			unsaved-value="null">
 			<generator class="native">
-				<param name="sequence">CONNECTOR_SEQ</param>
+				<param name="sequence">QUERY_CONNECTOR_SEQ</param>
 			</generator>
 		</id>
 
