@@ -57,6 +57,15 @@ public interface IRule extends IExpressionOperand, Iterable<ICondition> {
     void removeAllConditions();
 
     /**
+     * Removes specified condition from this rule.
+     * 
+     * @param condition the condition to remove.
+     * @return <tt>true</tt> if the specified condition was present in this
+     *         rule.
+     */
+    boolean removeCondition(ICondition condition);
+
+    /**
      * Supports element removal.
      * 
      * @see java.lang.Iterable#iterator()

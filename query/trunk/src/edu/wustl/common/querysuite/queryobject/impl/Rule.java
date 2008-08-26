@@ -147,6 +147,10 @@ public class Rule extends BaseQueryObject implements IRule {
         conditions.clear();
     }
 
+    public boolean removeCondition(ICondition condition) {
+        return conditions.remove(condition);
+    }
+    
     /**
      * To get the copy of the Rule. Note that, this is not deep copy.
      * 
@@ -212,5 +216,6 @@ public class Rule extends BaseQueryObject implements IRule {
         }
         return false;
     }
+
 
 }
