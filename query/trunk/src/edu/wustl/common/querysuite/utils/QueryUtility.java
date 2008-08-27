@@ -182,4 +182,23 @@ public class QueryUtility {
         }
         return res;
     }
+    
+  
+    public static Collection<ICustomFormula> getAllParameterizedCustomFormulas(
+			IParameterizedQuery paramQuery)
+	{
+		Collection<ICustomFormula> paramCustomFormulas = new HashSet<ICustomFormula>();
+
+		List<IParameter<?>> parameters = paramQuery.getParameters();
+
+		for (IParameter<?> parameter : parameters)
+		{
+			if (parameter.getParameterizedObject() instanceof ICustomFormula)
+			{
+				paramCustomFormulas.add((ICustomFormula) parameter.getParameterizedObject());
+				parameter.getName();
+			}
+		}
+		return paramCustomFormulas;
+	}
 }
