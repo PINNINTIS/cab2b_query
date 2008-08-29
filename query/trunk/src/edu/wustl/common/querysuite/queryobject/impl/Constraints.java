@@ -35,7 +35,7 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     private JoinGraph joinGraph = new JoinGraph();
 
-    private int currentExpressionId = 0;
+    private transient int currentExpressionId = 0;
 
     /**
      * Default Constructor
@@ -211,8 +211,12 @@ public class Constraints extends BaseQueryObject implements IConstraints {
 
     private void populateExprIdMap() {
         exprIdToExpr = new HashMap<Integer, IExpression>();
+        currentExpressionId = 0;
         for (IExpression expression : expressions) {
             exprIdToExpr.put(expression.getExpressionId(), expression);
+            if(expression.getExpressionId() > currentExpressionId) {
+                currentExpressionId = expression.getExpressionId(); 
+            }
         }
     }
 
