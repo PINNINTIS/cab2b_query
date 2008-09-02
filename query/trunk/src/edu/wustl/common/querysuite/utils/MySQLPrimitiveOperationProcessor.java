@@ -53,17 +53,4 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
         }
         return "timestampadd(SECOND, " + offsetStr + ", " + timeStr + ")";
     }
-
-    // @Override
-    // String getIntervalOp(String leftStr, ArithmeticOperator operator, String
-    // rightStr) {
-    // if (operator == ArithmeticOperator.Minus) {
-    // rightStr = negativeMaketimeString(rightStr);
-    // }
-    // return "addtime(" + leftStr + ", " + rightStr + ")";
-    // }
-
-    private String negativeMaketimeString(String s) {
-        return "concat('-',time_format(" + s + ",'%H:%i:%s'))";
-    }
 }
