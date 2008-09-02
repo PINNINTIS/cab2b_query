@@ -185,9 +185,13 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));
         check(term, d1S + " + NUMTODSINTERVAL(off, 'Day')", TermType.Timestamp);
 
+        // month
+        term.setOperand(1, dateOffsetLiteral("off", YMInterval.Month));
+        check(term, "cast(add_months(" + d1S + ", off) as timestamp)", TermType.Timestamp);
+
         // year
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Year));
-        check(term, d1S + " + NUMTOYMINTERVAL(off, 'Year')", TermType.Timestamp);
+        check(term, "cast(add_months(" + d1S + ", (off) * 12) as timestamp)", TermType.Timestamp);
 
         // week
         term.setOperand(1, dateOffsetLiteral("off", DSInterval.Week));
@@ -195,7 +199,16 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
         // quarter
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Quarter));
-        check(term, d1S + " + NUMTOYMINTERVAL((off) * 3, 'Month')", TermType.Timestamp);
+        check(term, "cast(add_months(" + d1S + ", (off) * 3) as timestamp)", TermType.Timestamp);
+
+        //-ve month
+        term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
+        term.setOperand(1, dateOffsetLiteral("off", YMInterval.Month));
+        check(term, "cast(add_months(" + d1S + ", -(off)) as timestamp)", TermType.Timestamp);
+        
+        // -ve year
+        term.setOperand(1, dateOffsetLiteral("off", YMInterval.Year));
+        check(term, "cast(add_months(" + d1S + ", -((off) * 12)) as timestamp)", TermType.Timestamp);
     }
 
     public void testOracleOffsetMath() {
