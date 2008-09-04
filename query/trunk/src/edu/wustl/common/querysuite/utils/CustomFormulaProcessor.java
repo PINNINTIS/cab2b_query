@@ -71,13 +71,22 @@ public class CustomFormulaProcessor {
             // unary operators
             return lhs + SPACE + getSQL(relationalOperator) + SPACE + rhs;
         }
-        if (relationalOperator == RelationalOperator.Between) {
+        if (relationalOperator == RelationalOperator.Between || relationalOperator == RelationalOperator.NotBetween) {
             String rhs2 = getString(rhses.get(1));
+            boolean between = relationalOperator == RelationalOperator.Between;
+            String innerOper = between ? " and " : " or ";
+            String outerOper = between ? " or " : " and ";
+            String le = between ? " <= " : " < ";
+            String ge = between ? " >= " : " > ";
+            // between :
             // (lhs >= rhs1 and lhs <= rhs2) or (lhs <= rhs1 and lhs >= rhs2)
-            String res = "(" + lhs + " >= " + rhs + " and " + lhs + " <= " + rhs2 + ")";
-            res += " or (" + lhs + " <= " + rhs + " and " + lhs + " >= " + rhs2 + ")";
+            // notBetween :
+            // (lhs > rhs1 or lhs < rhs2) and (lhs < rhs1 or lhs > rhs2)
+            String res = "(" + lhs + ge + rhs + innerOper + lhs + le + rhs2 + ")";
+            res += outerOper + "(" + lhs + le + rhs + innerOper + lhs + ge + rhs2 + ")";
             return res;
         }
+
         // In : lhs = rhs1 or lhs = rhs2 or lhs = rhs3...
         // NotIn : lhs != rhs1 and lhs != rhs2 and lhs != rhs3...
         String sqlOper = relationalOperator == RelationalOperator.In

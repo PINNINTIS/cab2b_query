@@ -125,6 +125,17 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
         addRhs(4);
         checkIllegal();
     }
+    
+    public void testNotBetween() {
+        setOperator(RelationalOperator.NotBetween);
+        checkIllegal();
+        addRhs(2);
+        checkIllegal();
+        addRhs(3);
+        check("(1 > 2 or 1 < 3) and (1 < 2 or 1 > 3)");
+        addRhs(4);
+        checkIllegal();
+    }
 
     public void testIn() {
         setOperator(RelationalOperator.In);
