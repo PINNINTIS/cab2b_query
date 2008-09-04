@@ -7,7 +7,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.common.dynamicextensions.domaininterface.AssociationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.AssociationDirection;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 
 /**
@@ -140,27 +139,5 @@ public class IntraModelAssociation extends ModelAssociation implements IIntraMod
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(dynamicExtensionsAssociation).toHashCode();
-    }
-
-    // for hibernate
-    /**
-     * @return the dynamicExtensionsAssociationId
-     * @hibernate.property name="dynamicExtensionsAssociationId"
-     *                     column="DE_ASSOCIATION_ID" type="long" length="30"
-     *                     not-null="true"
-     */
-    @SuppressWarnings("unused")
-    private Long getDynamicExtensionsAssociationId() {
-        return dynamicExtensionsAssociation.getId();
-    }
-
-    /**
-     * @param dynamicExtensionsAssociationId the dynamicExtensionsAssociationId
-     *            to set
-     */
-    @SuppressWarnings("unused")
-    private void setDynamicExtensionsAssociationId(Long dynamicExtensionsAssociationId) {
-        this.dynamicExtensionsAssociation = AbstractEntityCache.getCache().getAssociationById(
-                dynamicExtensionsAssociationId);
     }
 }

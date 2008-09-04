@@ -6,7 +6,6 @@ package edu.wustl.common.querysuite.queryobject.impl;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 
@@ -124,17 +123,5 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(expression).append(attribute).toHashCode();
-    }
-
-    // for hibernate
-
-    @SuppressWarnings("unused")
-    private Long getAttributeId() {
-        return attribute.getId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setAttributeId(Long attributeId) {
-        setAttribute(AbstractEntityCache.getCache().getAttributeById(attributeId));
     }
 }

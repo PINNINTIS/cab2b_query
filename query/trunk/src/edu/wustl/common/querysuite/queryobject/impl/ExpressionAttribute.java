@@ -1,7 +1,6 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -53,17 +52,5 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
     @Override
     public String toString() {
         return "ExprId: " + expression.getExpressionId() + ", Attribute: " + attribute;
-    }
-
-    // for hibernate
-
-    @SuppressWarnings("unused")
-    private Long getAttributeId() {
-        return attribute.getId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setAttributeId(Long attributeId) {
-        setAttribute(AbstractEntityCache.getCache().getAttributeById(attributeId));
     }
 }

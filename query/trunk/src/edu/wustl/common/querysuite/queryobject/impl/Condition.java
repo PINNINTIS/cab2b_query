@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 
@@ -21,12 +20,6 @@ import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 public class Condition extends BaseQueryObject implements ICondition {
     private static final long serialVersionUID = -307627971270099316L;
 
-    /**
-     * Stores the identifier of the attribute object. This is required for the
-     * internal reference to the attribute. Attribute is retrived using this
-     * property.
-     */
-    // private Long attributeId;
     /**
      * Stores the associated attribute
      */
@@ -230,16 +223,4 @@ public class Condition extends BaseQueryObject implements ICondition {
     public String toString() {
         return "[" + attribute.getName() + relationalOperator + values + "]";
     }
-
-    // for hibernate
-    @SuppressWarnings("unused")
-    private Long getAttributeId() {
-        return attribute.getId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setAttributeId(Long attributeId) {
-        this.attribute = AbstractEntityCache.getCache().getAttributeById(attributeId);
-    }
-
 }

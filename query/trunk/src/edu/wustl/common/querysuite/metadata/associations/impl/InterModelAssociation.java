@@ -4,7 +4,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IInterModelAssociation;
 
 /**
@@ -191,45 +190,5 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
     public int hashCode() {
         return new HashCodeBuilder().append(sourceAttribute).append(targetAttribute).append(sourceServiceUrl).append(
                 targetServiceUrl).toHashCode();
-    }
-
-    /**
-     * @return the sourceAttributeId
-     * @hibernate.property name="sourceAttributeId" column="SOURCE_ATTRIBUTE_ID"
-     *                     type="long" length="30" not-null="true"
-     */
-    @SuppressWarnings("unused")
-    private Long getSourceAttributeId() {
-        return sourceAttribute.getId();
-    }
-
-    /**
-     * @param sourceAttributeId the sourceAttributeId to set
-     */
-    @SuppressWarnings("unused")
-    private void setSourceAttributeId(Long sourceAttributeId) {
-        this.sourceAttribute = getAttributeFromCache(sourceAttributeId);
-    }
-
-    /**
-     * @return the targetAttributeId
-     * @hibernate.property name="targetAttributeId" column="TARGET_ATTRIBUTE_ID"
-     *                     type="long" length="30" not-null="true"
-     */
-    @SuppressWarnings("unused")
-    private Long getTargetAttributeId() {
-        return targetAttribute.getId();
-    }
-
-    /**
-     * @param targetAttributeId the targetAttributeId to set
-     */
-    @SuppressWarnings("unused")
-    private void setTargetAttributeId(Long targetAttributeId) {
-        this.targetAttribute = getAttributeFromCache(targetAttributeId);
-    }
-
-    private AttributeInterface getAttributeFromCache(Long attributeId) {
-        return AbstractEntityCache.getCache().getAttributeById(attributeId);
     }
 }

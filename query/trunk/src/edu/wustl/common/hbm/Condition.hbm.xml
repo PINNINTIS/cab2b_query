@@ -15,8 +15,13 @@
 			</generator>
 		</id>
 
-		<property name="attributeId" type="long" update="true" insert="true"
-			column="ATTRIBUTE_ID" length="30" not-null="true" />
+		<property name="attribute" column="ATTRIBUTE_ID" not-null="true">
+			<type name="edu.wustl.common.hibernate.CanonicalFormType">
+				<param name="canonical-form-provider">
+					edu.wustl.metadata.hibernate.AttributeCanonicalFormProvider
+				</param>
+			</type>
+		</property>
 
 		<property name="relationalOperator" column="RELATIONAL_OPERATOR">
 			<type name="edu.wustl.common.hibernate.EnumType">
@@ -29,14 +34,10 @@
 		<list name="values" table="QUERY_CONDITION_VALUES" lazy="false"
 			inverse="false" cascade="all-delete-orphan">
 			<cache usage="read-write" />
-
 			<key column="CONDITION_ID" />
-
 			<index column="POSITION" type="int" />
-
 			<element column="VALUE" type="string" not-null="false"
 				unique="false" />
-
 		</list>
 	</class>
 </hibernate-mapping>

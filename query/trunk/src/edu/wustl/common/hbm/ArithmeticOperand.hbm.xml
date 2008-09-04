@@ -59,8 +59,13 @@
 		<subclass name="ExpressionAttribute" discriminator-value="exAt">
 			<join table="QUERY_ARITHMETIC_OPERAND">
 				<key column="IDENTIFIER" />
-				<property name="attributeId" type="long"
-					column="DE_ATTRIBUTE_ID" />
+				<property name="attribute" column="DE_ATTRIBUTE_ID">
+					<type name="edu.wustl.common.hibernate.CanonicalFormType">
+						<param name="canonical-form-provider">
+							edu.wustl.metadata.hibernate.AttributeCanonicalFormProvider
+						</param>
+					</type>
+				</property>
 				<many-to-one name="expression" class="Expression"
 					column="EXPRESSION_ID" cascade="save-update" />
 				<property name="termType" column="TERM_TYPE">
@@ -83,8 +88,13 @@
 						</param>
 					</type>
 				</property>
-				<property name="attributeId" type="long"
-					column="DE_ATTRIBUTE_ID" />
+				<property name="attribute" column="DE_ATTRIBUTE_ID">
+					<type name="edu.wustl.common.hibernate.CanonicalFormType">
+						<param name="canonical-form-provider">
+							edu.wustl.metadata.hibernate.AttributeCanonicalFormProvider
+						</param>
+					</type>
+				</property>
 				<many-to-one name="expression" class="Expression"
 					column="EXPRESSION_ID" cascade="save-update" />
 				<property name="termType" column="TERM_TYPE">

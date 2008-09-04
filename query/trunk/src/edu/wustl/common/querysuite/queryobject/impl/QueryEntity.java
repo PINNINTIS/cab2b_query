@@ -7,7 +7,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.InheritanceStrategy;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 
 /**
@@ -180,16 +179,5 @@ public class QueryEntity extends BaseQueryObject implements IQueryEntity {
         } while (entityInterface != null);
 
         return set;
-    }
-
-    // for hibernate
-    @SuppressWarnings("unused")
-    private Long getEntityId() {
-        return entityInterface.getId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setEntityId(Long entityId) {
-        this.entityInterface = AbstractEntityCache.getCache().getEntityById(entityId);
     }
 }
