@@ -29,15 +29,6 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
     }
 
     /**
-     * This method returns the name of the name of the class.
-     * 
-     * @return
-     */
-    protected String getQueryClassName() {
-        return Query.class.getName();
-    }
-
-    /**
      * This method persists the Query object
      * 
      * @param query @
@@ -62,7 +53,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * @return The Category for given id. @ EBJ specific Exception
      */
     public Q getQueryById(Long queryId) {
-        List<Q> queryList = dbOperations().retrieve(getQueryClassName(), "id", queryId);
+        List<Q> queryList = dbOperations().retrieve(Query.class.getName(), "id", queryId);
 
         Q query = null;
         if (queryList != null && !queryList.isEmpty()) {
@@ -82,7 +73,7 @@ public class QueryBizLogic<Q extends IParameterizedQuery> {
      * @return List of all categories.
      */
     public List<Q> getAllQueries() {
-        List<Q> queryList = dbOperations().retrieve(getQueryClassName());
+        List<Q> queryList = dbOperations().retrieve(Query.class.getName());
         return queryList;
     }
 
