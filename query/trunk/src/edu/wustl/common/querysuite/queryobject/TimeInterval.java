@@ -84,10 +84,4 @@ public class TimeInterval<T extends Enum<?> & ITimeIntervalEnum> extends Compoun
     private Object readResolve() throws ObjectStreamException {
         return values.get(ordinal());
     }
-
-    public static void main(String[] args) {
-        for(TimeInterval t : values()) {
-            System.out.println(t.numSeconds);
-        }
-    }
 }
