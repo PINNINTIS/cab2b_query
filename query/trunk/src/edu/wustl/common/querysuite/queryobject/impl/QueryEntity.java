@@ -1,5 +1,8 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +10,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.InheritanceStrategy;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 
 /**
@@ -20,7 +24,7 @@ import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 public class QueryEntity extends BaseQueryObject implements IQueryEntity {
     private static final long serialVersionUID = 1L;
 
-    protected EntityInterface entityInterface;
+    protected transient EntityInterface entityInterface;
 
     /**
      * Default Constructor
@@ -179,5 +183,16 @@ public class QueryEntity extends BaseQueryObject implements IQueryEntity {
         } while (entityInterface != null);
 
         return set;
+    }
+    
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        s.writeObject(entityInterface.getId());
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        Long id = (Long) s.readObject();
+        entityInterface = AbstractEntityCache.getCache().getEntityById(id);
     }
 }

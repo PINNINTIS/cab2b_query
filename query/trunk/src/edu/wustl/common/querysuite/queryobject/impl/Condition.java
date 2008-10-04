@@ -1,11 +1,15 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.ICondition;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 
@@ -23,7 +27,7 @@ public class Condition extends BaseQueryObject implements ICondition {
     /**
      * Stores the associated attribute
      */
-    private AttributeInterface attribute;
+    private transient AttributeInterface attribute;
 
     /**
      * Stores the associated relational operator
@@ -222,5 +226,16 @@ public class Condition extends BaseQueryObject implements ICondition {
      */
     public String toString() {
         return "[" + attribute.getName() + relationalOperator + values + "]";
+    }
+
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        s.writeObject(attribute.getId());
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        Long id = (Long) s.readObject();
+        attribute = AbstractEntityCache.getCache().getAttributeById(id);
     }
 }

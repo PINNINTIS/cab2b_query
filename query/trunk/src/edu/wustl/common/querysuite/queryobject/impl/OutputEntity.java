@@ -4,6 +4,9 @@
 
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.Set;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
+import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IOutputEntity;
 
 /**
@@ -20,7 +24,7 @@ public class OutputEntity extends QueryEntity implements IOutputEntity {
 
     private static final long serialVersionUID = -823732241107299703L;
 
-    private List<AttributeInterface> selectedAttributes = new ArrayList<AttributeInterface>();
+    private transient List<AttributeInterface> selectedAttributes = new ArrayList<AttributeInterface>();
 
     /**
      * To instanciate OutputEntity object.
@@ -92,4 +96,21 @@ public class OutputEntity extends QueryEntity implements IOutputEntity {
         return "[OutputEntity: " + super.toString() + "]";
     }
 
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        s.writeInt(selectedAttributes.size());
+        for (AttributeInterface attr : selectedAttributes) {
+            s.writeObject(attr.getId());
+        }
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        int size = s.readInt();
+        selectedAttributes = new ArrayList<AttributeInterface>(size);
+        for (int i = 0; i < size; i++) {
+            Long id = (Long) s.readObject();
+            selectedAttributes.add(AbstractEntityCache.getCache().getAttributeById(id));
+        }
+    }
 }
