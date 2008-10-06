@@ -41,17 +41,17 @@ public class QueryUtility {
      * @return Map of ExpressionId -> Collection of Condition
      */
     public static Map<IExpression, Collection<ICondition>> getAllSelectedConditions(IQuery query) {
-        Map<IExpression, Collection<ICondition>> expressionIdConditionCollectionMap = null;
+        Map<IExpression, Collection<ICondition>> expressionIdConditionCollectionMap = new HashMap<IExpression, Collection<ICondition>>();
         if (query != null) {
-            expressionIdConditionCollectionMap = new HashMap<IExpression, Collection<ICondition>>();
-
             IConstraints constraints = query.getConstraints();
             for (IExpression expression : constraints) {
-                for (int index = 0; index < expression.numberOfOperands(); index++) {
-                    IExpressionOperand expressionOperand = expression.getOperand(index);
-                    if (expressionOperand instanceof IRule) {
-                        IRule rule = (IRule) expressionOperand;
-                        expressionIdConditionCollectionMap.put(expression, Collections.list(rule));
+                if (expression.isVisible()) {
+                    for (int index = 0; index < expression.numberOfOperands(); index++) {
+                        IExpressionOperand expressionOperand = expression.getOperand(index);
+                        if (expressionOperand instanceof IRule) {
+                            IRule rule = (IRule) expressionOperand;
+                            expressionIdConditionCollectionMap.put(expression, Collections.list(rule));
+                        }
                     }
                 }
             }
@@ -181,23 +181,18 @@ public class QueryUtility {
         }
         return res;
     }
-    
-  
-    public static Collection<ICustomFormula> getAllParameterizedCustomFormulas(
-			IParameterizedQuery paramQuery)
-	{
-		Collection<ICustomFormula> paramCustomFormulas = new HashSet<ICustomFormula>();
 
-		List<IParameter<?>> parameters = paramQuery.getParameters();
+    public static Collection<ICustomFormula> getAllParameterizedCustomFormulas(IParameterizedQuery paramQuery) {
+        Collection<ICustomFormula> paramCustomFormulas = new HashSet<ICustomFormula>();
 
-		for (IParameter<?> parameter : parameters)
-		{
-			if (parameter.getParameterizedObject() instanceof ICustomFormula)
-			{
-				paramCustomFormulas.add((ICustomFormula) parameter.getParameterizedObject());
-				parameter.getName();
-			}
-		}
-		return paramCustomFormulas;
-	}
+        List<IParameter<?>> parameters = paramQuery.getParameters();
+
+        for (IParameter<?> parameter : parameters) {
+            if (parameter.getParameterizedObject() instanceof ICustomFormula) {
+                paramCustomFormulas.add((ICustomFormula) parameter.getParameterizedObject());
+                parameter.getName();
+            }
+        }
+        return paramCustomFormulas;
+    }
 }
