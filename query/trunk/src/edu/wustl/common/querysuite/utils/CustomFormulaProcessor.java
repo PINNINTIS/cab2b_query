@@ -135,7 +135,7 @@ public class CustomFormulaProcessor {
             throw new RuntimeException("something wrong in code.");
         }
 
-        formula = ObjectCloner.clone(formula);
+        formula = new ObjectCloner().clone(formula);
         splitTerm.term2.addParantheses();
         IConnector<ArithmeticOperator> conn = conn(ArithmeticOperator.Plus);
         for (ITerm rhs : formula.getAllRhs()) {
