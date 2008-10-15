@@ -205,7 +205,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     }
 
     /**
-     * @hibernate.property name="createdDate" column="CREATED_DATE" type="timestamp"
+     * @hibernate.property name="createdDate" column="CREATED_DATE" type="timestamp" not-null="true"
      * @return the createdDate
      */
     public Date getCreatedDate() {
