@@ -1,14 +1,9 @@
 package edu.wustl.common.querysuite.metadata.associations.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IInterModelAssociation;
 
 /**
@@ -28,9 +23,9 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
 
     private String targetServiceUrl;
 
-    private transient AttributeInterface sourceAttribute;
+    private AttributeInterface sourceAttribute;
 
-    private transient AttributeInterface targetAttribute;
+    private AttributeInterface targetAttribute;
 
     /**
      * Default Constructor
@@ -195,19 +190,5 @@ public class InterModelAssociation extends ModelAssociation implements IInterMod
     public int hashCode() {
         return new HashCodeBuilder().append(sourceAttribute).append(targetAttribute).append(sourceServiceUrl).append(
                 targetServiceUrl).toHashCode();
-    }
-    
-    private void writeObject(ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        s.writeObject(sourceAttribute.getId());
-        s.writeObject(targetAttribute.getId());
-    }
-
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        Long srcId = (Long) s.readObject();
-        Long tgtId = (Long) s.readObject();
-        sourceAttribute = AbstractEntityCache.getCache().getAttributeById(srcId);
-        targetAttribute = AbstractEntityCache.getCache().getAttributeById(tgtId);
     }
 }

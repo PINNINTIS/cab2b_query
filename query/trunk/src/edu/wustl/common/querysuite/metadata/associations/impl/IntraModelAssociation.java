@@ -1,8 +1,5 @@
 package edu.wustl.common.querysuite.metadata.associations.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -10,7 +7,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import edu.common.dynamicextensions.domaininterface.AssociationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.util.global.Constants.AssociationDirection;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 
 /**
@@ -24,7 +20,7 @@ import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 public class IntraModelAssociation extends ModelAssociation implements IIntraModelAssociation {
     private static final long serialVersionUID = 1477526671383920408L;
 
-    private transient AssociationInterface dynamicExtensionsAssociation;
+    private AssociationInterface dynamicExtensionsAssociation;
 
     /**
      * Default Constructor
@@ -143,16 +139,5 @@ public class IntraModelAssociation extends ModelAssociation implements IIntraMod
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(dynamicExtensionsAssociation).toHashCode();
-    }
-    
-    private void writeObject(ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        s.writeObject(dynamicExtensionsAssociation.getId());
-    }
-
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        Long id = (Long) s.readObject();
-        dynamicExtensionsAssociation = AbstractEntityCache.getCache().getAssociationById(id);
     }
 }

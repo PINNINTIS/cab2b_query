@@ -1,11 +1,6 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.TermType;
@@ -15,7 +10,7 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
 
     private IExpression expression;
 
-    private transient AttributeInterface attribute;
+    private AttributeInterface attribute;
 
     ExpressionAttribute() {
     // for hibernate
@@ -57,16 +52,5 @@ public class ExpressionAttribute extends ArithmeticOperand implements IExpressio
     @Override
     public String toString() {
         return "ExprId: " + expression.getExpressionId() + ", Attribute: " + attribute;
-    }
-    
-    private void writeObject(ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        s.writeObject(attribute.getId());
-    }
-
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        Long id = (Long) s.readObject();
-        attribute = AbstractEntityCache.getCache().getAttributeById(id);
     }
 }

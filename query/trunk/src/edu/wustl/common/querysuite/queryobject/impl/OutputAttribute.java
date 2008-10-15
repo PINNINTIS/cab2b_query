@@ -3,14 +3,9 @@
  */
 package edu.wustl.common.querysuite.queryobject.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.common.dynamicextensions.domaininterface.AttributeInterface;
-import edu.wustl.cab2b.common.cache.AbstractEntityCache;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 
@@ -26,7 +21,7 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
 
     private IExpression expression;
 
-    private transient AttributeInterface attribute;
+    private AttributeInterface attribute;
 
     /** Default Constructor */
     public OutputAttribute() {
@@ -128,16 +123,5 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(expression).append(attribute).toHashCode();
-    }
-    
-    private void writeObject(ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        s.writeObject(attribute.getId());
-    }
-
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        Long id = (Long) s.readObject();
-        attribute = AbstractEntityCache.getCache().getAttributeById(id);
     }
 }
