@@ -4,6 +4,7 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
@@ -28,6 +29,8 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     private String description;
 
     private List<IParameter<?>> parameters;
+
+    private Date createdDate;
 
     /**
      * Default Constructor
@@ -72,6 +75,22 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
         this.getOutputTerms().addAll(query.getOutputTerms());
         this.name = name;
         this.description = description;
+    }
+
+    /**
+     * Parameterized Constructor. This constructor will be used by Hibernate
+     * internally.
+     * 
+     * @param id
+     * @param name
+     * @param description
+     * @param createdDate
+     */
+    public ParameterizedQuery(Long id, String name, String description, Date createdDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.createdDate = createdDate;
     }
 
     /**
@@ -183,5 +202,20 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     @SuppressWarnings("unused")
     private void setParameters(List<IParameter<?>> parameters) {
         this.parameters = parameters;
+    }
+
+    /**
+     * @hibernate.property name="createdDate" column="CREATED_DATE" type="timestamp" not-null="true"
+     * @return the createdDate
+     */
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    /**
+     * @param createdDate the createdDate to set
+     */
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 }
