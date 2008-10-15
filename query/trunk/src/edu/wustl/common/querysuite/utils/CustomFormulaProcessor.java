@@ -12,7 +12,7 @@ import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
-import edu.wustl.common.util.ObjectCloner;
+import edu.wustl.metadata.util.DyExtnObjectCloner;
 
 /**
  * Provides the string representation of a custom formula. It uses
@@ -135,7 +135,7 @@ public class CustomFormulaProcessor {
             throw new RuntimeException("something wrong in code.");
         }
 
-        formula = new ObjectCloner().clone(formula);
+        formula = new DyExtnObjectCloner().clone(formula);
         splitTerm.term2.addParantheses();
         IConnector<ArithmeticOperator> conn = conn(ArithmeticOperator.Plus);
         for (ITerm rhs : formula.getAllRhs()) {
