@@ -3,7 +3,6 @@
  */
 package edu.wustl.common.querysuite.queryobject;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,8 +15,4 @@ public interface IParameterizedQuery extends IQuery, INameable, IDescribable {
     void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
 
     List<IParameter<?>> getParameters();
-    
-    Date getCreatedDate();
-    
-    void setCreatedDate(Date createdDate);
 }

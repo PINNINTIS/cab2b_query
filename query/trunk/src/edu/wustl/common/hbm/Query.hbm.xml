@@ -39,9 +39,6 @@
 
 			<property name="description" type="string" update="true"
 				insert="true" column="DESCRIPTION" length="1024" />
-				
-			<property name="createdDate" type="timestamp" update="true" 
-				insert="true" column="CREATED_DATE" not-null="true" />
 
 			<list name="outputAttributeList" table="QUERY_OUTPUT_ATTRIBUTE"
 				lazy="false" inverse="false" cascade="all-delete-orphan">
