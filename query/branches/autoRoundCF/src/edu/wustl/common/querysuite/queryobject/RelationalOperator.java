@@ -1,5 +1,8 @@
 package edu.wustl.common.querysuite.queryobject;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Enum: Equals LessThan GreaterThan Like In Between
  * 
@@ -9,11 +12,27 @@ package edu.wustl.common.querysuite.queryobject;
  * @updated 11-Oct-2006 02:57:23 PM
  */
 public enum RelationalOperator {
-    Equals(1, "Equals"), NotEquals(1, "Not Equals"), Between(2, "Between"), NotBetween(2, "Not Between"), IsNull(0, "Is Null"), IsNotNull(0,
-            "Is Not Null"), LessThan(1, "Less than"), LessThanOrEquals(1, "Less than or Equal to"), GreaterThan(1,
-            "Greater than"), GreaterThanOrEquals(1, "Greater than or Equal to"), In(Integer.MAX_VALUE, "In"), Contains(
-            1, "Contains"), StartsWith(1, "Starts With"), EndsWith(1, "Ends With"), NotIn(Integer.MAX_VALUE,
-            "Not In");
+    Equals(1, "Equals"), NotEquals(1, "Not Equals"), Between(2, "Between"), NotBetween(2, "Not Between"), IsNull(0,
+            "Is Null"), IsNotNull(0, "Is Not Null"), LessThan(1, "Less than"), LessThanOrEquals(1,
+            "Less than or Equal to"), GreaterThan(1, "Greater than"), GreaterThanOrEquals(1, "Greater than or Equal to"), In(
+            Integer.MAX_VALUE, "In"), Contains(1, "Contains"), StartsWith(1, "Starts With"), EndsWith(1, "Ends With"), NotIn(
+            Integer.MAX_VALUE, "Not In");
+
+    public static final Set<RelationalOperator> NUMERIC_OPERATORS;
+
+    public static final Set<RelationalOperator> STRING_OPERATORS;
+
+    static {
+        Set<RelationalOperator> stringOnly = EnumSet.of(Contains, StartsWith, EndsWith);
+        Set<RelationalOperator> numericOnly = EnumSet.of(LessThan, LessThanOrEquals, GreaterThan, GreaterThanOrEquals,
+                Between, NotBetween);
+        
+        NUMERIC_OPERATORS = EnumSet.allOf(RelationalOperator.class);
+        NUMERIC_OPERATORS.removeAll(stringOnly);
+        
+        STRING_OPERATORS = EnumSet.allOf(RelationalOperator.class);
+        STRING_OPERATORS.removeAll(numericOnly);
+    }
 
     private int numberOfValuesRequired;
 

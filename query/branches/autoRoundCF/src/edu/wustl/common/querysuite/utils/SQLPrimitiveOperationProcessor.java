@@ -51,33 +51,31 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
             checkPlusOrMinus(operator);
             // rightStr = getDateOffsetString(rightStr,
             // rightTermStrOpnd.getTimeInterval());
-            return getTimeOffsetOpString(leftStr, rightStr, operator, rightType);
+            return getTimeOffsetOpString(leftStr, rightStr, operator);
         }
         if (TermType.isInterval(leftType) && rightType == TermType.Timestamp) {
             checkPlus(operator);
             // leftStr = getDateOffsetString(leftStr,
             // leftTermStrOpnd.getTimeInterval());
-            return getTimeOffsetOpString(rightStr, leftStr, operator, leftType);
+            return getTimeOffsetOpString(rightStr, leftStr, operator);
         }
         return super.getResultString(leftStr, operator, rightStr);
     }
 
-    private String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator,
-            TermType offsetType) {
-        return (offsetType == TermType.DSInterval)
-                ? getDSTimeOffsetOpString(timeStr, offsetStr, operator)
-                : getYMTimeOffsetOpString(timeStr, offsetStr, operator);
-    }
+    // always in secs
+    abstract String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator);
 
-    String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
-        return super.getResultString(timeStr, operator, offsetStr);
-    }
+    // String getDSTimeOffsetOpString(String timeStr, String offsetStr,
+    // ArithmeticOperator operator) {
+    // return super.getResultString(timeStr, operator, offsetStr);
+    // }
+    //
+    // String getYMTimeOffsetOpString(String timeStr, String offsetStr,
+    // ArithmeticOperator operator) {
+    // return super.getResultString(timeStr, operator, offsetStr);
+    // }
 
-    String getYMTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
-        return super.getResultString(timeStr, operator, offsetStr);
-    }
-
-    String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
+    private String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
         return super.getResultString(leftStr, operator, rightStr);
     }
 
@@ -117,13 +115,15 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         }
     }
 
-    abstract String getDateOffsetString(String s, TimeInterval<?> timeInterval);
+    // abstract String getDateOffsetString(String s, TimeInterval<?>
+    // timeInterval);
 
+    // should return in secs
     abstract String getDateDiffString(String leftStr, String rightStr);
 
     @Override
     final String getIntervalString(String s, TimeInterval<?> timeInterval) {
-        return getDateOffsetString(s, timeInterval);
+        return "(" + s + ")*" + timeInterval.numSeconds();
     }
 
     @Override

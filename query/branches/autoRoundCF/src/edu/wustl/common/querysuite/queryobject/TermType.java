@@ -62,7 +62,7 @@ public enum TermType {
             // becomes DAY
             rightOpndType = DSInterval;
         }
-        if (leftOpndType == DSInterval && rightOpndType == DSInterval) {
+        if (isInterval(leftOpndType) && isInterval(rightOpndType)) {
             if (operator == ArithmeticOperator.Plus || operator == ArithmeticOperator.Minus) {
                 return DSInterval;
             }
@@ -87,6 +87,10 @@ public enum TermType {
      */
     public static boolean isInterval(TermType termType) {
         return termType == DSInterval || termType == YMInterval;
+    }
+
+    public static boolean isDateTime(TermType termType) {
+        return termType == Date || termType == Timestamp;
     }
 
     /**

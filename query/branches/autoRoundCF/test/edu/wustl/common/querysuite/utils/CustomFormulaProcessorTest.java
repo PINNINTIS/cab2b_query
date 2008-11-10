@@ -8,6 +8,7 @@ import edu.wustl.common.querysuite.queryobject.ICustomFormula;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.YMInterval;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.*;
 
 public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     private CustomFormulaProcessor customFormulaProcessor;
@@ -43,7 +44,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testInvalidRHS() {
         addRhs(dateOffsetLiteral("off", YMInterval.Month));
-        setOperator(RelationalOperator.Equals);
+        setOperator(Equals);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -54,7 +55,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
     public void testIncompatibleRHS() {
         addRhs(dateLiteral("2008-01-01"));
-        setOperator(RelationalOperator.Equals);
+        setOperator(Equals);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -66,7 +67,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     public void testIncompatibleRHSBetweenIn() {
         addRhs(2);
         addRhs(dateLiteral("2008-01-01"));
-        setOperator(RelationalOperator.Between);
+        setOperator(Between);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -74,7 +75,7 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
 
         }
         customFormula.getAllRhs().add(1, newTerm(3));
-        setOperator(RelationalOperator.In);
+        setOperator(In);
         try {
             customFormulaProcessor.asString(customFormula);
             fail();
@@ -94,10 +95,10 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testNoRHS() {
-        RelationalOperator o = RelationalOperator.IsNull;
+        RelationalOperator o = IsNull;
         setOperator(o);
         check("1 " + sql(o));
-        o = RelationalOperator.IsNotNull;
+        o = IsNotNull;
         setOperator(o);
         check("1 " + sql(o));
     }
@@ -107,73 +108,64 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     public void testOneRHS() {
-        setOperator(RelationalOperator.Equals);
+        setOperator(Equals);
         checkIllegal();
         addRhs(2);
         check("1 = 2");
-        setOperator(RelationalOperator.LessThan);
+        setOperator(LessThan);
         check("1 < 2");
     }
 
     public void testBetween() {
-        setOperator(RelationalOperator.Between);
+        setOperator(Between);
         checkIllegal();
         addRhs(2);
         checkIllegal();
         addRhs(3);
-        check("(1 >= 2 and 1 <= 3) or (1 <= 2 and 1 >= 3)");
+        check("((1 >= 2) and (1 <= 3)) or ((1 >= 3) and (1 <= 2))");
         addRhs(4);
         checkIllegal();
     }
-    
+
     public void testNotBetween() {
-        setOperator(RelationalOperator.NotBetween);
+        setOperator(NotBetween);
         checkIllegal();
         addRhs(2);
         checkIllegal();
         addRhs(3);
-        check("(1 > 2 or 1 < 3) and (1 < 2 or 1 > 3)");
+        check("((1 < 2) or (1 > 3)) and ((1 < 3) or (1 > 2))");
         addRhs(4);
         checkIllegal();
     }
 
     public void testIn() {
-        setOperator(RelationalOperator.In);
+        setOperator(In);
         checkIllegal();
         addRhs(2);
-        check("1 = 2");
+        check("(1 = 2)");
         addRhs(3);
-        check("1 = 2 or 1 = 3");
+        check("(1 = 2) or (1 = 3)");
         addRhs(4);
-        check("1 = 2 or 1 = 3 or 1 = 4");
+        check("(1 = 2) or (1 = 3) or (1 = 4)");
     }
 
     public void testNotIn() {
-        setOperator(RelationalOperator.NotIn);
+        setOperator(NotIn);
         checkIllegal();
         addRhs(2);
-        check("1 != 2");
+        check("(1 != 2)");
         addRhs(3);
-        check("1 != 2 and 1 != 3");
+        check("(1 != 2) and (1 != 3)");
         addRhs(4);
-        check("1 != 2 and 1 != 3 and 1 != 4");
+        check("(1 != 2) and (1 != 3) and (1 != 4)");
     }
 
-    public void testYMIntervalIllegal() {
-        setOperator(RelationalOperator.IsNull);
+    public void testTemporalIllegal() {
         customFormula.setLhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
-        // 1month isnull
-        checkIllegal();
-        setOperator(RelationalOperator.Equals);
-
+        setOperator(Equals);
         addRhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
-        // 1month = 1month
-        checkIllegal();
 
         customFormula.setLhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
-        // 1day = 1month
-        checkIllegal();
-
         customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
         // 1day - '2008-01-01' = 1month
         checkIllegal();
@@ -187,47 +179,55 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
         checkIllegal();
 
         customFormula.setLhs(newTerm(1));
-        // 1 = YMInterval
+        // 1 = 1Month
         checkIllegal();
     }
 
-    public void testYMInterval() {
-        setOperator(RelationalOperator.Equals);
+    public void testTemporalNoRhs() {
+        setOperator(IsNull);
+        customFormula.setLhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
+        // 1month isnull
+        check("1Month is NULL");
+        setOperator(Equals);
+    }
+
+    public void testTemporalRounding() {
+        setOperator(Equals);
         customFormula.setLhs(newTerm(dateLiteral("2008-01-02")));
         customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
         addRhs(newTerm(dateOffsetLiteral("1", YMInterval.Month)));
-        check("'2008-01-02' = 1Month + '2008-01-01'");
+        // d1 - d2 = 1Month
+        check("('2008-01-02' - '2008-01-01' >= 1Month - 15Day) and ('2008-01-02' - '2008-01-01' <= 1Month + 15Day)");
 
-        setOperator(RelationalOperator.Between);
+        setOperator(NotEquals);
+        check("('2008-01-02' - '2008-01-01' < 1Month - 15Day) or ('2008-01-02' - '2008-01-01' > 1Month + 15Day)");
+
+        setOperator(LessThan);
+        check("'2008-01-02' - '2008-01-01' < 1Month");
+
+        setOperator(GreaterThan);
+        check("'2008-01-02' - '2008-01-01' > 1Month");
+
+        setOperator(LessThanOrEquals);
+        check("'2008-01-02' - '2008-01-01' <= 1Month + 15Day");
+
+        setOperator(GreaterThanOrEquals);
+        check("'2008-01-02' - '2008-01-01' >= 1Month - 15Day");
+
+        setOperator(Between);
         addRhs(newTerm(dateOffsetLiteral("2", DSInterval.Day)));
-        check("('2008-01-02' >= 1Month + '2008-01-01' and '2008-01-02' <= 2Day + '2008-01-01') or ('2008-01-02' <= 1Month + '2008-01-01' and '2008-01-02' >= 2Day + '2008-01-01')");
+        check("(('2008-01-02' - '2008-01-01' >= 1Month - 15Day) and ('2008-01-02' - '2008-01-01' <= 2Day + 12Hour)) or (('2008-01-02' - '2008-01-01' >= 2Day - 12Hour) and ('2008-01-02' - '2008-01-01' <= 1Month + 15Day))");
 
-        setOperator(RelationalOperator.In);
-        check("'2008-01-02' = 1Month + '2008-01-01' or '2008-01-02' = 2Day + '2008-01-01'");
-    }
+        setOperator(In);
+        check("(('2008-01-02' - '2008-01-01' >= 1Month - 15Day) and ('2008-01-02' - '2008-01-01' <= 1Month + 15Day)) or (('2008-01-02' - '2008-01-01' >= 2Day - 12Hour) and ('2008-01-02' - '2008-01-01' <= 2Day + 12Hour))");
+        
+        setOperator(NotIn);
+        check("(('2008-01-02' - '2008-01-01' < 1Month - 15Day) or ('2008-01-02' - '2008-01-01' > 1Month + 15Day)) and (('2008-01-02' - '2008-01-01' < 2Day - 12Hour) or ('2008-01-02' - '2008-01-01' > 2Day + 12Hour))");
 
-    public void testDSIntervalIllegal() {
-        setOperator(RelationalOperator.IsNull);
-        customFormula.setLhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
-        // 1day isnull
-        checkIllegal();
-        setOperator(RelationalOperator.Equals);
-
-        addRhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
-        // 1day = 1day
-        checkIllegal();
-
-        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("2", DSInterval.Day));
-        // 1day + 2Day = 1day
-        checkIllegal();
-    }
-
-    public void testDSInterval() {
-        setOperator(RelationalOperator.Equals);
-        customFormula.setLhs(newTerm(dateLiteral("2008-01-02")));
-        customFormula.getLhs().addOperand(conn(ArithmeticOperator.Minus, 0), dateLiteral("2008-01-01"));
-        addRhs(newTerm(dateOffsetLiteral("1", DSInterval.Day)));
-        check("'2008-01-02' = 1Day + '2008-01-01'");
+        setOperator(Equals);
+        customFormula.getAllRhs().remove(1);
+        customFormula.getAllRhs().get(0).addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("2", DSInterval.Week));
+        check("('2008-01-02' - '2008-01-01' >= (1Month + 2Week) - 15Day) and ('2008-01-02' - '2008-01-01' <= (1Month + 2Week) + 15Day)");
     }
 
     private void addRhs(int i) {
@@ -247,14 +247,16 @@ public class CustomFormulaProcessorTest extends AbstractTermProcessorTest {
     }
 
     private String sql(RelationalOperator o) {
-        return RelationalOperator.getSQL(o);
+        return getSQL(o);
     }
 
     private void check(String expected) {
         assertEquals(expected, getResult());
+        assertTrue(customFormula.isValid());
     }
 
     private void checkIllegal() {
+        assertFalse(customFormula.isValid());
         try {
             getResult();
             fail();

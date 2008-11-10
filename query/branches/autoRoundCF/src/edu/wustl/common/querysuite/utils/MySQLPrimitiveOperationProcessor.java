@@ -1,11 +1,6 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
-import edu.wustl.common.querysuite.queryobject.DSInterval;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
-import edu.wustl.common.querysuite.queryobject.TimeInterval;
-import edu.wustl.common.querysuite.queryobject.YMInterval;
-import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
 class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     MySQLPrimitiveOperationProcessor() {
@@ -17,22 +12,23 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
         return "timestampdiff(SECOND, " + rightStr + ", " + leftStr + ")";
     }
 
-    @Override
-    String getDateOffsetString(String s, TimeInterval<?> compoundTimeInterval) {
-        ITimeIntervalEnum timeInterval = compoundTimeInterval.primitiveEnum();
-        if (timeInterval instanceof DSInterval) {
-            return getDSIntervalString(s, (DSInterval) timeInterval);
-        } else if (timeInterval instanceof YMInterval) {
-            return "interval " + s + " " + timeIntervalStr(timeInterval);
-        }
-        throw new IllegalArgumentException("Shouldn't occur.");
-    }
-
-    private String getDSIntervalString(String s, DSInterval interval) {
-        s = "(" + s + ")";
-        s = s + "*" + interval.numSeconds();
-        return s;
-    }
+    // @Override
+    // String getDateOffsetString(String s, TimeInterval<?>
+    // compoundTimeInterval) {
+    // ITimeIntervalEnum timeInterval = compoundTimeInterval.primitiveEnum();
+    // if (timeInterval instanceof DSInterval) {
+    // return getDSIntervalString(s, (DSInterval) timeInterval);
+    // } else if (timeInterval instanceof YMInterval) {
+    // return "interval " + s + " " + timeIntervalStr(timeInterval);
+    // }
+    // throw new IllegalArgumentException("Shouldn't occur.");
+    // }
+    //
+    // private String getDSIntervalString(String s, DSInterval interval) {
+    // s = "(" + s + ")";
+    // s = s + "*" + interval.numSeconds();
+    // return s;
+    // }
 
     @Override
     String dateToTimestamp(String s) {
@@ -40,17 +36,21 @@ class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
     }
 
     @Override
-    String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator, TermStringOpnd rightTermStrOpnd) {
-
-        return super.getResultString(leftTermStrOpnd, operator, rightTermStrOpnd);
-    }
-
-    @Override
-    String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
+    String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
         if (operator == ArithmeticOperator.Minus) {
             // TODO check
             offsetStr = "-" + offsetStr;
         }
         return "timestampadd(SECOND, " + offsetStr + ", " + timeStr + ")";
     }
+
+    // @Override
+    // String getDSTimeOffsetOpString(String timeStr, String offsetStr,
+    // ArithmeticOperator operator) {
+    // if (operator == ArithmeticOperator.Minus) {
+    // // TODO check
+    // offsetStr = "-" + offsetStr;
+    // }
+    // return "timestampadd(SECOND, " + offsetStr + ", " + timeStr + ")";
+    // }
 }
