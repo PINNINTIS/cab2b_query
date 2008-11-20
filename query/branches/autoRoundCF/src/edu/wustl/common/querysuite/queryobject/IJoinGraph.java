@@ -32,33 +32,33 @@ public interface IJoinGraph extends IBaseQueryObject
 
 	/**
 	 * To get the association between two Expression ids.
-	 * @param parentExpressionId The parent Expression id.
-	 * @param childExpressionId The child Expression id.
+	 * @param parentExpression The parent Expression id.
+	 * @param childExpression The child Expression id.
 	 * @return The association betweent the thwo Expression ids.
 	 */
-	IAssociation getAssociation(IExpression parentExpressionId, IExpression childExpressionId);
+	IAssociation getAssociation(IExpression parentExpression, IExpression childExpression);
 
 	/**
 	 * To put the association in the joingraph.
-	 * @param parentExpressionId The parent Expression id to be added in joingraph.
-	 * @param childExpressionId The child Expression id to be added in joingraph.
+	 * @param parentExpression The parent Expression id to be added in joingraph.
+	 * @param childExpression The child Expression id to be added in joingraph.
 	 * @param association The association between two expression ids.
-	 * @return previous association for the given expressionId's which was
+	 * @return previous association for the given expression's which was
 	 *         overwritten by this association; null if no association existed
 	 *         previously.
 	 * @throws CyclicException
 	 *             if adding this edge will cause a cycle in the graph
 	 */
-	IAssociation putAssociation(IExpression parentExpressionId, IExpression childExpressionId,
+	IAssociation putAssociation(IExpression parentExpression, IExpression childExpression,
 			IAssociation association) throws CyclicException;
 
 	/**
 	 * Removes the association from the graph.
-	 * @param parentExpressionId The parent Expression id
-	 * @param childExpressionId The child Expression id
+	 * @param parentExpression The parent Expression id
+	 * @param childExpression The child Expression id
 	 * @return true if the association between the specified expressions existed.
 	 */
-	boolean removeAssociation(IExpression parentExpressionId, IExpression childExpressionId);
+	boolean removeAssociation(IExpression parentExpression, IExpression childExpression);
 
 	/**
 	 * indicates if the graph is a connected graph. for building queries
@@ -70,15 +70,15 @@ public interface IJoinGraph extends IBaseQueryObject
 
 	/**
 	 * To check wether there is an association between two Expression ids.
-	 * @param parentExpressionId The parent Expression id.
-	 * @param childExpressionId The child Expression id.
+	 * @param parentExpression The parent Expression id.
+	 * @param childExpression The child Expression id.
 	 * @return  true if the graph contains an association between the specified
-	 * expressionIds.
+	 * expressions.
 	 */
-	boolean containsAssociation(IExpression parentExpressionId, IExpression childExpressionId);
+	boolean containsAssociation(IExpression parentExpression, IExpression childExpression);
 
 	/**
-	 * For each element in IExpressionId list, the root node will be checked 
+	 * For each element in IExpression list, the root node will be checked 
 	 * for incoming edges for that element.The node having no incomming edges 
 	 * will be treated as Root node. 
 	 * @return root node of the join graph, null if no root exists for the expression tree
@@ -87,18 +87,18 @@ public interface IJoinGraph extends IBaseQueryObject
     IExpression getRoot() throws MultipleRootsException;
 
 	/**
-	 * To get the list of Parents of the given ExpressionId.
-	 * @param childExpressionId the Child Expression Id reference.
-	 * @return The List parent of ExpressionId for th given childExpressionId. 
+	 * To get the list of Parents of the given Expression.
+	 * @param childExpression the Child Expression  reference.
+	 * @return The List parent of Expression for th given childExpression. 
 	 */
-	List<IExpression> getParentList(IExpression childExpressionId);
+	List<IExpression> getParentList(IExpression childExpression);
 
 	/**
-	 * To get the list of children of the given ExpressionId.
-	 * @param expressionId the expr id whose children are to be found.
-	 * @return children of given expressionId. 
+	 * To get the list of children of the given Expression.
+	 * @param expression the expr id whose children are to be found.
+	 * @return children of given expression. 
 	 */
-	List<IExpression> getChildrenList(IExpression expressionId);
+	List<IExpression> getChildrenList(IExpression expression);
 	
 	List<IExpression> getAllRoots();
 }
