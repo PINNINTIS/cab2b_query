@@ -10,6 +10,7 @@ import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IParameter;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQuery;
+import edu.wustl.common.util.Identifiable;
 
 /**
  * @author chetan_patil
@@ -18,7 +19,7 @@ import edu.wustl.common.querysuite.queryobject.IQuery;
  * @hibernate.joined-subclass table="QUERY_PARAMETERIZED_QUERY"
  * @hibernate.joined-subclass-key column="IDENTIFIER"
  */
-public class ParameterizedQuery extends Query implements IParameterizedQuery {
+public class ParameterizedQuery extends Query implements IParameterizedQuery,Identifiable {
     private static final long serialVersionUID = 1L;
 
     private List<IOutputAttribute> outputAttributeList = new ArrayList<IOutputAttribute>();
@@ -184,4 +185,9 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery {
     private void setParameters(List<IParameter<?>> parameters) {
         this.parameters = parameters;
     }
+
+	public String getObjectId() 
+	{
+		return this.getClass().getName()+ "_" + this.getId();
+	}
 }
