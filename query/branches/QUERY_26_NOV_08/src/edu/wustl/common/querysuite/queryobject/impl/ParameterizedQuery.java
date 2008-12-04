@@ -24,10 +24,6 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     private List<IOutputAttribute> outputAttributeList = new ArrayList<IOutputAttribute>();
 
-    private String name;
-
-    private String description;
-
     private List<IParameter<?>> parameters;
 
     /**
@@ -80,40 +76,6 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
      */
     public void addParameterizedCondition(String name, String description) {
         this.name = name;
-        this.description = description;
-    }
-
-    /**
-     * @see edu.wustl.common.querysuite.queryobject.IDescribable#getName()
-     * 
-     * @hibernate.property name="name" column="QUERY_NAME" type="string"
-     *                     length="255" unique="true"
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @see edu.wustl.common.querysuite.queryobject.IDescribable#setName(java.lang.String)
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @see edu.wustl.common.querysuite.queryobject.IDescribable#getDescription()
-     * 
-     * @hibernate.property name="description" column="DESCRIPTION" type="string"
-     *                     length="1024"
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @see edu.wustl.common.querysuite.queryobject.IDescribable#setDescription()
-     */
-    public void setDescription(String description) {
         this.description = description;
     }
 
