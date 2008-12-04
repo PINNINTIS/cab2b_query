@@ -18,7 +18,7 @@ import edu.wustl.common.querysuite.queryobject.IQuery;
  * @hibernate.class table="QUERY"
  * @hibernate.cache usage="read-write"
  */
-public class Query extends BaseQueryObject implements IQuery {
+public class Query extends AbstractQuery implements IQuery {
     private static final long serialVersionUID = -9105109010866749580L;
 
     private IConstraints constraints;
