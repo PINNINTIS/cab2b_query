@@ -55,6 +55,10 @@
 			<configuration configurationfile="conf/oracle.cfg.xml" />
 			<hbm2ddl export="false" drop="true" outputfilename="oracle.ddl" />
 		</hibernatetool>
+		<hibernatetool destdir="${workarea.dir}/ddl">
+			<configuration configurationfile="conf/db2.cfg.xml" />
+			<hbm2ddl export="false" drop="true" outputfilename="db2.ddl" />
+		</hibernatetool>
 	</target>
 
 	<target name="exportSchema" depends="compile">
