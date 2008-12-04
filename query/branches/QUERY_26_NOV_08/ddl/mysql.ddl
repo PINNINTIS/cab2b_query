@@ -68,11 +68,33 @@ drop table if exists QUERY_RULE_COND;
 drop table if exists QUERY_SUBEXPR_OPERAND;
 drop table if exists QUERY_TO_OUTPUT_TERMS;
 drop table if exists QUERY_TO_PARAMETERS;
+
+drop table if exists QUERY_ABSTRACT_QUERY;
+create table QUERY_ABSTRACT_QUERY (IDENTIFIER bigint not null auto_increment, QUERY_NAME varchar(255) unique, DESCRIPTION text, primary key (IDENTIFIER));
+drop table if exists QUERY_COMPOSITE_QUERY;
+create table QUERY_COMPOSITE_QUERY (IDENTIFIER bigint not null, OPERATION_ID bigint, primary key (IDENTIFIER));
+
+drop table if exists QUERY_OPERATION;
+create table QUERY_OPERATION (IDENTIFIER bigint not null auto_increment, OPERAND_1 bigint, OPERAND_2 bigint, primary key (IDENTIFIER));
+drop table if exists QUERY_UNION;
+drop table if exists QUERY_INTERSECTION;
+drop table if exists QUERY_MINUS;
+create table QUERY_UNION (IDENTIFIER bigint not null, primary key (IDENTIFIER));
+create table QUERY_INTERSECTION (IDENTIFIER bigint not null, primary key (IDENTIFIER));
+create table QUERY_MINUS (IDENTIFIER bigint not null, primary key (IDENTIFIER));
+
+drop table if exists QUERY_WORKFLOW;
+create table QUERY_WORKFLOW (IDENTIFIER bigint not null auto_increment, NAME varchar(1024), primary key (IDENTIFIER));
+drop table if exists QUERY_WORKFLOW_ITEM;
+create table QUERY_WORKFLOW_ITEM (IDENTIFIER bigint not null auto_increment, WORKFLOW_ID, ORDER integer, primary key (IDENTIFIER));
+
+
+
 create table COMMONS_GRAPH (IDENTIFIER bigint not null auto_increment, primary key (IDENTIFIER));
 create table COMMONS_GRAPH_EDGE (IDENTIFIER bigint not null auto_increment, SOURCE_VERTEX_CLASS varchar(255), SOURCE_VERTEX_ID bigint, TARGET_VERTEX_CLASS varchar(255), TARGET_VERTEX_ID bigint, EDGE_CLASS varchar(255), EDGE_ID bigint, primary key (IDENTIFIER));
 create table COMMONS_GRAPH_TO_EDGES (GRAPH_ID bigint not null, EDGE_ID bigint not null unique, primary key (GRAPH_ID, EDGE_ID));
 create table COMMONS_GRAPH_TO_VERTICES (GRAPH_ID bigint not null, VERTEX_CLASS varchar(255), VERTEX_ID bigint);
-create table QUERY (IDENTIFIER bigint not null auto_increment, CONSTRAINTS_ID bigint unique, primary key (IDENTIFIER));
+create table QUERY (IDENTIFIER bigint not null, CONSTRAINTS_ID bigint unique, primary key (IDENTIFIER));
 create table QUERY_ARITHMETIC_OPERAND (IDENTIFIER bigint not null, LITERAL varchar(255), TERM_TYPE varchar(255), DATE_LITERAL date, TIME_INTERVAL varchar(255), DE_ATTRIBUTE_ID bigint, EXPRESSION_ID bigint, primary key (IDENTIFIER));
 create table QUERY_BASEEXPR_TO_CONNECTORS (BASE_EXPRESSION_ID bigint not null, CONNECTOR_ID bigint not null, POSITION integer not null, primary key (BASE_EXPRESSION_ID, POSITION));
 create table QUERY_BASE_EXPRESSION (IDENTIFIER bigint not null auto_increment, EXPR_TYPE varchar(255) not null, primary key (IDENTIFIER));
@@ -93,7 +115,7 @@ create table QUERY_OPERAND (IDENTIFIER bigint not null auto_increment, OPND_TYPE
 create table QUERY_OUTPUT_ATTRIBUTE (IDENTIFIER bigint not null auto_increment, EXPRESSION_ID bigint, ATTRIBUTE_ID bigint not null, PARAMETERIZED_QUERY_ID bigint, POSITION integer, primary key (IDENTIFIER));
 create table QUERY_OUTPUT_TERM (IDENTIFIER bigint not null auto_increment, NAME varchar(255), TIME_INTERVAL varchar(255), TERM_ID bigint, primary key (IDENTIFIER));
 create table QUERY_PARAMETER (IDENTIFIER bigint not null auto_increment, NAME varchar(255), OBJECT_CLASS varchar(255), OBJECT_ID bigint, primary key (IDENTIFIER));
-create table QUERY_PARAMETERIZED_QUERY (IDENTIFIER bigint not null, QUERY_NAME varchar(255) unique, DESCRIPTION text, primary key (IDENTIFIER));
+create table QUERY_PARAMETERIZED_QUERY (IDENTIFIER bigint not null, primary key (IDENTIFIER));
 create table QUERY_QUERY_ENTITY (IDENTIFIER bigint not null auto_increment, ENTITY_ID bigint not null, primary key (IDENTIFIER));
 create table QUERY_RULE_COND (RULE_ID bigint not null, CONDITION_ID bigint not null, POSITION integer not null, primary key (RULE_ID, POSITION));
 create table QUERY_SUBEXPR_OPERAND (IDENTIFIER bigint not null, EXPRESSION_ID bigint, primary key (IDENTIFIER));
@@ -134,3 +156,5 @@ alter table QUERY_TO_OUTPUT_TERMS add index FK8A70E2565E5B9430 (OUTPUT_TERM_ID),
 alter table QUERY_TO_OUTPUT_TERMS add index FK8A70E25691051647 (QUERY_ID), add constraint FK8A70E25691051647 foreign key (QUERY_ID) references QUERY (IDENTIFIER);
 alter table QUERY_TO_PARAMETERS add index FK8060DAD7F84B9027 (PARAMETER_ID), add constraint FK8060DAD7F84B9027 foreign key (PARAMETER_ID) references QUERY_PARAMETER (IDENTIFIER);
 alter table QUERY_TO_PARAMETERS add index FK8060DAD739F0A314 (QUERY_ID), add constraint FK8060DAD739F0A314 foreign key (QUERY_ID) references QUERY_PARAMETERIZED_QUERY (IDENTIFIER);
+
+

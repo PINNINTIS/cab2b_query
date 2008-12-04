@@ -13,9 +13,9 @@
 		</property>
 		
 		<property name="connection.username">root</property>
-		<property name="connection.password">root</property>
+		<property name="connection.password">pspl</property>
 		<property name="connection.url">
-			jdbc:mysql://localhost:3306/cab2bnew
+			jdbc:mysql://localhost:3306/querynew
 		</property>
 		
 		<property name="hibernate.cache.use_second_level_cache">false</property>
@@ -29,7 +29,7 @@
 		<mapping resource="edu/wustl/common/hbm/JoinGraph.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/ModelAssociation.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/OutputAttribute.hbm.xml" />
-		<mapping resource="edu/wustl/common/hbm/Query.hbm.xml" />
+		<mapping resource="edu/wustl/common/hbm/AbstractQuery.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/QueryEntity.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/QueryHQL.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/Term.hbm.xml" />
@@ -38,5 +38,7 @@
 		<mapping resource="edu/wustl/common/hbm/OutputTerm.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/PersistentGraph.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/Parameter.hbm.xml" />
+		<mapping resource="edu/wustl/common/hbm/Operation.hbm.xml" />
+		<mapping resource="edu/wustl/common/hbm/ResultView.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
