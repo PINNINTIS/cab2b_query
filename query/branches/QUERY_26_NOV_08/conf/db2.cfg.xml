@@ -38,8 +38,6 @@
 		<mapping resource="edu/wustl/common/hbm/OutputTerm.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/PersistentGraph.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/Parameter.hbm.xml" />
-		<mapping resource="edu/wustl/common/hbm/WorkFlow.hbm.xml" />
-		<mapping resource="edu/wustl/common/hbm/WorkFlowItem.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/Operation.hbm.xml" />
 		<mapping resource="edu/wustl/common/hbm/ResultView.hbm.xml" />
 	</session-factory>
