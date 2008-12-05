@@ -10,7 +10,7 @@ import java.util.List;
  * @version 1.0
  * @updated 11-Oct-2006 02:57:13 PM
  */
-public interface IQuery extends IBaseQueryObject {
+public interface IQuery extends IAbstractQuery {
     /**
      * @return the reference to constraints
      * @see IConstraints
