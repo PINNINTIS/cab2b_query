@@ -5,7 +5,7 @@ package edu.wustl.common.querysuite.queryobject;
  * @author vijay_pande
  * Interface for Composite Query
  */
-public interface ICompositeQuery
+public interface ICompositeQuery extends IAbstractQuery
 {
 	/**
 	 * Method to return operation associated with the Composite query
