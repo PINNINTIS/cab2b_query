@@ -2,13 +2,14 @@ package edu.wustl.common.querysuite.queryobject.impl;
 
 import edu.wustl.common.querysuite.queryobject.ICompositeQuery;
 import edu.wustl.common.querysuite.queryobject.IOperation;
+import edu.wustl.common.util.Identifiable;
 
 
 /**
  * @author vijay_pande
  * Class for composite query
  */
-public class CompositeQuery extends AbstractQuery implements ICompositeQuery
+public class CompositeQuery extends AbstractQuery implements ICompositeQuery, Identifiable
 {
 	/**
 	 * Default serial version id
@@ -36,5 +37,14 @@ public class CompositeQuery extends AbstractQuery implements ICompositeQuery
 	public void setOperation(IOperation operation)
 	{
 		this.operation = operation;
+	}
+	
+	/**
+	 * Method to get object id of the composite query required while saving CSM data
+	 * @param objectid  Object of type String
+	 */
+	public String getObjectId() 
+	{
+		return this.getClass().getName()+ "_" + this.getId();
 	}
 }
