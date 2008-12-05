@@ -17,11 +17,11 @@ public interface IOperation
 	 * Method to get first operand for operation
 	 * @return query object of type IQuery
 	 */
-	public IQuery getOperandOne();
+	public IAbstractQuery getOperandOne();
 	
 	/**
 	 * Method to get second operand for operation
 	 * @return query object of type IQuery
 	 */
-	public IQuery getOperandTwo();
+	public IAbstractQuery getOperandTwo();
 }

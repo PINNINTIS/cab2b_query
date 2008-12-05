@@ -1,14 +1,14 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import edu.wustl.common.querysuite.queryobject.IAbstractQuery;
 import edu.wustl.common.querysuite.queryobject.IOperation;
-import edu.wustl.common.querysuite.queryobject.IQuery;
 
 
 /**
  * @author vijay_pande
  * Base class for operation to be performed for composite query
  */
-public class Operation implements IOperation
+public abstract class Operation implements IOperation
 {
 	/**
 	 * identifier of the operation
@@ -18,12 +18,12 @@ public class Operation implements IOperation
 	/**
 	 * first operand of the operation
 	 */
-	protected IQuery operandOne;
+	protected IAbstractQuery operandOne;
 	
 	/**
 	 * second operand of the operation
 	 */
-	protected IQuery operandTwo;
+	protected IAbstractQuery operandTwo;
 	
 	
 	/**
@@ -46,36 +46,36 @@ public class Operation implements IOperation
 	
 	/**
 	 * Method to get first operand of the operation
-	 * @return id of type Long
+	 * @return operandOne of type AbstractQuery
 	 */
-	public IQuery getOperandOne()
+	public IAbstractQuery getOperandOne()
 	{
 		return operandOne;
 	}
 	
 	/**
 	 * Method to set first operand of the operation
-	 * @param id of type Long
+	 * @param operandOne of type AbstractQuery
 	 */
-	public void setOperandOne(IQuery operandOne)
+	public void setOperandOne(IAbstractQuery operandOne)
 	{
 		this.operandOne = operandOne;
 	}
 	
 	/**
 	 * Method to get second operand of the operation
-	 * @return id of type Long
+	 * @return operandTwo of type AbstractQuery
 	 */
-	public IQuery getOperandTwo()
+	public IAbstractQuery getOperandTwo()
 	{
 		return operandTwo;
 	}
 	
 	/**
 	 * Method to set second operand of the operation
-	 * @param id of type Long
+	 * @param operandTwo of type AbstractQuery
 	 */
-	public void setOperandTwo(IQuery operandTwo)
+	public void setOperandTwo(IAbstractQuery operandTwo)
 	{
 		this.operandTwo = operandTwo;
 	}
