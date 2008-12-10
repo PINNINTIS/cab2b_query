@@ -12,4 +12,9 @@ public interface ICountView extends IResultView
 	 * @return countEntity Object of type IQueryEntity
 	 */
 	public IQueryEntity getCountEntity();
+	/**
+	 * Method to set CountEntity. CountEntity is the entity for which the count is to be generated.
+	 * @param countEntity Object of type IQueryEntity
+	 */
+	public void setCountEntity(IQueryEntity countEntity);
 }

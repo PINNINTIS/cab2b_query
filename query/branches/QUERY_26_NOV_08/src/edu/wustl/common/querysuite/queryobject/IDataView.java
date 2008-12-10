@@ -14,4 +14,10 @@ public interface IDataView extends IResultView
 	 * @return outputAttributeList List of objects of type IOutputAttribute
 	 */
 	public List<IOutputAttribute> getOutputAttributeList();
+	
+	/**
+	 * Method to set list of output attributes
+	 * @param outputAttributeList List of objects of type IOutputAttribute
+	 */
+	public  void setOutputAttributeList(List<IOutputAttribute> outputAttributeList);
 }

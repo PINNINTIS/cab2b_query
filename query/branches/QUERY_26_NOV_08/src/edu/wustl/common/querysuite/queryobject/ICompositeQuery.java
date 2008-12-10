@@ -12,4 +12,10 @@ public interface ICompositeQuery extends IAbstractQuery
 	 * @return operation Object of type IOperation
 	 */
 	public IOperation getOperation();
+	
+	/**
+	 * Method to set operation associated with the Composite query
+	 * @param operation Object of type IOperation
+	 */
+	public void setOperation(IOperation operation);
 }
