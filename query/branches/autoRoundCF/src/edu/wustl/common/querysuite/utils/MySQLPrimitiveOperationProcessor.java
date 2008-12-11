@@ -2,8 +2,8 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 
-class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
-    MySQLPrimitiveOperationProcessor() {
+public class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
+	public MySQLPrimitiveOperationProcessor() {
         super("%Y-%m-%d", "STR_TO_DATE");
     }
 

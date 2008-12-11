@@ -60,8 +60,8 @@ public class CustomFormulaProcessor {
      * @see TermProcessor#TermProcessor(IAttributeAliasProvider,
      *      DatabaseSQLSettings)
      */
-    public CustomFormulaProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
-        this.termProcessor = new TermProcessor(aliasProvider, databaseSQLSettings);
+    public CustomFormulaProcessor(IAttributeAliasProvider aliasProvider, Object primitiveOperationProcessor) {
+        this.termProcessor = new TermProcessor(aliasProvider, primitiveOperationProcessor);
     }
 
     /**

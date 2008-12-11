@@ -2,9 +2,9 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 
-class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
+public class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
-    OraclePrimitiveOperationProcessor() {
+	public OraclePrimitiveOperationProcessor() {
         super("YYYY-MM-DD", "TO_DATE");
     }
 
