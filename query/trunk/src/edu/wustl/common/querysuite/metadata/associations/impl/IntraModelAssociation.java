@@ -87,6 +87,7 @@ public class IntraModelAssociation extends ModelAssociation implements IIntraMod
 
         for (AssociationInterface associationOfOrigTgtEnt : associationsOfOrigTgtEnt) {
             if (associationOfOrigTgtEnt.getAssociationDirection() == AssociationDirection.BI_DIRECTIONAL
+                    && associationOfOrigTgtEnt.getTargetEntity().equals(getDynamicExtensionsAssociation().getEntity())
                     && associationOfOrigTgtEnt.getTargetRole().getName().equals(
                             getDynamicExtensionsAssociation().getSourceRole().getName())
                     && associationOfOrigTgtEnt.getSourceRole().getName().equals(
