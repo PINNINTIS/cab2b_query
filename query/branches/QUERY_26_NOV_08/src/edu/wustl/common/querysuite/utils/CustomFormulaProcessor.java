@@ -1,17 +1,33 @@
 package edu.wustl.common.querysuite.utils;
 
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.Between;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.Equals;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.GreaterThanOrEquals;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.In;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.LessThanOrEquals;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.NotBetween;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.NotEquals;
+import static edu.wustl.common.querysuite.queryobject.RelationalOperator.NotIn;
 import static edu.wustl.common.querysuite.queryobject.RelationalOperator.getSQL;
+import static edu.wustl.common.querysuite.queryobject.TermType.isDateTime;
+import static edu.wustl.common.querysuite.queryobject.TermType.isInterval;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import edu.wustl.common.querysuite.factory.QueryObjectFactory;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IArithmeticOperand;
 import edu.wustl.common.querysuite.queryobject.IConnector;
 import edu.wustl.common.querysuite.queryobject.ICustomFormula;
+import edu.wustl.common.querysuite.queryobject.IDateOffset;
+import edu.wustl.common.querysuite.queryobject.IDateOffsetLiteral;
 import edu.wustl.common.querysuite.queryobject.ITerm;
 import edu.wustl.common.querysuite.queryobject.RelationalOperator;
 import edu.wustl.common.querysuite.queryobject.TermType;
+import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
+import edu.wustl.common.util.ObjectCloner;
 import edu.wustl.metadata.util.DyExtnObjectCloner;
 
 /**
@@ -44,148 +60,35 @@ public class CustomFormulaProcessor {
      * @see TermProcessor#TermProcessor(IAttributeAliasProvider,
      *      DatabaseSQLSettings)
      */
-    public CustomFormulaProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
-        this.termProcessor = new TermProcessor(aliasProvider, databaseSQLSettings);
+    public CustomFormulaProcessor(IAttributeAliasProvider aliasProvider, Object primitiveOperationProcessor) {
+        this.termProcessor = new TermProcessor(aliasProvider, primitiveOperationProcessor);
     }
 
     /**
      * @return the string representation of the specified formula.
      */
     public String asString(ICustomFormula formula) {
-        formula = modifyYMInterval(formula);
-        if (!isValid2(formula)) {
+        if (!isValid(formula)) {
             throw new IllegalArgumentException("invalid custom formula.");
         }
-        String lhs = getString(formula.getLhs());
-        RelationalOperator relationalOperator = formula.getOperator();
-        if (relationalOperator.numberOfValuesRequired() == 0) {
-            // is (not) null
-            return lhs + SPACE + getSQL(relationalOperator);
+        CFProc cfProc;
+        if (isTemporal(formula)) {
+            // temporal
+            cfProc = new TemporalCFProc();
+        } else {
+            // non temporal
+            cfProc = new DefaultCFProc();
         }
-        List<ITerm> rhses = formula.getAllRhs();
-        if (rhses.isEmpty()) {
-            throw new IllegalArgumentException("No value for operator " + getSQL(relationalOperator));
-        }
-        String rhs = getString(rhses.get(0));
-        if (relationalOperator.numberOfValuesRequired() == 1) {
-            // unary operators
-            return lhs + SPACE + getSQL(relationalOperator) + SPACE + rhs;
-        }
-        if (relationalOperator == RelationalOperator.Between || relationalOperator == RelationalOperator.NotBetween) {
-            String rhs2 = getString(rhses.get(1));
-            boolean between = relationalOperator == RelationalOperator.Between;
-            String innerOper = between ? " and " : " or ";
-            String outerOper = between ? " or " : " and ";
-            String le = between ? " <= " : " < ";
-            String ge = between ? " >= " : " > ";
-            // between :
-            // (lhs >= rhs1 and lhs <= rhs2) or (lhs <= rhs1 and lhs >= rhs2)
-            // notBetween :
-            // (lhs > rhs1 or lhs < rhs2) and (lhs < rhs1 or lhs > rhs2)
-            String res = "(" + lhs + ge + rhs + innerOper + lhs + le + rhs2 + ")";
-            res += outerOper + "(" + lhs + le + rhs + innerOper + lhs + ge + rhs2 + ")";
-            return res;
-        }
-
-        // In : lhs = rhs1 or lhs = rhs2 or lhs = rhs3...
-        // NotIn : lhs != rhs1 and lhs != rhs2 and lhs != rhs3...
-        String sqlOper = relationalOperator == RelationalOperator.In
-                ? getSQL(RelationalOperator.Equals)
-                : getSQL(RelationalOperator.NotEquals);
-        String logicOper = relationalOperator == RelationalOperator.In ? "or" : "and";
-        sqlOper = SPACE + sqlOper + SPACE;
-        logicOper = SPACE + logicOper + SPACE;
-        String res = lhs + sqlOper + rhs;
-
-        for (int i = 1, n = rhses.size(); i < n; i++) {
-            rhs = getString(rhses.get(i));
-            String next = logicOper + lhs + sqlOper + rhs;
-            res += next;
-        }
-        return res;
+        return cfProc.getString(formula);
     }
 
-    private String getString(ITerm term) {
-        return termProcessor.convertTerm(term).getString();
-    }
-
-    private ICustomFormula modifyYMInterval(ICustomFormula formula) {
-        ITerm lhs = formula.getLhs();
-        TermType lhsType = lhs.getTermType();
-        if (lhsType == TermType.Invalid || lhsType == TermType.YMInterval) {
-            return null;
-        }
-        if (lhsType != TermType.DSInterval) {
-            return formula;
-        }
-        // LHS is DSInterval; check if can be split
-        if (lhs.numberOfOperands() == 1) {
-            return null;
-        }
-        SplitTerm splitTerm = new SplitTerm(lhs);
-        if (splitTerm.term1.getTermType() == TermType.DSInterval
-                || splitTerm.term2.getTermType() == TermType.DSInterval) {
-            // can't support this in MYSQL.
-            // TODO code database specific support. e.g. can support this in
-            // ORACLE.
-            return null;
-        }
-        // here, LHS must of type date1 - date2
-        if (splitTerm.operator != ArithmeticOperator.Minus) {
-            throw new RuntimeException("something wrong in code.");
-        }
-
-        formula = new DyExtnObjectCloner().clone(formula);
-        splitTerm.term2.addParantheses();
-        IConnector<ArithmeticOperator> conn = conn(ArithmeticOperator.Plus);
-        for (ITerm rhs : formula.getAllRhs()) {
-            rhs.addParantheses();
-            rhs.addAll(conn, splitTerm.term2);
-        }
-        formula.setLhs(splitTerm.term1);
-
-        return formula;
-    }
-
-    private IConnector<ArithmeticOperator> conn(ArithmeticOperator operator) {
-        return QueryObjectFactory.createArithmeticConnector(operator, 0);
-    }
-
-    private static class SplitTerm {
-        private final ITerm term1;
-
-        private final ITerm term2;
-
-        private final ArithmeticOperator operator;
-
-        private SplitTerm(ITerm term) {
-            int splitIdx = indexOfSplitConn(term);
-            operator = term.getConnector(splitIdx, splitIdx + 1).getOperator();
-            term1 = (ITerm) term.subExpression(0, splitIdx);
-            term2 = (ITerm) term.subExpression(splitIdx + 1, term.numberOfOperands() - 1);
-        }
-
-        private int indexOfSplitConn(ITerm term) {
-            int splitIdx = -1;
-            int minNesting = -1;
-            for (int i = 0, n = term.numberOfOperands(); i < n - 1; i++) {
-                IConnector<ArithmeticOperator> conn = term.getConnector(i, i + 1);
-                // take last connector with min nesting
-                if (conn.getNestingNumber() >= minNesting) {
-                    splitIdx = i;
-                    minNesting = conn.getNestingNumber();
-                }
-            }
-            return splitIdx;
-        }
+    private boolean isTemporal(ICustomFormula formula) {
+        TermType lhsType = formula.getLhs().getTermType();
+        return isInterval(lhsType) || isDateTime(lhsType);
     }
 
     public boolean isValid(ICustomFormula customFormula) {
-        return isValid2(modifyYMInterval(customFormula));
-    }
-
-    // called only after modifying YMInterval.
-    private boolean isValid2(ICustomFormula customFormula) {
+        // TODO check only numeric operators.
         if (customFormula == null) {
             return false;
         }
@@ -195,12 +98,12 @@ public class CustomFormulaProcessor {
         }
 
         int numRhs = customFormula.getAllRhs().size();
-        if (operator == RelationalOperator.Between) {
+        if (operator == Between) {
             if (numRhs != 2) {
                 return false;
             }
         }
-        if (operator == RelationalOperator.In || operator == RelationalOperator.NotIn) {
+        if (operator == In || operator == NotIn) {
             if (numRhs == 0) {
                 return false;
             }
@@ -212,10 +115,260 @@ public class CustomFormulaProcessor {
 
         TermType lhsType = customFormula.getLhs().getTermType();
         for (ITerm rhs : customFormula.getAllRhs()) {
-            if (rhs.getTermType() != lhsType) {
+            if (!compatibleTypes(rhs.getTermType(), lhsType)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean compatibleTypes(TermType type1, TermType type2) {
+        return (isInterval(type1) && isInterval(type2)) || type1 == type2;
+    }
+
+    private interface CFProc {
+        String getString(ICustomFormula formula);
+    }
+
+    private class BasicCFProc implements CFProc {
+        public String getString(ICustomFormula formula) {
+            String lhs = termString(formula.getLhs());
+            RelationalOperator relationalOperator = formula.getOperator();
+            if (relationalOperator.numberOfValuesRequired() == 0) {
+                // is (not) null
+                return lhs + SPACE + getSQL(relationalOperator);
+            }
+            List<ITerm> rhses = formula.getAllRhs();
+            String rhs = termString(rhses.get(0));
+            if (relationalOperator.numberOfValuesRequired() == 1) {
+                // unary operators
+                return lhs + SPACE + getSQL(relationalOperator) + SPACE + rhs;
+            }
+            if (relationalOperator == Between || relationalOperator == NotBetween) {
+                String rhs2 = termString(rhses.get(1));
+                boolean between = relationalOperator == Between;
+                String logicOper = between ? " and " : " or ";
+                String rel1 = between ? " >= " : " < ";
+                String rel2 = between ? " <= " : " > ";
+                // between :
+                // (lhs >= rhs1 and lhs <= rhs2)
+                // notBetween :
+                // (lhs < rhs1 or lhs > rhs2)
+                return brackets(lhs + rel1 + rhs) + logicOper + brackets(lhs + rel2 + rhs2);
+            }
+            // In : lhs = rhs1 or lhs = rhs2 or lhs = rhs3...
+            // NotIn : lhs != rhs1 and lhs != rhs2 and lhs != rhs3...
+            String sqlOper = relationalOperator == In ? getSQL(Equals) : getSQL(NotEquals);
+            String logicOper = relationalOperator == In ? "or" : "and";
+            sqlOper = SPACE + sqlOper + SPACE;
+            logicOper = SPACE + logicOper + SPACE;
+            String res = brackets(lhs + sqlOper + rhs);
+
+            for (int i = 1, n = rhses.size(); i < n; i++) {
+                rhs = termString(rhses.get(i));
+                String next = logicOper + brackets(lhs + sqlOper + rhs);
+                res += next;
+            }
+            return res;
+        }
+    }
+
+    private class DefaultCFProc implements CFProc {
+        public String getString(ICustomFormula formula) {
+            CFProc basic = new BasicCFProc();
+            RelationalOperator relationalOperator = formula.getOperator();
+
+            // override between and notBetween so that order of rhses is
+            // irrelevant.
+            if (relationalOperator == Between || relationalOperator == NotBetween) {
+                String res1 = basic.getString(formula);
+                String res2 = basic.getString(swapRhses(formula));
+                String logicOper = (relationalOperator == Between) ? " or " : " and ";
+                // between :
+                // (lhs between rhs1, rhs2) or (lhs between rhs2,rhs1)
+                // notBetween :
+                // (lhs notBetween rhs1, rhs2) and (lhs notBetween rhs2,rhs1)
+
+                return brackets(res1) + logicOper + brackets(res2);
+            } else {
+                return basic.getString(formula);
+            }
+        }
+
+    }
+
+    private static ICustomFormula swapRhses(ICustomFormula formula) {
+        formula = new DyExtnObjectCloner().clone(formula);
+        List<ITerm> rhses = formula.getAllRhs();
+        ITerm temp = rhses.get(0);
+        rhses.set(0, rhses.get(1));
+        rhses.set(1, temp);
+        return formula;
+    }
+
+    private static EnumSet<RelationalOperator> temporalSpecials = EnumSet.of(Equals, NotEquals, Between,
+            LessThanOrEquals, GreaterThanOrEquals, In, NotIn);
+
+    private class TemporalCFProc implements CFProc {
+        public String getString(ICustomFormula formula) {
+            RelationalOperator relOper = formula.getOperator();
+            if (!temporalSpecials.contains(relOper)) {
+                return new DefaultCFProc().getString(formula);
+            }
+            ObjectCloner cloner = new DyExtnObjectCloner();
+            formula = cloner.clone(formula);
+            boolean intervalFormula = isInterval(formula.getLhs().getTermType());
+            IArithmeticOperand offset = null;
+            if (!intervalFormula) {
+                offset = roundingOffset(formula.getLhs());
+            }
+
+            if (relOper.numberOfValuesRequired() == 1) {
+                ITerm rhs = formula.getAllRhs().get(0);
+                if (intervalFormula) {
+                    offset = roundingOffset(rhs);
+                }
+                if (relOper == Equals || relOper == NotEquals) {
+                    formula.setOperator(relOper == Equals ? Between : NotBetween);
+                    ITerm rhs2 = cloner.clone(rhs);
+                    formula.addRhs(rhs2);
+
+                    subtract(rhs, offset);
+                    add(rhs2, offset);
+                    return new BasicCFProc().getString(formula);
+                }
+                if (relOper == LessThanOrEquals) {
+                    add(rhs, offset);
+                    return new BasicCFProc().getString(formula);
+                }
+                if (relOper == GreaterThanOrEquals) {
+                    subtract(rhs, offset);
+                    return new BasicCFProc().getString(formula);
+                }
+                throw new RuntimeException("can't occur.");
+            }
+            if (relOper == Between) {
+                return brackets(between(formula, offset)) + " or " + brackets(between(swapRhses(formula), offset));
+            }
+
+            // in, notIn remain
+            RelationalOperator newOper;
+            String logicOper;
+            if (relOper == In) {
+                newOper = Equals;
+                logicOper = " or ";
+            } else {
+                // notIn
+                newOper = NotEquals;
+                logicOper = " and ";
+            }
+
+            String res = "";
+            for (ITerm rhs : formula.getAllRhs()) {
+                ICustomFormula newFormula = QueryObjectFactory.createCustomFormula();
+                newFormula.setLhs(formula.getLhs());
+                newFormula.setOperator(newOper);
+                newFormula.addRhs(rhs);
+
+                String s = new TemporalCFProc().getString(newFormula);
+                res += brackets(s) + logicOper;
+            }
+
+            return res.substring(0, res.length() - logicOper.length());
+        }
+
+        private String between(ICustomFormula formula, IArithmeticOperand offset) {
+            formula = new DyExtnObjectCloner().clone(formula);
+            ITerm rhs = formula.getAllRhs().get(0);
+            ITerm rhs2 = formula.getAllRhs().get(1);
+            if (offset == null) {
+                subtract(rhs, roundingOffset(rhs));
+                add(rhs2, roundingOffset(rhs2));
+            } else {
+                subtract(rhs, offset);
+                add(rhs2, offset);
+            }
+            return new BasicCFProc().getString(formula);
+        }
+
+        @SuppressWarnings("unchecked")
+        private TimeInterval<?> findTimeInterval(ITerm term) {
+            TimeInterval res = TimeInterval.Second;
+
+            boolean found = false;
+            for (IArithmeticOperand opnd : term) {
+                if (opnd instanceof IDateOffset) {
+                    TimeInterval timeInterval = ((IDateOffset) opnd).getTimeInterval();
+                    if (timeInterval.compareTo(res) > 0) {
+                        res = timeInterval;
+                    }
+                    found = true;
+                }
+            }
+            if (!found) {
+                throw new RuntimeException("Problem in code.");
+            }
+            return res;
+        }
+
+        private void subtract(ITerm term, IArithmeticOperand offset) {
+            addOpndToTerm(term, offset, ArithmeticOperator.Minus);
+        }
+
+        private void add(ITerm term, IArithmeticOperand offset) {
+            addOpndToTerm(term, offset, ArithmeticOperator.Plus);
+        }
+
+        private void addOpndToTerm(ITerm term, IArithmeticOperand opnd, ArithmeticOperator oper) {
+            term.addParantheses();
+            term.addOperand(conn(oper), opnd);
+        }
+
+        private IConnector<ArithmeticOperator> conn(ArithmeticOperator oper) {
+            return QueryObjectFactory.createArithmeticConnector(oper, 0);
+        }
+
+        private IArithmeticOperand roundingOffset(ITerm term) {
+            TimeInterval<?> timeInterval = findTimeInterval(term);
+            if (timeInterval.equals(TimeInterval.Second)) {
+                return offset(0, TimeInterval.Second);
+            }
+            if (timeInterval.equals(TimeInterval.Minute)) {
+                return offset(30, TimeInterval.Second);
+            }
+            if (timeInterval.equals(TimeInterval.Hour)) {
+                return offset(30, TimeInterval.Minute);
+            }
+            if (timeInterval.equals(TimeInterval.Day)) {
+                return offset(12, TimeInterval.Hour);
+            }
+            if (timeInterval.equals(TimeInterval.Week)) {
+                // 3.5 * 24
+                return offset(84, TimeInterval.Hour);
+            }
+            if (timeInterval.equals(TimeInterval.Month)) {
+                return offset(15, TimeInterval.Day);
+            }
+            if (timeInterval.equals(TimeInterval.Quarter)) {
+                return offset(45, TimeInterval.Day);
+            }
+            if (timeInterval.equals(TimeInterval.Year)) {
+                return offset(6, TimeInterval.Month);
+            }
+            throw new RuntimeException("won't occur.");
+        }
+
+        private IDateOffsetLiteral offset(int offset, TimeInterval<?> timeInterval) {
+            return QueryObjectFactory.createDateOffsetLiteral(String.valueOf(offset), timeInterval);
+        }
+
+    }
+
+    private String termString(ITerm term) {
+        return termProcessor.convertTerm(term).getString();
+    }
+
+    private String brackets(String s) {
+        return "(" + s + ")";
     }
 }

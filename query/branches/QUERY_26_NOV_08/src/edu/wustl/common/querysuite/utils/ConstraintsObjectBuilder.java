@@ -40,7 +40,7 @@ import edu.wustl.common.querysuite.queryobject.RelationalOperator;
  * 
  * @author gautam_shetty
  */
-public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuilderInterface {
+public class ConstraintsObjectBuilder implements IConstraintsObjectBuilderInterface {
 
     /**
      * The query object.
@@ -51,7 +51,7 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
      * 
      */
     private Set<Integer> m_visibleExpressions = new HashSet<Integer>();
-
+    
     public ConstraintsObjectBuilder(IQuery query) {
         this.query = query;
     }
@@ -146,7 +146,9 @@ public abstract class ConstraintsObjectBuilder implements IConstraintsObjectBuil
     /**
      * @return the service urls for specified entity.
      */
-    public abstract String[] getServiceUrls(EntityInterface entity);
+    public String[] getServiceUrls(EntityInterface entity) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Creates a copy of the source expression passed and returns the expression

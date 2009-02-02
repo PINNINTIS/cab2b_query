@@ -89,7 +89,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         IDateOffsetAttribute offsetAttr = createDateOffsetExpressionAttribute("a1", "e1", YMInterval.Year);
         term.setOperand(1, offsetAttr);
         // d1 + a1Off
-        check(term, d1S + " + interval e1.a1 Year", TermType.Timestamp);
+        check(term, "timestampadd(SECOND, (e1.a1)*31536000, " + d1S + ")", TermType.Timestamp);
 
         offsetAttr = createDateOffsetExpressionAttribute("a1", "e1", DSInterval.Day);
         term.setOperand(1, offsetAttr);
@@ -141,11 +141,10 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         String expectedRes = "timestampadd(SECOND, (1)*86400, " + d2S + ")";
         expectedRes = "(" + expectedRes + ")";
         expectedRes = "timestampdiff(SECOND, " + expectedRes + ", " + d1S + ")";
-        expectedRes = expectedRes + " - (e1.a1)*60";
-        check(term, expectedRes, TermType.DSInterval);
+        check(term, expectedRes + " - (e1.a1)*60", TermType.DSInterval);
 
         term.setOperand(3, createDateOffsetExpressionAttribute("a1", "e1", YMInterval.Month));
-        checkInvalid(term);
+        check(term, expectedRes + " - (e1.a1)*2592000", TermType.DSInterval);
     }
 
     private void switchToOracle() {
@@ -171,7 +170,22 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         ILiteral d2 = dateLiteral("2008-01-02");
         String d2S = "cast(TO_DATE('2008-01-02', " + oracleQuotedDateFormat + ") as timestamp)";
         term.addOperand(conn(ArithmeticOperator.Minus, 0), d2);
-        check(term, d1S + " - " + d2S, TermType.DSInterval);
+        String dateDiff = d1S + " - " + d2S;
+        check(term, toSecs(dateDiff), TermType.DSInterval);
+    }
+
+    private String toSecs(String ds) {
+        final String plus = " + ";
+        return extract(DSInterval.Day, ds) + plus + extract(DSInterval.Hour, ds) + plus
+                + extract(DSInterval.Minute, ds) + plus + extract(DSInterval.Second, ds);
+    }
+
+    private String extract(DSInterval what, String from) {
+        String res = "extract(" + what.toString().toLowerCase() + " from " + from + ")";
+        if (what != DSInterval.Second) {
+            res += "*" + what.numSeconds();
+        }
+        return res;
     }
 
     public void testOracleOffsetSQL() {
@@ -183,43 +197,43 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
         // day
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("off"));
-        check(term, d1S + " + NUMTODSINTERVAL(off, 'Day')", TermType.Timestamp);
+        check(term, d1S + " + NUMTODSINTERVAL((off)*86400, 'second')", TermType.Timestamp);
 
         // month
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Month));
-        check(term, "cast(add_months(" + d1S + ", off) as timestamp)", TermType.Timestamp);
+        check(term, d1S + " + NUMTODSINTERVAL((off)*2592000, 'second')", TermType.Timestamp);
 
         // year
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Year));
-        check(term, "cast(add_months(" + d1S + ", (off) * 12) as timestamp)", TermType.Timestamp);
+        check(term, d1S + " + NUMTODSINTERVAL((off)*31536000, 'second')", TermType.Timestamp);
 
         // week
         term.setOperand(1, dateOffsetLiteral("off", DSInterval.Week));
-        check(term, d1S + " + NUMTODSINTERVAL((off) * 7, 'Day')", TermType.Timestamp);
+        check(term, d1S + " + NUMTODSINTERVAL((off)*604800, 'second')", TermType.Timestamp);
 
         // quarter
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Quarter));
-        check(term, "cast(add_months(" + d1S + ", (off) * 3) as timestamp)", TermType.Timestamp);
+        check(term, d1S + " + NUMTODSINTERVAL((off)*7776000, 'second')", TermType.Timestamp);
 
-        //-ve month
+        // -ve month
         term.getConnector(0, 1).setOperator(ArithmeticOperator.Minus);
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Month));
-        check(term, "cast(add_months(" + d1S + ", -(off)) as timestamp)", TermType.Timestamp);
-        
+        check(term, d1S + " - NUMTODSINTERVAL((off)*2592000, 'second')", TermType.Timestamp);
+
         // -ve year
         term.setOperand(1, dateOffsetLiteral("off", YMInterval.Year));
-        check(term, "cast(add_months(" + d1S + ", -((off) * 12)) as timestamp)", TermType.Timestamp);
+        check(term, d1S + " - NUMTODSINTERVAL((off)*31536000, 'second')", TermType.Timestamp);
     }
 
     public void testOracleOffsetMath() {
         switchToOracle();
         ITerm term = QueryObjectFactory.createTerm();
         term.addOperand(dateOffsetLiteral("o1", DSInterval.Day));
-        check(term, "NUMTODSINTERVAL(o1, 'Day')", TermType.DSInterval);
+        check(term, "(o1)*86400", TermType.DSInterval);
 
         term.addOperand(conn(ArithmeticOperator.Plus, 0), dateOffsetLiteral("o2", DSInterval.Day));
-        check(term, "NUMTODSINTERVAL(o1, 'Day') + NUMTODSINTERVAL(o2, 'Day')", TermType.DSInterval);
+        check(term, "(o1)*86400 + (o2)*86400", TermType.DSInterval);
         term.setOperand(1, dateOffsetLiteral("o2", YMInterval.Month));
-        checkInvalid(term);
+        check(term, "(o1)*86400 + (o2)*2592000", TermType.DSInterval);
     }
 }

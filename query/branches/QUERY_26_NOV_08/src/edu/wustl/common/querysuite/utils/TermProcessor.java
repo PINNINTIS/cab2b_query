@@ -28,8 +28,9 @@ import edu.wustl.common.querysuite.queryobject.TimeInterval;
  * settings, an appropriate {@link PrimitiveOperationProcessor} is used.
  * 
  * @author srinath_k
- * 
  */
+ 
+ //TODO remove support of converting numeric to date as appropriate 
 public class TermProcessor {
 
     /**
@@ -70,18 +71,19 @@ public class TermProcessor {
      * {@link PrimitiveOperationProcessor} appropriate for the specified
      * database settings.
      */
-    public TermProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings) {
-        this.aliasProvider = aliasProvider;
-        switch (databaseSQLSettings.getDatabaseType()) {
-            case MySQL :
-                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
-                break;
-            case Oracle :
-                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
-                break;
-            default :
-                throw new RuntimeException("Can't occur.");
-        }
+    public TermProcessor(IAttributeAliasProvider aliasProvider, Object primitiveOperationProcessor) {
+    	this.aliasProvider = aliasProvider;
+    	if(primitiveOperationProcessor instanceof MySQLPrimitiveOperationProcessor)
+    	{
+    		this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
+    	}
+    	else if(primitiveOperationProcessor instanceof OraclePrimitiveOperationProcessor)
+    	{
+    		this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
+    	}
+    	else{
+    		throw new RuntimeException("Can't occur.");
+    	}
     }
 
     /**
@@ -242,11 +244,10 @@ public class TermProcessor {
         }
         if (term.numberOfOperands() == 1) {
             IArithmeticOperand opnd = term.getOperand(0);
-            if (opnd.getTermType() == TermType.Invalid || opnd.getTermType() == TermType.YMInterval) {
+            if (opnd.getTermType() == TermType.Invalid) {
                 return TermString.INVALID;
             }
             if (opnd.getTermType() == TermType.DSInterval && opnd instanceof IDateOffsetLiteral) {
-                // TODO this NEVER occurs while processing a custom formula.
                 IDateOffsetLiteral lit = (IDateOffsetLiteral) opnd;
                 String s = primitiveOperationProcessor.getIntervalString(lit.getOffset(), lit.getTimeInterval());
                 return new TermString(s, TermType.DSInterval);

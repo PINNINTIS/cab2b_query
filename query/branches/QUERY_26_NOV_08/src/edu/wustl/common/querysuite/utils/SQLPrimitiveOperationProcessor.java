@@ -2,11 +2,17 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IDateLiteral;
-import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
 
+/**
+ * Provides SQL database specific string representations of primitive
+ * operations.
+ * 
+ * @author srinath_k
+ * @see PrimitiveOperationProcessor
+ */
 abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcessor {
     private final String dateFormat;
 
@@ -23,6 +29,12 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         this.strToDateFunc = strToDateFunc;
     }
 
+    /**
+     * Customizes the result string when the operation is temporal. For
+     * non-temporal operations, the value obtained from
+     * {@link PrimitiveOperationProcessor#getResultString(String, ArithmeticOperator, String)}
+     * is returned.
+     */
     @Override
     String getResultString(TermStringOpnd leftTermStrOpnd, ArithmeticOperator operator, TermStringOpnd rightTermStrOpnd) {
         TermType leftType = leftTermStrOpnd.getTermType();
@@ -49,35 +61,16 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         }
         if (leftType == TermType.Timestamp && TermType.isInterval(rightType)) {
             checkPlusOrMinus(operator);
-            // rightStr = getDateOffsetString(rightStr,
-            // rightTermStrOpnd.getTimeInterval());
-            return getTimeOffsetOpString(leftStr, rightStr, operator, rightType);
+            return getTimeOffsetOpString(leftStr, rightStr, operator);
         }
         if (TermType.isInterval(leftType) && rightType == TermType.Timestamp) {
             checkPlus(operator);
-            // leftStr = getDateOffsetString(leftStr,
-            // leftTermStrOpnd.getTimeInterval());
-            return getTimeOffsetOpString(rightStr, leftStr, operator, leftType);
+            return getTimeOffsetOpString(rightStr, leftStr, operator);
         }
         return super.getResultString(leftStr, operator, rightStr);
     }
 
-    private String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator,
-            TermType offsetType) {
-        return (offsetType == TermType.DSInterval)
-                ? getDSTimeOffsetOpString(timeStr, offsetStr, operator)
-                : getYMTimeOffsetOpString(timeStr, offsetStr, operator);
-    }
-
-    String getDSTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
-        return super.getResultString(timeStr, operator, offsetStr);
-    }
-
-    String getYMTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
-        return super.getResultString(timeStr, operator, offsetStr);
-    }
-
-    String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
+    private String getIntervalOp(String leftStr, ArithmeticOperator operator, String rightStr) {
         return super.getResultString(leftStr, operator, rightStr);
     }
 
@@ -88,15 +81,6 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
 
     private String standardDateFormat(IDateLiteral s) {
         return s.getDate().toString();
-    }
-
-    String timeIntervalStr(ITimeIntervalEnum timeInterval) {
-        return timeInterval.toString();
-    }
-
-    // for testing
-    final String getDateFormat() {
-        return dateFormat;
     }
 
     private void checkPlusOrMinus(ArithmeticOperator operator) {
@@ -117,15 +101,37 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         }
     }
 
-    abstract String getDateOffsetString(String s, TimeInterval<?> timeInterval);
-
-    abstract String getDateDiffString(String leftStr, String rightStr);
-
     @Override
     final String getIntervalString(String s, TimeInterval<?> timeInterval) {
-        return getDateOffsetString(s, timeInterval);
+        return "(" + s + ")*" + timeInterval.numSeconds();
     }
 
+    /**
+     * @param s the date string
+     * @return the SQL string that converts/casts the specified date string to a
+     *         timestamp.
+     */
     @Override
     abstract String dateToTimestamp(String s);
+
+    /**
+     * Returns the SQL string denoting difference (in seconds) between the two
+     * dates.
+     * 
+     * @return SQL for (leftStr - rightStr) in seconds.
+     */
+    abstract String getDateDiffString(String leftStr, String rightStr);
+
+    /**
+     * Returns the SQL string (of type timestamp) denoting the operation
+     * <tt>time +/- offset<tt>. 
+     * 
+     * @return SQL for <tt>time +/- offset<tt> of type timestamp.
+     */
+    abstract String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator);
+
+    // for testing
+    final String getDateFormat() {
+        return dateFormat;
+    }
 }
