@@ -70,6 +70,22 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
         this.name = name;
         this.description = description;
     }
+    
+    /**
+     * Parameterized Constructor. This constructor will be used by Hibernate
+     * internally.
+     * 
+     * @param id
+     * @param name
+     * @param description
+     * @param type
+     */
+    public ParameterizedQuery(Long id, String name, String description, String type) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
 
     /**
      * @see edu.wustl.common.querysuite.queryobject.IParameterizedQuery#addParameterizedCondition(edu.wustl.common.querysuite.queryobject.IParameterizedCondition)

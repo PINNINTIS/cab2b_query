@@ -21,6 +21,11 @@ public class AbstractQuery extends BaseQueryObject implements INameable, IDescri
 	protected String name;
 	
 	/**
+	 * Type of the query
+	 */
+	protected String type;
+	
+	/**
 	 * Description of the query
 	 */
 	protected String description;
@@ -59,4 +64,21 @@ public class AbstractQuery extends BaseQueryObject implements INameable, IDescri
         this.description = description;
     }
 
+	/**
+	 * @hibernate.property name="type" column="DESCRIPTION" type="string"
+     *                     length="255"
+	 * @return the type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
 }

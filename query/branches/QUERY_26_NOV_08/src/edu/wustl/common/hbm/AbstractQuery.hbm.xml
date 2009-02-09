@@ -24,6 +24,15 @@
 			length="255" 
 			unique="true" />
 
+	<property 
+			name="type" 
+			type="string" 
+			update="true" 
+			insert="true"
+			column="QUERY_TYPE" 
+			length="255" 
+			unique="true" />
+			
 		<property 
 			name="description" 
 			type="string" 
