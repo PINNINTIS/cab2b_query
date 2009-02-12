@@ -197,7 +197,7 @@ public class QueryUtility {
         return paramCustomFormulas;
     }
     
-    public IExpression getExpression(IParameter<ICondition> parameter,
+    public static IExpression getExpression(IParameter<ICondition> parameter,
 			IQuery query) {
 		ICondition condition = parameter.getParameterizedObject();
 		IExpression returnExpression = null;
