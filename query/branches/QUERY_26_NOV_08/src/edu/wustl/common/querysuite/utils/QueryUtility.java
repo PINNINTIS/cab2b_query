@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -195,4 +196,30 @@ public class QueryUtility {
         }
         return paramCustomFormulas;
     }
+    
+    public IExpression getExpression(IParameter<ICondition> parameter,
+			IQuery query) {
+		ICondition condition = parameter.getParameterizedObject();
+		IExpression returnExpression = null;
+		if (query != null) {
+			IConstraints constraints = query.getConstraints();
+			for (IExpression expression : constraints) {
+				if (expression.isVisible()) {
+					for (int index = 0; index < expression.numberOfOperands(); index++) {
+						IExpressionOperand expressionOperand = expression
+								.getOperand(index);
+						if (expressionOperand instanceof IRule) {
+							IRule rule = (IRule) expressionOperand;
+							for (ICondition ruleCondition : rule) {
+								if(ruleCondition.equals(condition))
+									returnExpression =  expression;
+							}
+						}
+					}
+				}
+			}
+		}
+		return returnExpression;
+
+	}
 }
