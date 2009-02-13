@@ -2,6 +2,7 @@ package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IDateLiteral;
+import edu.wustl.common.querysuite.queryobject.ITimeIntervalEnum;
 import edu.wustl.common.querysuite.queryobject.TermType;
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
 import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
@@ -14,22 +15,8 @@ import edu.wustl.common.querysuite.utils.TermProcessor.TermStringOpnd;
  * @see PrimitiveOperationProcessor
  */
 abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcessor {
-    private final String dateFormat;
 
-    private final String strToDateFunc;
-
-    SQLPrimitiveOperationProcessor(String dateFormat, String strToDateFunc) {
-        if (dateFormat == null) {
-            throw new NullPointerException("date format is null.");
-        }
-        if (strToDateFunc == null) {
-            throw new NullPointerException("str-to-date function is null.");
-        }
-        this.dateFormat = dateFormat;
-        this.strToDateFunc = strToDateFunc;
-    }
-
-    /**
+	/**
      * Customizes the result string when the operation is temporal. For
      * non-temporal operations, the value obtained from
      * {@link PrimitiveOperationProcessor#getResultString(String, ArithmeticOperator, String)}
@@ -74,12 +61,11 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         return super.getResultString(leftStr, operator, rightStr);
     }
 
-    @Override
-    final String modifyDateLiteral(IDateLiteral s) {
-        return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
-    }
+   
+    abstract String modifyDateLiteral(IDateLiteral s);
+    
 
-    private String standardDateFormat(IDateLiteral s) {
+    String standardDateFormat(IDateLiteral s) {
         return s.getDate().toString();
     }
 
@@ -121,17 +107,17 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
      * @return SQL for (leftStr - rightStr) in seconds.
      */
     abstract String getDateDiffString(String leftStr, String rightStr);
-
+ 
     /**
      * Returns the SQL string (of type timestamp) denoting the operation
-     * <tt>time +/- offset<tt>. 
+     * <tt>time +/- offset<tt>. Note that offset is in number 
      * 
      * @return SQL for <tt>time +/- offset<tt> of type timestamp.
      */
     abstract String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator);
 
-    // for testing
-    final String getDateFormat() {
-        return dateFormat;
+    
+    String timeIntervalStr(ITimeIntervalEnum timeInterval) {
+        return timeInterval.toString();
     }
 }
