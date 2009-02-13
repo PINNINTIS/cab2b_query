@@ -1,13 +1,13 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 
 public class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
-    public OraclePrimitiveOperationProcessor() {
-        super("YYYY-MM-DD", "TO_DATE");
-    }
-
+	private static final String dateFormat="YYYY-MM-DD";
+	private static final String strToDateFunc="TO_DATE";
+    
     @Override
     String getDateDiffString(String leftStr, String rightStr) {
         return numSecs(leftStr + " - " + rightStr);
@@ -28,5 +28,10 @@ public class OraclePrimitiveOperationProcessor extends SQLPrimitiveOperationProc
     @Override
     String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
         return super.getResultString(timeStr, operator, "NUMTODSINTERVAL(" + offsetStr + ", 'second')");
+    }
+    
+    @Override
+    String modifyDateLiteral(IDateLiteral s) {
+        return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
     }
 }

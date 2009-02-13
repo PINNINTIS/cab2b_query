@@ -1,12 +1,12 @@
 package edu.wustl.common.querysuite.utils;
 
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
+import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 
-public class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
-    public MySQLPrimitiveOperationProcessor() {
-        super("%Y-%m-%d", "STR_TO_DATE");
-    }
-
+class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
+    private static final String dateFormat="%Y-%m-%d";
+    private static final String strToDateFunc="STR_TO_DATE";
+    
     @Override
     String getDateDiffString(String leftStr, String rightStr) {
         return "timestampdiff(SECOND, " + rightStr + ", " + leftStr + ")";
@@ -24,4 +24,10 @@ public class MySQLPrimitiveOperationProcessor extends SQLPrimitiveOperationProce
         }
         return "timestampadd(SECOND, " + offsetStr + ", " + timeStr + ")";
     }
+    
+    @Override
+    String modifyDateLiteral(IDateLiteral s) {
+        return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
+    }
+   
 }
