@@ -211,7 +211,9 @@ public class QueryUtility {
 						if (expressionOperand instanceof IRule) {
 							IRule rule = (IRule) expressionOperand;
 							for (ICondition ruleCondition : rule) {
-								if(ruleCondition.equals(condition))
+								if(ruleCondition.getAttribute().getName().equals(condition.getAttribute().getName()) && 
+										ruleCondition.getRelationalOperator().getStringRepresentation().equalsIgnoreCase(condition.getRelationalOperator().getStringRepresentation())
+										&& ruleCondition.getValue().equalsIgnoreCase(condition.getValue()))
 									returnExpression =  expression;
 							}
 						}
