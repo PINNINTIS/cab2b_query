@@ -75,7 +75,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     @Override
-    final String modifyDateLiteral(IDateLiteral s) {
+    protected String modifyDateLiteral(IDateLiteral s) {
         return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
     }
 

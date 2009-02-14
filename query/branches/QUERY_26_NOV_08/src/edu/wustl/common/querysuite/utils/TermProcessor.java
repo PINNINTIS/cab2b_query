@@ -71,19 +71,24 @@ public class TermProcessor {
      * {@link PrimitiveOperationProcessor} appropriate for the specified
      * database settings.
      */
-    public TermProcessor(IAttributeAliasProvider aliasProvider, Object primitiveOperationProcessor) {
-    	this.aliasProvider = aliasProvider;
-    	if(primitiveOperationProcessor instanceof MySQLPrimitiveOperationProcessor)
-    	{
-    		this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
-    	}
-    	else if(primitiveOperationProcessor instanceof OraclePrimitiveOperationProcessor)
-    	{
-    		this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
-    	}
-    	else{
-    		throw new RuntimeException("Can't occur.");
-    	}
+    public TermProcessor(IAttributeAliasProvider aliasProvider, DatabaseSQLSettings databaseSQLSettings,String queryType) {
+        this.aliasProvider = aliasProvider;
+        switch (databaseSQLSettings.getDatabaseType()) {
+            case MySQL :
+                this.primitiveOperationProcessor = new MySQLPrimitiveOperationProcessor();
+                break;
+            case Oracle :
+                this.primitiveOperationProcessor = new OraclePrimitiveOperationProcessor();
+                break;
+            case DB2 :
+            	if(queryType.equals("X"))
+            	{
+            		this.primitiveOperationProcessor = new DB2XQueryPrimitiveOperationProcessor();
+            	}
+            	break;
+            default :
+                throw new RuntimeException("Can't occur.");
+        }
     }
 
     /**
