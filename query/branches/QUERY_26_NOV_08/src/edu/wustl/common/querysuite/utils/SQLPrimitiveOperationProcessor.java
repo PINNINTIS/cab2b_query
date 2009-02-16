@@ -79,7 +79,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
         return strToDateFunc + "('" + standardDateFormat(s) + "', '" + dateFormat + "')";
     }
 
-    private String standardDateFormat(IDateLiteral s) {
+    protected String standardDateFormat(IDateLiteral s) {
         return s.getDate().toString();
     }
 
