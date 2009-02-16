@@ -1,5 +1,6 @@
 package edu.wustl.common.querysuite.queryobject.impl;
 
+import edu.wustl.common.querysuite.queryobject.IAbstractQuery;
 import edu.wustl.common.querysuite.queryobject.IDescribable;
 import edu.wustl.common.querysuite.queryobject.INameable;
 
@@ -8,7 +9,7 @@ import edu.wustl.common.querysuite.queryobject.INameable;
  * @author vijay_pande
  * Class created for the model changes for Composite Query. 
  */
-public class AbstractQuery extends BaseQueryObject implements INameable, IDescribable
+public class AbstractQuery extends BaseQueryObject implements IAbstractQuery
 {
 	/**
 	 * Default serial version id
