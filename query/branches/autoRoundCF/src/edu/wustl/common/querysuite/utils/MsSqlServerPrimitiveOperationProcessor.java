@@ -15,7 +15,7 @@ public class MsSqlServerPrimitiveOperationProcessor extends SQLPrimitiveOperatio
     
     @Override
     String modifyDateLiteral(IDateLiteral s) {
-        return strToDateFunc + "(smalldatetime,'" + standardDateFormat(s) + "', " + dateFormat + ")";
+        return strToDateFunc + "(datetime,'" + standardDateFormat(s) + "', " + dateFormat + ")";
     }
 
     @Override
