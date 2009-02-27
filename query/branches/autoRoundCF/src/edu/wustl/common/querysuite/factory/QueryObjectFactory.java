@@ -10,6 +10,7 @@ import edu.common.dynamicextensions.domaininterface.AttributeTypeInformationInte
 import edu.common.dynamicextensions.domaininterface.DateTypeInformationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterface;
+import edu.common.dynamicextensions.domaininterface.StringTypeInformationInterface;
 import edu.wustl.common.querysuite.metadata.associations.IIntraModelAssociation;
 import edu.wustl.common.querysuite.metadata.associations.impl.IntraModelAssociation;
 import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
@@ -259,15 +260,25 @@ public abstract class QueryObjectFactory {
         return new CustomFormula();
     }
 
-    public static IExpressionAttribute createExpressionAttribute(IExpression expression, AttributeInterface attribute) {
+    public static IExpressionAttribute createExpressionAttribute(IExpression expression, AttributeInterface attribute, boolean isDate) {
         AttributeTypeInformationInterface attrTypeInfo = attribute.getAttributeTypeInformation();
         TermType termType;
-        if (attrTypeInfo instanceof NumericTypeInformationInterface) {
-            termType = TermType.Numeric;
-        } else if (attrTypeInfo instanceof DateTypeInformationInterface) {
-            termType = TermType.Date;
-        } else {
-            throw new UnsupportedOperationException("Only numeric and date attributes supported in custom formulas.");
+        if(!isDate)
+        {
+	        if (attrTypeInfo instanceof NumericTypeInformationInterface) {
+	            termType = TermType.Numeric;
+	        } else if (attrTypeInfo instanceof DateTypeInformationInterface) {
+	            termType = TermType.Date;
+	        }else if (attrTypeInfo instanceof StringTypeInformationInterface) {
+	        	termType = TermType.String;	
+	        }
+	        else {
+	            throw new UnsupportedOperationException("Only numeric and date attributes supported in custom formulas.");
+	        }
+        }
+        else
+        {
+        	termType = TermType.String;	
         }
         return new ExpressionAttribute(expression, attribute, termType);
     }
