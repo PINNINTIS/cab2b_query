@@ -9,7 +9,7 @@ package edu.wustl.common.querysuite.queryobject;
 public enum TermType {
     // TODO String?
     // TODO Boolean ??
-    Date, Timestamp, YMInterval, DSInterval, Numeric, Invalid, String;
+    Date, Timestamp, YMInterval, DSInterval, Numeric, Invalid;
 
     /**
      * Returns the term type resulting from the specified arithmetic operation.
