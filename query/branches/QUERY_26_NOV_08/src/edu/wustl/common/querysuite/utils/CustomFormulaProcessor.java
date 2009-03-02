@@ -149,7 +149,7 @@ public class CustomFormulaProcessor {
                 boolean between = relationalOperator == Between;
                 String logicOper = between ? " and " : " or ";
                 String rel1 = between ? " >= " : " < ";
-                String rel2 = between ? " <= " : " > ";
+                String rel2 = between ? " < " : " >= ";
                 // between :
                 // (lhs >= rhs1 and lhs <= rhs2)
                 // notBetween :
