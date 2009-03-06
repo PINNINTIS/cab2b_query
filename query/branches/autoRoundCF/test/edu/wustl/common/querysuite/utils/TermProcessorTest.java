@@ -216,6 +216,16 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
         term.addOperand(conn(ArithmeticOperator.Plus, 0), numericLiteral("1"));
         check(term, alias + " + 1", TermType.Numeric);
     }
+    
+    public void testStringExprAttr()
+    {
+    	ITerm term = newTerm();
+    	IExpressionAttribute a1 = createStringExpressionAttribute("a1", "edu.wustl.e1");
+    	String alias = "e1.a1";
+    	term.addOperand(a1);
+    	
+    	check(term, alias, TermType.String);
+    }
 
     public void testConstructor() {
         TermProcessor termProcessor = new TermProcessor();
