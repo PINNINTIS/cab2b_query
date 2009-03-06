@@ -8,6 +8,7 @@ import edu.common.dynamicextensions.domaininterface.AttributeTypeInformationInte
 import edu.common.dynamicextensions.domaininterface.DateTypeInformationInterface;
 import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.common.dynamicextensions.domaininterface.NumericTypeInformationInterface;
+import edu.common.dynamicextensions.domaininterface.StringTypeInformationInterface;
 import edu.wustl.common.querysuite.queryobject.IExpression;
 import edu.wustl.common.querysuite.queryobject.TermType;
 
@@ -61,6 +62,9 @@ public class DynExtnMockUtil {
                     }
                 });
                 break;
+            case String : 
+            	attrInfo = context.mock(StringTypeInformationInterface.class, getI());
+            	break;
             default :
                 throw new IllegalArgumentException();
         }
