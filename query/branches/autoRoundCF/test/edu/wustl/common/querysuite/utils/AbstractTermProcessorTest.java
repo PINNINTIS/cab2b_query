@@ -76,10 +76,6 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return QueryObjectFactory.createDateOffsetLiteral(s, TimeInterval.compoundEnum(timeInterval));
     }
 
-    // protected ILiteral literal(String s, TermType termType) {
-    // return QueryObjectFactory.createLiteral(s, termType);
-    // }
-
     protected void swapOperands(ITerm term, int i, int j) {
         IArithmeticOperand temp = term.getOperand(i);
         term.setOperand(i, term.getOperand(j));
@@ -111,9 +107,13 @@ public abstract class AbstractTermProcessorTest extends TestCase {
         return QueryObjectFactory.createDateOffsetAttribute(createExpression(1), createAttribute(attrName,
                 createEntity(entityName)), TimeInterval.compoundEnum(timeInterval));
     }
+    
+    protected IExpressionAttribute createStringExpressionAttribute(String attrName, String entityName) {
+    	return createExpressionAttribute(attrName, entityName, TermType.String);
+    }
 
     private IExpressionAttribute createExpressionAttribute(String attrName, String entityName, TermType termType) {
         return QueryObjectFactory.createExpressionAttribute(createExpression(1), createAttribute(attrName,
-                createEntity(entityName), termType));
+                createEntity(entityName), termType), false);
     }
 }
