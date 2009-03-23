@@ -4,6 +4,7 @@ import edu.wustl.common.querysuite.queryobject.ArithmeticOperator;
 import edu.wustl.common.querysuite.queryobject.IDateLiteral;
 import edu.wustl.common.querysuite.queryobject.TimeInterval;
 
+
 public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationProcessor {
 
     public DB2XQueryPrimitiveOperationProcessor() 
@@ -17,8 +18,7 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
     }
 
     private String numSecs(String s) {
-        return "days-from-duration(" + s + ") * 86400 + " + "hours-from-duration(" + s + ") * 3600 + " 
-        	+ " minutes-from-duration(" + s + ") * 60 + " + " seconds-from-duration(" + s + ")";
+    	return s;
     }
 
     @Override
@@ -44,4 +44,47 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
     protected String modifyDateLiteral(IDateLiteral s) {
         return standardDateFormat(s);
     }
+    
+    protected String getIntervalString(String s, TimeInterval<?> timeInterval) {
+    	return getTimeIntervalFormula(s, timeInterval);
+    }
+    
+    private String getTimeIntervalFormula(String s, TimeInterval<?> timeInterval)
+    {
+    	
+    	if(timeInterval.name().equals("Year"))
+    	{
+    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 365";
+    	}
+    	if(timeInterval.name().equals("Month"))
+    	{
+    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 30";
+    	}
+    	if(timeInterval.name().equals("Day"))
+    	{
+    		return "xdt:dayTimeDuration(\"P" + s + "D\")";
+    	}
+    	if(timeInterval.name().equals("Hour"))
+    	{
+    		return "xdt:dayTimeDuration(\"PT" + s + "H\")";
+    	}
+    	if(timeInterval.name().equals("Minute"))
+    	{
+    		return "xdt:dayTimeDuration(\"PT" + s + "M\")";
+    	}
+    	if(timeInterval.name().equals("Second"))
+    	{
+    		return "xdt:dayTimeDuration(\"PT" + s + "S\")";
+    	}
+    	if(timeInterval.name().equals("Week"))
+    	{
+    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 7";	
+    	}
+    	if(timeInterval.name().equals("Quarter"))
+    	{
+    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 90";
+    	}
+    	return "";
+    }
+
 }
