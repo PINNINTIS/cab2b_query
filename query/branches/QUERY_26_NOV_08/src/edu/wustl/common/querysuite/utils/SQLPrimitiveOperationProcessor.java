@@ -102,7 +102,7 @@ abstract class SQLPrimitiveOperationProcessor extends PrimitiveOperationProcesso
     }
 
     @Override
-    final String getIntervalString(String s, TimeInterval<?> timeInterval) {
+    protected String getIntervalString(String s, TimeInterval<?> timeInterval) {
         return "(" + s + ")*" + timeInterval.numSeconds();
     }
 
