@@ -54,11 +54,13 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
     	
     	if(timeInterval.name().equals("Year"))
     	{
-    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 365";
+    		int k = Integer.valueOf(s) * 365;
+    		return "xdt:dayTimeDuration(\"P" + k + "D\")";
     	}
     	if(timeInterval.name().equals("Month"))
     	{
-    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 30";
+    		int k = Integer.valueOf(s) * 30;
+    		return "xdt:dayTimeDuration(\"P" + k + "D\")";
     	}
     	if(timeInterval.name().equals("Day"))
     	{
@@ -78,11 +80,13 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
     	}
     	if(timeInterval.name().equals("Week"))
     	{
-    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 7";	
+    		int k = Integer.valueOf(s) * 7;
+    		return "xdt:dayTimeDuration(\"P" + k + "D\")";	
     	}
     	if(timeInterval.name().equals("Quarter"))
     	{
-    		return "xdt:dayTimeDuration(\"P" + s + "D\") * 90";
+    		int k = Integer.valueOf(s) * 90;
+    		return "xdt:dayTimeDuration(\"P" + k + "D\")";
     	}
     	return "";
     }
