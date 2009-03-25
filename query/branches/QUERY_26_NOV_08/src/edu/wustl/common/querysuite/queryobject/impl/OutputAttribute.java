@@ -105,8 +105,8 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
         } else if (object != null && this.getClass() == object.getClass()) {
             OutputAttribute outputAtrribute = (OutputAttribute) object;
             IExpression expression = outputAtrribute.getExpression();
-
-            if (this.getExpression().equals(expression) && this.getAttribute().equals(outputAtrribute)) {
+            
+            if (this.getExpression().equals(expression) && this.getAttribute().equals(outputAtrribute.getAttribute())) {
                 isEqual = true;
             }
         }
@@ -122,6 +122,6 @@ public class OutputAttribute extends BaseQueryObject implements IOutputAttribute
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(expression).append(attribute).toHashCode();
+    	return new HashCodeBuilder().append(expression).append(attribute).toHashCode();
     }
 }
