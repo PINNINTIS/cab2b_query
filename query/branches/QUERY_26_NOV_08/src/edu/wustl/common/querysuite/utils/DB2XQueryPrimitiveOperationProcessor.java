@@ -85,7 +85,7 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
     	}
     	if(timeInterval.name().equals("Quarter"))
     	{
-    		int k = Integer.valueOf(s) * 90;
+    		int k = Integer.valueOf(s) * 91;
     		return "xdt:dayTimeDuration(\"P" + k + "D\")";
     	}
     	return "";
