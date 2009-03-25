@@ -31,6 +31,16 @@ public class Query extends AbstractQuery implements IQuery {
     public Query() {
 
     }
+    /**
+     * Parameterized Constructor
+     * 
+     * @param query
+     */
+    public Query(IQuery query) {
+    	this.setDescription(query.getDescription());
+    	this.setName(query.getName());
+    	this.setOutputTerms(query.getOutputTerms());
+    }
 
     /**
      * Returns the identifier assigned to BaseQueryObject.
