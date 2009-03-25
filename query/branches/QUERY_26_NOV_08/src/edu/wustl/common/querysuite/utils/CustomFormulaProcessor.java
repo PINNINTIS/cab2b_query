@@ -343,17 +343,16 @@ public class CustomFormulaProcessor {
                 return offset(12, TimeInterval.Hour);
             }
             if (timeInterval.equals(TimeInterval.Week)) {
-                // 3.5 * 24
-                return offset(84, TimeInterval.Hour);
+                return offset(4, TimeInterval.Day);
             }
             if (timeInterval.equals(TimeInterval.Month)) {
                 return offset(15, TimeInterval.Day);
             }
             if (timeInterval.equals(TimeInterval.Quarter)) {
-                return offset(45, TimeInterval.Day);
+                return offset(46, TimeInterval.Day);
             }
             if (timeInterval.equals(TimeInterval.Year)) {
-                return offset(6, TimeInterval.Month);
+                return offset(183, TimeInterval.Day);
             }
             throw new RuntimeException("won't occur.");
         }
