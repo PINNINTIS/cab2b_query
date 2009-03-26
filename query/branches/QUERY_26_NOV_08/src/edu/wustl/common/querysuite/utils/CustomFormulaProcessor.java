@@ -207,7 +207,7 @@ public class CustomFormulaProcessor {
     }
 
     private static EnumSet<RelationalOperator> temporalSpecials = EnumSet.of(Equals, NotEquals, Between,
-            LessThanOrEquals, GreaterThanOrEquals, In, NotIn);
+             In, NotIn);
 
     private class TemporalCFProc implements CFProc {
         public String getString(ICustomFormula formula) {
@@ -237,14 +237,16 @@ public class CustomFormulaProcessor {
                     add(rhs2, offset);
                     return new BasicCFProc().getString(formula);
                 }
-                if (relOper == LessThanOrEquals) {
-                    add(rhs, offset);
-                    return new BasicCFProc().getString(formula);
-                }
-                if (relOper == GreaterThanOrEquals) {
-                    subtract(rhs, offset);
-                    return new BasicCFProc().getString(formula);
-                }
+//                if (relOper == LessThanOrEquals) {
+//                	offset = offset((Integer.valueOf((IDateOffsetLiteral(offset)).getOffset()) - 1),findTimeInterval(rhs));
+//                    add(rhs, offset);
+//                    return new BasicCFProc().getString(formula);
+//                }
+//                if (relOper == GreaterThanOrEquals) {
+//                	offset = offset((Integer.valueOf((IDateOffsetLiteral(offset)).getOffset()) - 1),findTimeInterval(rhs));
+//                    subtract(rhs, offset);
+//                    return new BasicCFProc().getString(formula);
+//                }
                 throw new RuntimeException("can't occur.");
             }
             if (relOper == Between) {
