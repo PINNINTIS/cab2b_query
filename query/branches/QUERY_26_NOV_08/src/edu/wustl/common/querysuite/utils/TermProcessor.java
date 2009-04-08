@@ -193,10 +193,19 @@ public class TermProcessor {
         public Long getId() {
             throw new UnsupportedOperationException();
         }
+        
 
         public void setId(Long id) {
             throw new UnsupportedOperationException();
         }
+        
+        public Boolean getIsSystemGenerated() {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setIsSystemGenerated(Boolean isSystemGenerated)	{
+			throw new UnsupportedOperationException();
+		}
     }
 
     private static class SubTerm implements IArithmeticOperand {
@@ -239,6 +248,14 @@ public class TermProcessor {
         public void setId(Long id) {
             throw new UnsupportedOperationException();
         }
+
+		public Boolean getIsSystemGenerated() {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setIsSystemGenerated(Boolean isSystemGenerated)	{
+			throw new UnsupportedOperationException();
+		}
     }
 
     @SuppressWarnings("unchecked")

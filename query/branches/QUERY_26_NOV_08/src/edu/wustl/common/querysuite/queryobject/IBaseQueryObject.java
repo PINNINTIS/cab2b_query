@@ -13,5 +13,17 @@ public interface IBaseQueryObject extends Serializable {
     Long getId();
 
     void setId(Long id);
-
+    
+    /**
+	 * Returns is object systemGenerated
+	 * @return
+	 */
+    Boolean getIsSystemGenerated();
+    
+    /**
+	 * sets the object systemGenerated
+	 * @param isSystemGenerated
+	 */
+    void setIsSystemGenerated(Boolean isSystemGenerated);
+    
 }

@@ -18,8 +18,30 @@ public class BaseQueryObject implements IBaseQueryObject {
      * Internally generated identifier.
      */
     protected Long id;
+    
+    protected Boolean isSystemGenerated = false;
 
-    public Long getId() {
+    
+	/**
+	 * Returns is object systemGenerated
+	 * @return
+	 */
+	public Boolean getIsSystemGenerated()
+	{
+		return isSystemGenerated;
+	}
+
+	
+	/**
+	 * sets the object systemGenerated
+	 * @param isSystemGenerated
+	 */
+	public void setIsSystemGenerated(Boolean isSystemGenerated)
+	{
+		this.isSystemGenerated = isSystemGenerated;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -29,4 +51,5 @@ public class BaseQueryObject implements IBaseQueryObject {
     final public void setId(Long id) {
         this.id = id;
     }
+    
 }
