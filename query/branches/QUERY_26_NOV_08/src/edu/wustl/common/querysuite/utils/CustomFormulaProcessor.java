@@ -225,7 +225,7 @@ public class CustomFormulaProcessor {
 
             if (relOper.numberOfValuesRequired() == 1) {
                 ITerm rhs = formula.getAllRhs().get(0);
-                if (intervalFormula) {
+                if (intervalFormula || offset == null) {
                     offset = roundingOffset(rhs);
                 }
                 if (relOper == Equals || relOper == NotEquals) {
@@ -308,7 +308,7 @@ public class CustomFormulaProcessor {
                 }
             }
             if (!found) {
-                throw new RuntimeException("Problem in code.");
+                return null;
             }
             return res;
         }
@@ -322,8 +322,11 @@ public class CustomFormulaProcessor {
         }
 
         private void addOpndToTerm(ITerm term, IArithmeticOperand opnd, ArithmeticOperator oper) {
-            term.addParantheses();
-            term.addOperand(conn(oper), opnd);
+          if (opnd != null) 
+          {
+                term.addParantheses();
+                term.addOperand(conn(oper), opnd);
+          }
         }
 
         private IConnector<ArithmeticOperator> conn(ArithmeticOperator oper) {
@@ -332,6 +335,10 @@ public class CustomFormulaProcessor {
 
         private IArithmeticOperand roundingOffset(ITerm term) {
             TimeInterval<?> timeInterval = findTimeInterval(term);
+            if (timeInterval == null) 
+            {
+                return null;
+            }
             if (timeInterval.equals(TimeInterval.Second)) {
                 return offset(0, TimeInterval.Second);
             }

@@ -38,7 +38,7 @@ public class DB2XQueryPrimitiveOperationProcessor extends SQLPrimitiveOperationP
 
     @Override
     String getTimeOffsetOpString(String timeStr, String offsetStr, ArithmeticOperator operator) {
-        return super.getResultString(timeStr, operator, "xs:dateTime(PT" + offsetStr + "S)");
+        return super.getResultString(timeStr, operator, offsetStr);
     }
     
     protected String modifyDateLiteral(IDateLiteral s) {
