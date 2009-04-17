@@ -55,6 +55,14 @@ public class ConstraintsObjectBuilder implements IConstraintsObjectBuilderInterf
     public ConstraintsObjectBuilder(IQuery query) {
         this.query = query;
     }
+    
+    /**
+     * non-arg constructor
+     */
+    public ConstraintsObjectBuilder()
+    {
+    	query = QueryObjectFactory.createParameterizedQuery();
+    }
 
     /**
      * Returns the query object.
