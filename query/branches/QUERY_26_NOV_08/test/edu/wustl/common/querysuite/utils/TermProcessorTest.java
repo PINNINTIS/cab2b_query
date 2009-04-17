@@ -234,7 +234,7 @@ public class TermProcessorTest extends AbstractTermProcessorTest {
 
         };
         DatabaseSQLSettings sqlSettings = new DatabaseSQLSettings(DatabaseType.MySQL);
-        TermProcessor termProcessor = new TermProcessor(aliasProvider, sqlSettings);
+        TermProcessor termProcessor = new TermProcessor(aliasProvider, sqlSettings, null);
 
         assertSame(termProcessor.getAliasProvider(), aliasProvider);
         PrimitiveOperationProcessor actualPrimProc = termProcessor.getPrimitiveOperationProcessor();

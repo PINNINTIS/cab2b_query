@@ -20,7 +20,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
 
     @Override
     protected void setUp() throws Exception {
-        setTermProcessor(new TermProcessor(TermProcessor.defaultAliasProvider, mySQLSettings));
+        setTermProcessor(new TermProcessor(TermProcessor.defaultAliasProvider, mySQLSettings, ""));
     }
 
     public void testDateFormatSQL() {
@@ -133,10 +133,10 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
         term.addParantheses(1, 2);
         // d1 - (d2 + 1)
         check(term, "timestampdiff(SECOND, (timestampadd(SECOND, (1)*86400, " + d2S + ")), " + d1S + ")",
-                TermType.DSInterval);
+              TermType.DSInterval);
 
         term.addOperand(conn(ArithmeticOperator.Minus, 0), createDateOffsetExpressionAttribute("a1", "e1",
-                DSInterval.Minute));
+                                                                                               DSInterval.Minute));
         // d1 - (d2 + 1) - a1
         String expectedRes = "timestampadd(SECOND, (1)*86400, " + d2S + ")";
         expectedRes = "(" + expectedRes + ")";
@@ -148,7 +148,7 @@ public class SQLTermProcessorTest extends AbstractTermProcessorTest {
     }
 
     private void switchToOracle() {
-        setTermProcessor(new TermProcessor(TermProcessor.defaultAliasProvider, oracleSettings));
+        setTermProcessor(new TermProcessor(TermProcessor.defaultAliasProvider, oracleSettings, ""));
     }
 
     public void testOracleDateFormatSQL() {
