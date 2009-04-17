@@ -1,9 +1,10 @@
 /**
- * 
+ *
  */
 package edu.wustl.common.querysuite.queryobject.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
@@ -15,7 +16,7 @@ import edu.wustl.common.util.Identifiable;
 /**
  * @author chetan_patil
  * @created Aug 31, 2007, 4:22:00 PM
- * 
+ *
  * @hibernate.joined-subclass table="QUERY_PARAMETERIZED_QUERY"
  * @hibernate.joined-subclass-key column="IDENTIFIER"
  */
@@ -36,7 +37,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
     /**
      * Parameterized Constructor. This constructor will be used by Hibernate
      * internally.
-     * 
+     *
      * @param id
      * @param name
      * @param description
@@ -49,7 +50,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     /**
      * Parameterized Constructor
-     * 
+     *
      * @param query
      */
     public ParameterizedQuery(IQuery query) {
@@ -63,7 +64,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     /**
      * Parameterized Constructor
-     * 
+     *
      * @param name
      * @param description
      * @param query
@@ -74,11 +75,11 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
         this.name = name;
         this.description = description;
     }
-    
+
     /**
-     * Parameterized Constructor. This constructor will be used by Hibernate
-     * internally.
-     * 
+     * Parameterized Constructor.
+     * This constructor will be used by Hibernate internally.
+     *
      * @param id
      * @param name
      * @param description
@@ -92,6 +93,22 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
     }
 
     /**
+     * Parameterized Constructor.
+     * This constructor will be used by Hibernate internally.
+     *
+     * @param id
+     * @param name
+     * @param description
+     * @param createdDate
+     */
+    public ParameterizedQuery(Long id, String name, String description, Date createdDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.createdDate = createdDate;
+    }
+
+    /**
      * @see edu.wustl.common.querysuite.queryobject.IParameterizedQuery#addParameterizedCondition(edu.wustl.common.querysuite.queryobject.IParameterizedCondition)
      */
     public void addParameterizedCondition(String name, String description) {
@@ -101,7 +118,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     /**
      * @return the outputAttributeList
-     * 
+     *
      * @hibernate.list name="outputAttributeList" table="OUTPUT_ATTRIBUTES"
      *                 cascade="all-delete-orphan" inverse="false" lazy="false"
      * @hibernate.collection-key column="PARAMETERIZED_QUERY_ID"
@@ -125,7 +142,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     /**
      * This method adds a given OutputAttribute into the OutputAtributeList.
-     * 
+     *
      * @param outputAttribute
      * @return
      */
@@ -141,7 +158,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
 
     /**
      * This method removes a given OutputAttribute from the OutputAtributeList
-     * 
+     *
      * @param outputAttribute
      * @return
      */
@@ -168,7 +185,7 @@ public class ParameterizedQuery extends Query implements IParameterizedQuery,Ide
         this.parameters = parameters;
     }
 
-	public String getObjectId() 
+	public String getObjectId()
 	{
 		return this.getClass().getName()+ "_" + this.getId();
 	}
