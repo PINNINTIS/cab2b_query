@@ -14,39 +14,56 @@
 				<param name="sequence">QUERY_SEQ</param>
 			</generator>
 		</id>
-		
-		<property 
-			name="name" 
-			type="string" 
-			update="true" 
+
+		<property
+			name="name"
+			type="string"
+			update="true"
 			insert="true"
-			column="QUERY_NAME" 
-			length="255" 
+			column="QUERY_NAME"
+			length="255"
 			unique="true" />
 
-	<property 
-			name="type" 
-			type="string" 
-			update="true" 
-			insert="true"
-			column="QUERY_TYPE" 
-			length="255" 
-			unique="true" />
-			
-		<property 
-			name="description" 
-			type="string" 
+		<property
+			name="type"
+			type="string"
 			update="true"
-			insert="true" 
-			column="DESCRIPTION" 
+			insert="true"
+			column="QUERY_TYPE"
+			length="30" />
+
+		<property
+			name="description"
+			type="string"
+			update="true"
+			insert="true"
+			column="DESCRIPTION"
 			length="1024" />
+
+		<property
+			name="createdDate"
+			type="timestamp"
+			update="true"
+			insert="true"
+			column="CREATED_DATE"
+			not-null="true" />
+
+		<property
+            name="createdBy"
+            type="long"
+            update="true"
+            insert="true"
+            column="CREATED_BY"
+            length="30"
+            not-null="true"
+        />
 
 	<joined-subclass
 			name="edu.wustl.common.querysuite.queryobject.impl.Query"
 			table="QUERY" dynamic-update="false"
 			dynamic-insert="false">
 			<key column="IDENTIFIER" />
-			
+
 		<many-to-one name="constraints"
 			class="edu.wustl.common.querysuite.queryobject.impl.Constraints"
 			cascade="all" outer-join="auto" update="true" insert="true"
@@ -65,7 +82,7 @@
 			table="QUERY_PARAMETERIZED_QUERY" dynamic-update="false"
 			dynamic-insert="false">
 			<key column="IDENTIFIER" />
-				
+
 			<list name="outputAttributeList" table="QUERY_OUTPUT_ATTRIBUTE"
 				lazy="false" inverse="false" cascade="all-delete-orphan">
 				<cache usage="read-write" />
@@ -84,13 +101,13 @@
 			</list>
 		</joined-subclass>
 	</joined-subclass>
-	
+
 	<joined-subclass
 			name="edu.wustl.common.querysuite.queryobject.impl.CompositeQuery"
 			table="QUERY_COMPOSITE_QUERY" dynamic-update="false"
 			dynamic-insert="false">
 			<key column="IDENTIFIER" />
-		
+
 		<many-to-one
            name="operation"
 	       class="edu.wustl.common.querysuite.queryobject.impl.Operation"
